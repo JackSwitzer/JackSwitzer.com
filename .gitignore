@@ -69,3 +69,6 @@ Desktop.ini
 # Claude Code sandbox state
 .claude/state/
 .claude/logs/
+.claude/port
+.claude/todos.md
+.claude/tokens.json

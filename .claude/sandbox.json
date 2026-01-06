@@ -1,0 +1,12 @@
+{
+  "project": "PersonalWebsite",
+  "sandbox": "claude-sandbox-PersonalWebsite",
+  "created": "2026-01-06T18:25:41Z",
+  "isolation": {
+    "filesystem": "project-only",
+    "network": "restricted",
+    "tools": ["bun", "uv", "git", "docker"]
+  },
+  "permissions": "skip-all",
+  "state": "persistent"
+}

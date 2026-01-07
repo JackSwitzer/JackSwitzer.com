@@ -98,7 +98,7 @@ export default function ResumePage() {
             )}
           </div>
           <div className="text-right text-sm">
-            <p>GPA: {education?.gpa}</p>
+            {education?.gpa && <p>GPA: {education.gpa}</p>}
             <p className="text-neutral-500">Expected {education?.graduation}</p>
           </div>
         </div>

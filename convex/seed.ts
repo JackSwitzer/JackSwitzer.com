@@ -41,9 +41,7 @@ export const seedFromResume = mutation({
     await ctx.db.insert("education", {
       institution: "Queen's University",
       degree: "Bachelor of Applied Mathematics & Computer Engineering",
-      gpa: "3.7",
       graduation: "May 2027",
-      certificate: "Certificate in Business",
       relevantCourses: [
         "Object Oriented Programming",
         "Data Structures and Algorithms",
@@ -83,7 +81,7 @@ export const seedFromResume = mutation({
         order: 1,
         role: "Teaching Assistant: Linear Algebra I",
         company: "Queen's University",
-        period: "2025",
+        period: "2024-2025",
         accomplishments: [
           "Led 2 weekly tutorials teaching the fundamentals of linear algebra to 60 students at a time in an interactive manner",
           "Fully created and designed a learning platform (linalg.jackswitzer.com) with interactive visualizations, leading to positive student performance outcomes",
@@ -94,7 +92,7 @@ export const seedFromResume = mutation({
         order: 2,
         role: "Data Scientist",
         company: "Royal Bank of Canada",
-        period: "2024",
+        period: "Summer 2024",
         accomplishments: [
           "Implemented time series forecasting models using Meta's Prophet and Recurrent Neural Networks (LSTM) which reduced error by 50% over existing methods",
           "Led a unit of 3 for a 3-week sprint in order to refactor existing code base, bring in standard coding practices and migrate to GitHub",
@@ -106,7 +104,7 @@ export const seedFromResume = mutation({
         order: 3,
         role: "Data Analyst",
         company: "Royal Bank of Canada",
-        period: "2023",
+        period: "Summer 2023",
         accomplishments: [
           "Automated weekly visualization of key business metrics for executives in Python, saving 8 hours weekly",
           "Conducted time series analysis to forecast call centre volume with SARIMA, with less than 5% error for yearly model",
@@ -118,7 +116,7 @@ export const seedFromResume = mutation({
         order: 4,
         role: "Group Leader and Instructor",
         company: "Pedalheads Bike Camp",
-        period: "2022",
+        period: "Summer 2022",
         accomplishments: [
           "Managed and led groups of 5-10 children aged 4-11, developing leadership and communication skills",
         ],
@@ -218,7 +216,7 @@ export const seedFromResume = mutation({
         slug: "rbc-data-scientist",
         name: "RBC Data Scientist",
         type: "work" as const,
-        period: "2024",
+        period: "Summer 2024",
         featured: true,
         visible: true,
         status: "complete" as const,
@@ -235,7 +233,7 @@ export const seedFromResume = mutation({
         slug: "rbc-data-analyst",
         name: "RBC Data Analyst",
         type: "work" as const,
-        period: "2023",
+        period: "Summer 2023",
         featured: true,
         visible: true,
         status: "complete" as const,
@@ -513,7 +511,7 @@ export const seedFromResume = mutation({
         order: 4,
         role: "Analyst → Project Manager",
         organization: "QUANTT (Queen's Quantitative Trading Team)",
-        period: "2023-Present",
+        period: "2023-2025",
         accomplishments: [
           "Progressed from analyst to project manager over 2 years in Queen's premier quantitative finance club",
           "Managed teams of 5 developing quantitative trading strategies using ML and NLP",
@@ -542,7 +540,7 @@ export const seedFromResume = mutation({
     await ctx.db.insert("future", {
       name: "CSSIC - Canadian Semiconductor Conference",
       role: "Co-organizer",
-      partner: "Zeni",
+      partner: "Mattias Zeni",
       targetDate: "February/March 2027",
       description: "Planning and running a new conference focused on Canadian semiconductors",
     });

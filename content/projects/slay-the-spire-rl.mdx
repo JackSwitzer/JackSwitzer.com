@@ -1,0 +1,52 @@
+---
+title: "StSRLSolver - Slay the Spire RL Agent"
+projectType: personal
+technologies:
+  - Python
+  - Neural Networks
+  - Behavioral Cloning
+  - PyTorch
+tags:
+  - reinforcement-learning
+  - game-ai
+  - machine-learning
+github:
+  repo: StSRLSolver
+  account: jackswitzer
+featured: true
+visible: true
+status: active
+period: "2025"
+accomplishments:
+  - "Developing a reinforcement learning agent targeting >96% win rate on Slay the Spire Watcher at Ascension 20 (highest difficulty)"
+  - "Trained behavioral cloning model on 77 million official game runs using self-play training loop"
+  - "Engineered 44 high-level strategic features including kill probability calculations, stance mechanics, and block efficiency predictions"
+summary: "A reinforcement learning agent designed to achieve exceptional performance in Slay the Spire, targeting >96% win rate at the highest difficulty."
+---
+
+# StSRLSolver
+
+StSRLSolver is an artificial intelligence agent designed to achieve exceptional performance in the roguelike deck-building game Slay the Spire, specifically targeting greater than 96% win rate on the Watcher character at Ascension 20 (the highest difficulty level).
+
+## Technical Approach
+
+### Strategic Decision-Making
+The agent pre-computes 44 high-level strategic features rather than using raw card data. This includes:
+- Kill probability calculations per enemy and for lethal lines
+- Stance-specific mechanics (Wrath doubles damage)
+- Block efficiency and incoming damage predictions
+
+### Learning Architecture
+- **Line Evaluation Module**: Simulates card play sequences
+- **Combat Calculator**: Handles pre-computation of battle math
+- **Enemy Database**: Maintains difficulty assessments
+- **Neural Network**: Implements behavioral cloning approach
+
+### Training Methodology
+- Self-play training loop for continuous improvement
+- Behavioral cloning using 77 million official game runs (2018-2020 dataset)
+- Modular system supporting both active agent mode and training mode
+
+## Current Status
+
+This project is actively in development, with the goal of achieving a 96%+ win rate - an exceptionally high performance metric for this difficulty tier that requires sophisticated strategy implementation beyond basic heuristics.

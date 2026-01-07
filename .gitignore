@@ -72,3 +72,6 @@ Desktop.ini
 .claude/port
 .claude/todos.md
 .claude/tokens.json
+.ssh/
+.env.local
+.claude/settings.local.json

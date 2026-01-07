@@ -30,6 +30,11 @@ export default async function DynamicPage({ params }: Props) {
   try {
     const fullPath = params.slug.join('/')
 
+    // Exclude portfolio routes - they have their own pages
+    if (fullPath.startsWith('portfolio')) {
+      notFound()
+    }
+
     // Handle static assets and favicons
     if (
       fullPath.includes('assets/') ||

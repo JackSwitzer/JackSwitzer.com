@@ -58,9 +58,9 @@ export default function middleware(request: NextRequest) {
     )
   }
 
-  // Handle direct note access - exclude special routes
-  if (/^\/[a-zA-Z0-9-]+$/.test(pathname) && 
-      !['notes', 'outro', 'videos'].includes(pathname.slice(1))) {
+  // Handle direct note access - exclude special routes and portfolio
+  if (/^\/[a-zA-Z0-9-]+$/.test(pathname) &&
+      !['notes', 'outro', 'videos', 'portfolio', 'course-resources', 'tutorials', 'internships'].includes(pathname.slice(1))) {
     return NextResponse.redirect(
       new URL(`/notes${pathname}`, request.url)
     )

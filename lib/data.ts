@@ -96,6 +96,7 @@ export const extracurriculars = [
       "Organized 3 major networking events including meetings with IBM Canada President and 2 VPs",
       "Planned and executed holiday party and social events for intern community",
     ],
+    link: "https://www.linkedin.com/posts/ashwinbalu_ibmcanada-internshipexperience-leadership-activity-7379305095907299328-ifXj",
   },
   {
     id: "rbc-campus-ambassador",
@@ -148,6 +149,22 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    slug: "qwen-interpretability",
+    name: "Quantization Degradation Analysis with SAEs",
+    type: "personal",
+    period: "2025",
+    featured: true,
+    visible: true,
+    status: "wip",
+    summary: "Studying quantization degradation in Qwen 3 Coder 30B using Sparse Autoencoders (SAEs) and benchmarks to understand how compression affects model capabilities.",
+    accomplishments: [
+      "Investigating how quantization affects model capabilities using interpretability tools",
+      "Applying Sparse Autoencoders to analyze feature degradation across quantization levels",
+    ],
+    technologies: ["Python", "SAE", "Interpretability", "LLM", "Quantization", "PyTorch"],
+    tags: ["interpretability", "sae", "quantization", "llm-analysis", "mechanistic-interpretability"],
+  },
   {
     slug: "ibm-software-developer",
     name: "IBM Software Developer - Mainframe Modernization",
@@ -263,7 +280,7 @@ export const projects: Project[] = [
     name: "MTHE393 Control Systems - Black Box Identification",
     type: "school",
     period: "2025",
-    featured: false,
+    featured: true,
     visible: true,
     status: "complete",
     summary: "Analyzed unknown dynamic systems through experimental identification, designed stable control systems.",
@@ -333,7 +350,7 @@ export const projects: Project[] = [
     name: "RBC Data Scientist",
     type: "work",
     period: "Summer 2024",
-    featured: false,
+    featured: true,
     visible: true,
     status: "complete",
     summary: "Data Scientist role at Royal Bank of Canada, implementing advanced time series forecasting.",

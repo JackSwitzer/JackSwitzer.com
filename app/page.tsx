@@ -59,10 +59,10 @@ export default function HomePage() {
       <div>
         <h2 className="text-lg font-semibold mb-3">About</h2>
         <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">
-          I'm a Math & Computer Engineering student at Queen's passionate about AI systems and interpretability.
-          Currently at IBM building AI-powered tools for mainframe modernization, while researching how
-          quantization affects LLM capabilities through mechanistic interpretability. I love building things
-          that make complex systems more understandable.
+          I build things that work. Currently a Software Developer at IBM building AI-powered tools for
+          mainframe modernization, while exploring how quantization degrades LLM capabilities through
+          interpretability research. I've shipped projects across ML, web dev, and quant finance—from
+          teaching platforms used by 120+ students to trading strategies using neural networks.
         </p>
       </div>
 

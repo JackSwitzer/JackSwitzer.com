@@ -1,0 +1,65 @@
+---
+title: "NYT Games Solver"
+projectType: personal
+technologies:
+  - Python
+  - Algorithms
+  - Word Games
+tags:
+  - algorithms
+  - puzzles
+  - optimization
+github:
+  repo: NYT-Games
+  account: jackswitzer
+featured: false
+visible: true
+status: complete
+period: "2024"
+accomplishments:
+  - "Built puzzle solvers for NYT LetterBoxed and Spelling Bee games"
+  - "Implemented efficient word search algorithms using dictionary data structures"
+summary: "Automated solvers for New York Times word puzzle games including LetterBoxed and Spelling Bee."
+---
+
+# NYT Games Solver
+
+Automated puzzle solvers for New York Times word games, turning daily puzzles into algorithmic challenges.
+
+## Supported Games
+
+### LetterBoxed
+A puzzle where you connect letters on a square to form words, with each word starting where the last one ended.
+
+The solver:
+- Finds optimal solutions minimizing total words used
+- Explores valid word chains connecting all letters
+- Uses efficient graph traversal algorithms
+
+### Spelling Bee
+Create words using 7 letters, with one center letter required in every word.
+
+The solver:
+- Identifies all valid words from the dictionary
+- Highlights pangrams (words using all 7 letters)
+- Ranks words by point value
+
+## Technical Implementation
+
+### Dictionary Data Structures
+Implemented efficient word lookup using:
+- Trie structures for prefix matching
+- Hash sets for O(1) word validation
+- Pre-computed valid word lists
+
+### Search Algorithms
+- Depth-first search for LetterBoxed chains
+- Constraint satisfaction for valid word generation
+- Pruning strategies for performance optimization
+
+## Why Build This?
+
+Beyond solving daily puzzles, this project explores:
+- Combinatorial optimization
+- Word graph algorithms
+- Efficient search strategies

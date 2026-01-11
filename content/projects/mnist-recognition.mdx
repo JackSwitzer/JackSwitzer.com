@@ -1,0 +1,54 @@
+---
+title: "Handwritten Digit Recognition"
+projectType: school
+technologies:
+  - Python
+  - Neural Networks
+  - KAN
+  - Computer Vision
+tags:
+  - ml
+  - computer-vision
+  - neural-networks
+github:
+  repo: handwritten-digit-recognition
+  account: jackswitzer
+featured: false
+visible: true
+status: complete
+period: "2024"
+accomplishments:
+  - "Trained a Kolmogorov Arnold Neural Network (KAN) to make predictions on the MNIST database"
+  - "Achieved test accuracy of 97.73%"
+summary: "Implemented a Kolmogorov Arnold Network (KAN) for MNIST digit recognition achieving 97.73% accuracy."
+---
+
+# Handwritten Digit Recognition
+
+A computer vision project exploring Kolmogorov Arnold Networks (KANs) for the classic MNIST handwritten digit recognition task.
+
+## The MNIST Challenge
+
+MNIST is a benchmark dataset of 70,000 handwritten digits (0-9). While considered "solved" by modern standards, it remains an excellent testbed for exploring new neural network architectures.
+
+## Kolmogorov Arnold Networks (KANs)
+
+Rather than using traditional MLPs or CNNs, this project implements a **Kolmogorov Arnold Network** - a novel architecture based on the Kolmogorov-Arnold representation theorem.
+
+### How KANs Differ
+
+- **Traditional Neural Networks**: Fixed activation functions, learnable weights
+- **KANs**: Learnable activation functions on edges, no linear weights
+
+This approach can be more interpretable and sometimes more parameter-efficient than traditional architectures.
+
+## Results
+
+Achieved **97.73% test accuracy** on MNIST, demonstrating that KANs can effectively learn visual patterns for digit classification.
+
+## Technical Implementation
+
+- Built in Python using neural network frameworks
+- Trained on standard MNIST train/test split
+- Explored different KAN configurations and depths
+- Compared performance to traditional MLP baselines

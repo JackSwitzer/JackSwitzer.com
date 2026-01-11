@@ -1,0 +1,495 @@
+{
+  "personal": {
+    "name": "Jack Switzer",
+    "email": "jackswitzer3@gmail.com",
+    "github": "jackswitzer",
+    "githubSchool": "JackSwitzerSchool",
+    "linkedin": "https://linkedin.com/in/jackswitzer"
+  },
+  "education": {
+    "institution": "Queen's University",
+    "degree": "Bachelor of Applied Mathematics & Computer Engineering",
+    "gpa": "3.7",
+    "graduation": "May 2027",
+    "certificate": "Certificate in Business",
+    "relevantCourses": [
+      "Object Oriented Programming",
+      "Data Structures and Algorithms",
+      "Computer Architecture",
+      "Digital Systems",
+      "Algorithms I",
+      "Microprocessor Systems",
+      "Fundamentals of Software Development",
+      "Probability I & II",
+      "Linear Algebra I & II",
+      "Real Analysis I & II",
+      "Complex Analysis",
+      "Quantitative Trading Strategy (COMM420)",
+      "Database Programming",
+      "Math of Engineering Systems"
+    ]
+  },
+  "experience": [
+    {
+      "id": "ibm-software-developer",
+      "role": "Software Developer",
+      "company": "IBM",
+      "period": "May 2025 - April 2026",
+      "accomplishments": [
+        "Working on translating legacy mainframe languages (COBOL, PL1, REXX) into modern compiled languages (Java, Python) for maintenance and feature development",
+        "Developed inference portion of new benchmark pipeline that influenced product model decisions",
+        "Orchestrated new VSCode extension for high-quality code explanations with architecture schema visualization",
+        "Developed MCP and subagent tooling for code explanation workflows",
+        "Built first official feature adding data dictionary of all variables into the main explain pipeline, helping other teams understand functionality",
+        "Working on adding A2A (Agent-to-Agent) support with improved intricate subagent loops"
+      ],
+      "technologies": ["Python", "Java", "COBOL", "PL1", "REXX", "VSCode Extensions", "MCP", "LLM", "AI Agents"]
+    },
+    {
+      "id": "ta-linear-algebra",
+      "role": "Teaching Assistant: Linear Algebra I",
+      "company": "Queen's University",
+      "period": "2025",
+      "accomplishments": [
+        "Led 2 weekly tutorials teaching the fundamentals of linear algebra to 60 students at a time in an interactive manner",
+        "Fully created and designed a website to aide in learning (jackswitzer.com) which led to positive student performance outcomes"
+      ],
+      "technologies": ["Next.js", "MDX", "TypeScript", "Tailwind CSS"]
+    },
+    {
+      "id": "rbc-data-scientist",
+      "role": "Data Scientist",
+      "company": "Royal Bank of Canada",
+      "period": "2024",
+      "accomplishments": [
+        "Implemented time series forecasting models using Meta's Prophet and Recurrent Neural Networks (LSTM) which reduced error by 50% over existing methods",
+        "Led a unit of 3 for a 3-week sprint in order to refactor existing code base, bring in standard coding practices and migrate to GitHub",
+        "Built an Excel visualization tool for team members to dynamically interact with forecast, bridging the gap between technological efforts and business needs"
+      ],
+      "technologies": ["Python", "Prophet", "LSTM", "PyTorch", "Excel", "Git"]
+    },
+    {
+      "id": "rbc-data-analyst",
+      "role": "Data Analyst",
+      "company": "Royal Bank of Canada",
+      "period": "2023",
+      "accomplishments": [
+        "Automated weekly visualization of key business metrics for executives in Python, saving 8 hours weekly",
+        "Conducted time series analysis to forecast call centre volume with SARIMA, with less than 5% error for yearly model",
+        "Designed and taught a course on Python with applications to forecasting to a team of twelve"
+      ],
+      "technologies": ["Python", "SARIMA", "Pandas", "Data Visualization"]
+    },
+    {
+      "id": "pedalheads",
+      "role": "Group Leader and Instructor",
+      "company": "Pedalheads Bike Camp",
+      "period": "2022",
+      "accomplishments": [
+        "Managed and led a group of 5-10 children aged 4-11 on basic trail riding and tricks",
+        "Learned to interact with a diverse group including demanding parents, children, managers and colleagues"
+      ],
+      "technologies": []
+    }
+  ],
+  "projects": [
+    {
+      "id": "slay-the-spire-rl",
+      "name": "StSRLSolver",
+      "type": "personal",
+      "period": "2025",
+      "featured": true,
+      "visible": true,
+      "status": "active",
+      "accomplishments": [
+        "Developing a reinforcement learning agent targeting >96% win rate on Slay the Spire Watcher at Ascension 20 (highest difficulty)",
+        "Trained behavioral cloning model on 77 million official game runs using self-play training loop",
+        "Engineered 44 high-level strategic features including kill probability calculations, stance mechanics, and block efficiency predictions"
+      ],
+      "technologies": ["Python", "Neural Networks", "Behavioral Cloning", "PyTorch"],
+      "github": {
+        "repo": "StSRLSolver",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "qhacks2025-chrono",
+      "name": "Chrono - Linguistic Pattern Forecasting",
+      "type": "hackathon",
+      "period": "2025",
+      "featured": true,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Built a linguistic pattern forecasting system to predict how language evolves over time",
+        "Developed end-to-end ML pipeline including data preprocessing, forecasting models, and voice synthesis (Polly)",
+        "Led team of 4 contributors across 52 commits in a 36-hour hackathon"
+      ],
+      "technologies": ["Python", "NLP", "Machine Learning", "Flask"],
+      "github": {
+        "repo": "QHacks2025",
+        "account": "JackSwitzerSchool"
+      }
+    },
+    {
+      "id": "gulf-of-mexico-simulation",
+      "name": "Gulf of Mexico Trash Collection Simulation",
+      "type": "school",
+      "period": "2023",
+      "featured": true,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Led a team of 4 to develop a Multi-Agent System to model cleaning garbage out of the Gulf of Mexico by finding optimal locations and pathing for garbage collection drones",
+        "Used satellite imagery to simulate the Gulf Stream and accurately model garbage flow in a dynamic density map",
+        "Implemented K-Means clustering which led to a 20% efficiency improvement over existing methodology"
+      ],
+      "technologies": ["MATLAB", "Multi-Agent Systems", "K-Means Clustering", "Simulation"],
+      "github": {
+        "repo": "APSC-200",
+        "account": "JackSwitzerSchool"
+      }
+    },
+    {
+      "id": "mthe393-control-systems",
+      "name": "MTHE393 Control Systems",
+      "type": "school",
+      "period": "2025",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Deconstructed black-box systems to identify transfer functions through system identification",
+        "Designed stable control systems using MATLAB/Simulink"
+      ],
+      "technologies": ["MATLAB", "Simulink", "Control Theory", "System Identification"],
+      "github": {
+        "repo": "MTHE393",
+        "account": "JackSwitzerSchool"
+      }
+    },
+    {
+      "id": "panokeet",
+      "name": "Panokeet",
+      "type": "personal",
+      "period": "2025",
+      "featured": false,
+      "visible": true,
+      "status": "wip",
+      "accomplishments": [
+        "Building a voice-to-text parakeet app with local fine-tuning on voice to text intent",
+        "Implemented in Swift for iOS with local ML model integration"
+      ],
+      "technologies": ["Swift", "iOS", "Machine Learning", "Speech Recognition"],
+      "github": {
+        "repo": "Panokeet",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "sol-smart-bulb",
+      "name": "Sol - Smart Bulb CLI",
+      "type": "personal",
+      "period": "2025",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Built a CLI tool to manage a Kana smart bulb for easy wake-up routines",
+        "Implemented sunrise simulation for natural wake-ups"
+      ],
+      "technologies": ["Python", "CLI", "IoT", "Smart Home"],
+      "github": {
+        "repo": "sol",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "tavla-backgammon",
+      "name": "Tavla - Backgammon RL",
+      "type": "personal",
+      "period": "2025",
+      "featured": false,
+      "visible": false,
+      "status": "wip",
+      "accomplishments": [
+        "Developing an on-the-go RL Backgammon solver for mobile use",
+        "Implementing reinforcement learning techniques for optimal play strategy"
+      ],
+      "technologies": ["Python", "Reinforcement Learning", "Game AI"],
+      "github": {
+        "repo": "Tavla",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "nyt-games",
+      "name": "NYT Games Solver",
+      "type": "personal",
+      "period": "2024",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Built puzzle solvers for NYT LetterBoxed and Spelling Bee games",
+        "Implemented efficient word search algorithms using dictionary data structures"
+      ],
+      "technologies": ["Python", "Algorithms", "Word Games"],
+      "github": {
+        "repo": "NYT-Games",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "advent-of-code-2024",
+      "name": "Advent of Code 2024",
+      "type": "personal",
+      "period": "2024",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Completed challenges in 8 different programming languages",
+        "Achieved 29 stars across various algorithmic problems"
+      ],
+      "technologies": ["Python", "Rust", "Go", "Java", "C", "OCaml", "R", "Multiple Languages"],
+      "github": {
+        "repo": "AdventofCode",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "mnist-recognition",
+      "name": "Handwritten Digit Recognition",
+      "type": "school",
+      "period": "2024",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Trained a Kolmogorov Arnold Neural Network (KAN) to make predictions on the MNIST database",
+        "Achieved test accuracy of 97.73%"
+      ],
+      "technologies": ["Python", "Neural Networks", "KAN", "Computer Vision"],
+      "github": {
+        "repo": "handwritten-digit-recognition",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "linear-algebra-website",
+      "name": "Linear Algebra Course Website",
+      "type": "school",
+      "period": "2025",
+      "featured": false,
+      "visible": true,
+      "status": "active",
+      "accomplishments": [
+        "Built a comprehensive course website for APSC 174 Linear Algebra",
+        "Created interactive tutorials, embedded videos, and detailed notes for 60+ students",
+        "Implemented MDX-based content system with math rendering (KaTeX)"
+      ],
+      "technologies": ["Next.js", "TypeScript", "MDX", "KaTeX", "Tailwind CSS"],
+      "github": {
+        "repo": "APSC174",
+        "account": "JackSwitzerSchool"
+      },
+      "link": "https://apsc174.jackswitzer.com"
+    },
+    {
+      "id": "qhacks2023-financial-advisor",
+      "name": "Virtual Financial Advisor",
+      "type": "hackathon",
+      "period": "2023",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Developed an all-in-one virtual financial advisor that accesses public sentiment of keywords and manages stock portfolios",
+        "Created a sentiment analysis tool that scraped thousands of sites to generate a sentiment score for specific companies",
+        "Built Flask backend with ChatGPT API integration"
+      ],
+      "technologies": ["Python", "Flask", "ChatGPT API", "Web Scraping", "Sentiment Analysis"],
+      "github": {
+        "repo": "qhacks24",
+        "account": "jackswitzer"
+      }
+    },
+    {
+      "id": "robotic-arm",
+      "name": "Robotic Arm for Cerebral Palsy",
+      "type": "school",
+      "period": "2022",
+      "featured": false,
+      "visible": true,
+      "status": "complete",
+      "accomplishments": [
+        "Led a team of 5 to design a robotic arm for people with cerebral palsy that could grab, lift and rotate objects",
+        "Achieved 100% testing grade"
+      ],
+      "technologies": ["Mechanical Design", "Robotics", "Team Leadership"],
+      "github": null
+    },
+    {
+      "id": "scapcentre-chatbot",
+      "name": "Scapcentre AI Chatbot",
+      "type": "consulting",
+      "period": "2025",
+      "featured": false,
+      "visible": false,
+      "status": "wip",
+      "accomplishments": [
+        "Building AI chatbot for scapcentre.ca to help answer questions about treatment options",
+        "Implementing conversational interface to direct users to booking and ease experience for new and returning customers"
+      ],
+      "technologies": ["AI", "Chatbot", "Web Development"],
+      "link": "https://scapcentre.ca"
+    }
+  ],
+  "future": [
+    {
+      "id": "cssic-conference",
+      "name": "CSSIC - Canadian Semiconductor Conference",
+      "role": "Co-organizer",
+      "partner": "Zeni",
+      "targetDate": "February/March 2027",
+      "description": "Planning and running a new conference focused on Canadian semiconductors"
+    }
+  ],
+  "quant": {
+    "description": "Quantitative finance projects and experience",
+    "active": false,
+    "items": [
+      {
+        "id": "rit-hackathon",
+        "name": "RIT Hackathon - Market Making",
+        "type": "hackathon",
+        "period": "2024",
+        "accomplishments": [
+          "Implemented market making strategies using mean-reversion and risk analysis",
+          "Developed liability trading algorithms for competition"
+        ],
+        "technologies": ["Python", "Quantitative Finance", "Market Making"],
+        "github": {
+          "repo": "RIT-Hackathon",
+          "account": "jackswitzer"
+        }
+      },
+      {
+        "id": "faim-hackathon",
+        "name": "McGill FAIM Hackathon - Portfolio Optimization",
+        "type": "hackathon",
+        "period": "2024",
+        "accomplishments": [
+          "Led a team of 5 in developing a trading strategy for the McGill FAIM quantitative finance hackathon",
+          "Used stock prediction techniques such as elastic nets & LSTM neural networks trained on Queen's University compute cluster",
+          "Achieved an alpha of 0.00137",
+          "Implemented Black-Litterman portfolio management technique to rebalance a portfolio of 50-100 stocks in long and short positions",
+          "Trained LSTM neural network on 147 investment factors with multi-GPU optimization"
+        ],
+        "technologies": ["Python", "LSTM", "Elastic Net", "Black-Litterman", "PyTorch", "HPC"],
+        "github": {
+          "repo": "FAIM-Personal",
+          "account": "jackswitzer"
+        }
+      },
+      {
+        "id": "quantt-analyst",
+        "name": "QUANTT - Quantitative Analyst",
+        "type": "extracurricular",
+        "period": "2023-2024",
+        "accomplishments": [
+          "Participated in a 10-week educational program to gain expertise in quantitative finance fundamentals",
+          "Covered areas such as capital markets, time series analysis, and computational statistics and probability",
+          "Implemented a Monte Carlo simulation and a Heston model to accurately price AMD options to ~5% error on test data"
+        ],
+        "technologies": ["Python", "Monte Carlo", "Heston Model", "Options Pricing"],
+        "github": {
+          "repo": "Quantt-5",
+          "account": "JackSwitzerSchool"
+        }
+      },
+      {
+        "id": "quantt-pm",
+        "name": "QUANTT - Project Manager",
+        "type": "extracurricular",
+        "period": "2024-Present",
+        "accomplishments": [
+          "Managed a team of 5 in developing a natural language processing basis for algorithmic trading",
+          "Taught a session to 60 club members on data science and machine learning applied to finance",
+          "Project managed 2 teams in third year",
+          "Gained experience in project management, team coordination, and delivering under uncertainty even when outcomes weren't achieved"
+        ],
+        "technologies": ["NLP", "Python", "Project Management"],
+        "github": {
+          "repo": "Quantt-7",
+          "account": "JackSwitzerSchool"
+        }
+      },
+      {
+        "id": "comm420",
+        "name": "COMM420 - Quantitative Trading Strategy",
+        "type": "coursework",
+        "period": "2024-2025",
+        "accomplishments": [
+          "Completed coursework in quantitative trading strategy as part of Certificate in Business"
+        ],
+        "technologies": ["Quantitative Finance", "Trading Strategy"]
+      }
+    ]
+  },
+  "extracurriculars": [
+    {
+      "id": "future-blue-president",
+      "role": "President, Future Blue Intern Council",
+      "organization": "IBM",
+      "period": "May 2025 - Present",
+      "accomplishments": [
+        "Led IBM's intern student council (Future Blue) as President from July to January",
+        "Organized and ran 3 major networking events including meetings with IBM Canada President and 2 VPs",
+        "Planned and executed holiday party and social events for intern community",
+        "Transitioned to advisory role for Markham office (January - Present)"
+      ]
+    },
+    {
+      "id": "rbc-campus-ambassador",
+      "role": "Campus Ambassador",
+      "organization": "Royal Bank of Canada",
+      "period": "2024-2025",
+      "accomplishments": [
+        "Worked with the RBC campus recruitment team to engage the student population at Queen's University",
+        "Helped run networking events",
+        "Selected due to strong manager and team advocacy based on project contributions"
+      ]
+    },
+    {
+      "id": "qube-consultant",
+      "role": "Consulting Analyst",
+      "organization": "QUBE",
+      "period": "2023-2024",
+      "accomplishments": [
+        "Developed a US market entrance strategy for Canadian mental health service provider Keel Digital",
+        "High customer satisfaction led to further consulting for Keel Digital to implement website changes suggested"
+      ]
+    },
+    {
+      "id": "qsc-consultant",
+      "role": "Consulting Analyst",
+      "organization": "QSC",
+      "period": "2024-Present",
+      "accomplishments": [
+        "Worked with early-stage startups to develop their marketing strategy, build websites and expand their brand"
+      ]
+    }
+  ],
+  "skills": {
+    "languages": ["Python", "Java", "C", "C++", "Assembly (NIOS II)", "R", "OCaml", "Rust", "Swift", "MATLAB"],
+    "libraries": ["Pandas", "NumPy", "PyTorch", "SARIMA", "SciPy", "Prophet", "Scikit-learn"],
+    "tools": ["Git", "GitHub", "Docker", "Excel", "Next.js", "TypeScript"],
+    "externalCourses": [
+      "Udemy Machine Learning",
+      "Andrej Karpathy's ML series",
+      "DataCamp R for Finance I & II"
+    ]
+  }
+}

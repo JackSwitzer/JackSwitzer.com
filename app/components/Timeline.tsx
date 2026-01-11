@@ -56,6 +56,21 @@ const typeLabels = {
   hackathon: "Hackathon",
 };
 
+// Format date display - show full range for multi-year spans, abbreviated for same-year
+function formatDateDisplay(date: string, groupYear: string): string {
+  const years = date.match(/20\d{2}/g) || [];
+
+  // Multi-year range (e.g., "May 2025 - Apr 2026")
+  if (years.length >= 2 && years[0] !== years[years.length - 1]) {
+    // Show abbreviated format: "May '25 - Apr '26"
+    return date.replace(/20(\d{2})/g, "'$1");
+  }
+
+  // Same year range or single date - strip the year since it's in the group header
+  const stripped = date.replace(/20\d{2}/g, '').replace(/^\s*-?\s*/, '').trim();
+  return stripped || groupYear;
+}
+
 export function Timeline() {
   // Group by year
   const groupedByYear: Record<string, TimelineItem[]> = {};
@@ -100,7 +115,7 @@ export function Timeline() {
                         {item.title}
                       </span>
                       <span className="text-xs text-neutral-400 dark:text-neutral-500 font-mono">
-                        {item.date.replace(/20\d{2}/g, '').replace(/^\s*-?\s*/, '').trim() || year}
+                        {formatDateDisplay(item.date, year)}
                       </span>
                     </div>
                     {item.subtitle && (

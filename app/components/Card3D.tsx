@@ -1,97 +1,134 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useRef } from 'react';
+import HTMLFlipBook from 'react-pageflip';
 import Image from 'next/image';
 
-interface Card3DProps {
-  className?: string;
-}
+// Page component with forwardRef for react-pageflip
+const Page = React.forwardRef<HTMLDivElement, { children: React.ReactNode; className?: string }>(
+  ({ children, className = '' }, ref) => (
+    <div ref={ref} className={`bg-white ${className}`}>
+      {children}
+    </div>
+  )
+);
+Page.displayName = 'Page';
 
-export function Card3D({ className = '' }: Card3DProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function Card3D({ className = '' }: { className?: string }) {
+  const bookRef = useRef<any>(null);
+
+  const goNext = () => {
+    bookRef.current?.pageFlip()?.flipNext();
+  };
+
+  const goPrev = () => {
+    bookRef.current?.pageFlip()?.flipPrev();
+  };
 
   return (
-    <div className={`flex flex-col items-center gap-4 ${className}`}>
-      {/* Card container with perspective */}
-      <div
-        style={{ perspective: '1200px' }}
-        className="w-[500px] max-w-full"
-      >
-        {/* Book container - holds both pages */}
-        <div
-          className="relative cursor-pointer"
-          style={{ aspectRatio: '1.4 / 1' }}
-          onClick={() => setIsOpen(!isOpen)}
+    <div className={`flex flex-col items-center gap-6 ${className}`}>
+      {/* Flipbook */}
+      <div className="shadow-2xl">
+        {/* @ts-ignore - react-pageflip types are incomplete */}
+        <HTMLFlipBook
+          ref={bookRef}
+          width={300}
+          height={400}
+          size="fixed"
+          minWidth={280}
+          maxWidth={400}
+          minHeight={350}
+          maxHeight={500}
+          showCover={true}
+          mobileScrollSupport={false}
+          className="shadow-xl"
+          flippingTime={800}
+          useMouseEvents={true}
+          swipeDistance={30}
+          clickEventForward={true}
+          usePortrait={false}
+          startZIndex={0}
+          autoSize={false}
+          maxShadowOpacity={0.5}
+          drawShadow={true}
+          style={{}}
         >
-          {/* Right page (inside-right, always visible as base) */}
-          <div className="absolute inset-0 rounded-r-lg overflow-hidden shadow-lg">
-            <Image
-              src="/card-images/card_inside_right.png"
-              alt="Inside right"
-              fill
-              className="object-cover"
-            />
-            {/* Spine shadow */}
-            <div
-              className="absolute inset-y-0 left-0 w-6 pointer-events-none"
-              style={{
-                background: 'linear-gradient(to right, rgba(0,0,0,0.2), transparent)',
-              }}
-            />
-          </div>
-
-          {/* Left page (front cover on outside, inside-left on inside) */}
-          <div
-            className="absolute inset-0 rounded-lg overflow-hidden shadow-xl"
-            style={{
-              transformStyle: 'preserve-3d',
-              transformOrigin: 'right center',
-              transform: isOpen ? 'rotateY(-160deg)' : 'rotateY(0deg)',
-              transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
-            }}
-          >
-            {/* Front cover (visible when closed) */}
-            <div
-              className="absolute inset-0"
-              style={{ backfaceVisibility: 'hidden' }}
-            >
+          {/* Page 1: Front Cover */}
+          <Page className="rounded-r-lg overflow-hidden">
+            <div className="relative w-full h-full">
               <Image
                 src="/card-images/card_cover.png"
-                alt="Switzer Theorem"
+                alt="Switzer Theorem - Front Cover"
                 fill
                 className="object-cover"
+                priority
               />
             </div>
+          </Page>
 
-            {/* Inside left (visible when open) */}
-            <div
-              className="absolute inset-0"
-              style={{
-                backfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)',
-              }}
-            >
+          {/* Page 2: Inside Left */}
+          <Page className="overflow-hidden">
+            <div className="relative w-full h-full">
               <Image
                 src="/card-images/card_inside_left.png"
-                alt="Inside left"
+                alt="Student Messages - Inside Left"
                 fill
                 className="object-cover"
-              />
-              {/* Spine shadow on inside */}
-              <div
-                className="absolute inset-y-0 right-0 w-6 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(to left, rgba(0,0,0,0.15), transparent)',
-                }}
+                priority
               />
             </div>
-          </div>
-        </div>
+          </Page>
+
+          {/* Page 3: Inside Right */}
+          <Page className="overflow-hidden">
+            <div className="relative w-full h-full">
+              <Image
+                src="/card-images/card_inside_right.png"
+                alt="Student Messages - Inside Right"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </Page>
+
+          {/* Page 4: Back Cover */}
+          <Page className="rounded-l-lg overflow-hidden">
+            <div className="relative w-full h-full">
+              <Image
+                src="/card-images/card_back.png"
+                alt="More Messages - Back Cover"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </Page>
+        </HTMLFlipBook>
       </div>
 
-      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-        {isOpen ? 'Click to close' : 'Click to open'}
-      </p>
+      {/* Navigation */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={goPrev}
+          className="px-4 py-2 text-sm font-medium rounded-lg
+                     bg-neutral-100 dark:bg-neutral-800
+                     hover:bg-neutral-200 dark:hover:bg-neutral-700
+                     transition-colors"
+        >
+          ← Previous
+        </button>
+        <span className="text-xs text-neutral-500">Click or drag to flip</span>
+        <button
+          onClick={goNext}
+          className="px-4 py-2 text-sm font-medium rounded-lg
+                     bg-neutral-100 dark:bg-neutral-800
+                     hover:bg-neutral-200 dark:hover:bg-neutral-700
+                     transition-colors"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }

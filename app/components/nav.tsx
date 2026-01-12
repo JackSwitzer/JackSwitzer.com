@@ -15,10 +15,6 @@ const navItems = {
   '/resume': {
     name: 'resume',
     order: 2
-  },
-  '/timeline': {
-    name: 'timeline',
-    order: 3
   }
 }
 

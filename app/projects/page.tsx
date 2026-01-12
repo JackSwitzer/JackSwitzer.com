@@ -1,15 +1,20 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { getVisibleProjects, getAllTechnologies, type Project } from "@/lib/data";
+import Link from "next/link";
+import { HorizontalTimeline } from "@/app/components/HorizontalTimeline";
+import { TimelineDetailPanel } from "@/app/components/TimelineDetailPanel";
+import { getTimelineItems, getVisibleProjects, getAllTechnologies, type TimelineItem, type Project } from "@/lib/data";
 
 const PROJECT_TYPES = ["all", "work", "personal", "school", "hackathon", "consulting", "quant"] as const;
 
 export default function ProjectsPage() {
+  const [selectedItem, setSelectedItem] = useState<TimelineItem | null>(null);
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"timeline" | "list">("timeline");
 
+  const timelineItems = getTimelineItems();
   const projects = getVisibleProjects();
   const technologies = getAllTechnologies();
 
@@ -23,90 +28,133 @@ export default function ProjectsPage() {
   const otherProjects = filteredProjects.filter((p) => !p.featured);
 
   return (
-    <section>
-      <h1 className="text-3xl font-bold tracking-tight mb-2">Projects</h1>
-      <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-        A collection of work, personal projects, and hackathon builds.
-      </p>
-
-      {/* Filters */}
-      <div className="mb-6 space-y-4">
-        {/* Type Filter */}
-        <div className="flex flex-wrap gap-2">
-          {PROJECT_TYPES.map((type) => (
-            <button
-              key={type}
-              onClick={() => setSelectedType(type)}
-              className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                selectedType === type
-                  ? "bg-blue-600 text-white"
-                  : "bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700"
-              }`}
-            >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </button>
-          ))}
+    <section className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Projects</h1>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            My journey from 2022 to present - work, education, leadership, and projects.
+          </p>
         </div>
 
-        {/* Tech Filter */}
-        <div className="flex flex-wrap gap-1">
+        {/* View toggle */}
+        <div className="flex gap-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
           <button
-            onClick={() => setSelectedTech(null)}
-            className={`px-2 py-0.5 text-xs rounded transition-colors ${
-              !selectedTech
-                ? "bg-green-600 text-white"
-                : "bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+            onClick={() => setViewMode("timeline")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              viewMode === "timeline"
+                ? "bg-white dark:bg-neutral-700 shadow-sm"
+                : "hover:bg-neutral-200 dark:hover:bg-neutral-700"
             }`}
           >
-            All Tech
+            Timeline
           </button>
-          {technologies.slice(0, 15).map((tech) => (
-            <button
-              key={tech}
-              onClick={() => setSelectedTech(tech === selectedTech ? null : tech)}
-              className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                selectedTech === tech
-                  ? "bg-green-600 text-white"
-                  : "bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800"
-              }`}
-            >
-              {tech}
-            </button>
-          ))}
+          <button
+            onClick={() => setViewMode("list")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              viewMode === "list"
+                ? "bg-white dark:bg-neutral-700 shadow-sm"
+                : "hover:bg-neutral-200 dark:hover:bg-neutral-700"
+            }`}
+          >
+            List
+          </button>
         </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-neutral-500 mb-4">
-        Showing {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
-      </p>
+      {viewMode === "timeline" ? (
+        <>
+          {/* Sticky detail panel */}
+          <TimelineDetailPanel item={selectedItem} />
 
-      {/* Featured Projects */}
-      {featuredProjects.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <span className="text-yellow-500">★</span> Featured
-          </h2>
-          <div className="grid gap-4">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
+          {/* Horizontal scrolling timeline */}
+          <HorizontalTimeline
+            items={timelineItems}
+            selectedItem={selectedItem}
+            onSelectItem={setSelectedItem}
+          />
+        </>
+      ) : (
+        <>
+          {/* Filters */}
+          <div className="space-y-4">
+            {/* Type Filter */}
+            <div className="flex flex-wrap gap-2">
+              {PROJECT_TYPES.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type)}
+                  className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                    selectedType === type
+                      ? "bg-blue-600 text-white"
+                      : "bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                  }`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Tech Filter */}
+            <div className="flex flex-wrap gap-1">
+              <button
+                onClick={() => setSelectedTech(null)}
+                className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                  !selectedTech
+                    ? "bg-green-600 text-white"
+                    : "bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                }`}
+              >
+                All Tech
+              </button>
+              {technologies.slice(0, 15).map((tech) => (
+                <button
+                  key={tech}
+                  onClick={() => setSelectedTech(tech === selectedTech ? null : tech)}
+                  className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                    selectedTech === tech
+                      ? "bg-green-600 text-white"
+                      : "bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {tech}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Other Projects */}
-      {otherProjects.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3">All Projects</h2>
-          <div className="grid gap-4">
-            {otherProjects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
-        </div>
-      )}
+          {/* Results count */}
+          <p className="text-sm text-neutral-500">
+            Showing {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
+          </p>
 
+          {/* Featured Projects */}
+          {featuredProjects.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <span className="text-yellow-500">★</span> Featured
+              </h2>
+              <div className="grid gap-4">
+                {featuredProjects.map((project) => (
+                  <ProjectCard key={project.slug} project={project} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Other Projects */}
+          {otherProjects.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-3">All Projects</h2>
+              <div className="grid gap-4">
+                {otherProjects.map((project) => (
+                  <ProjectCard key={project.slug} project={project} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </section>
   );
 }

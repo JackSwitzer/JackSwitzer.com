@@ -336,7 +336,6 @@ export const projects: Project[] = [
     ],
     technologies: ["Python", "Monte Carlo", "Heston Model", "Options Pricing"],
     tags: ["monte-carlo", "heston-model", "options-pricing"],
-    github: { repo: "Quantt-5", account: "JackSwitzerSchool" },
   },
   {
     slug: "advent-of-code-2024",

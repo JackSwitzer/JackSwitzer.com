@@ -7,34 +7,34 @@ export default function ResumePage() {
   const [viewMode, setViewMode] = useState<"web" | "print">("web");
 
   return (
-    <section className="max-w-3xl">
+    <section>
       {/* View Mode Toggle */}
-      <div className="flex justify-between items-center mb-6 print:hidden">
-        <div className="flex gap-2">
+      <div className="flex justify-between items-center mb-8 print:hidden">
+        <div className="flex border border-[var(--border)]">
           <button
             onClick={() => setViewMode("web")}
-            className={`px-3 py-1 text-sm rounded transition-colors ${
+            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wide transition-colors ${
               viewMode === "web"
-                ? "bg-blue-600 text-white"
-                : "bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                ? "bg-[var(--ink)] text-[var(--paper)]"
+                : "hover:bg-[var(--border)]"
             }`}
           >
-            Web View
+            Web
           </button>
           <button
             onClick={() => setViewMode("print")}
-            className={`px-3 py-1 text-sm rounded transition-colors ${
+            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wide border-l border-[var(--border)] transition-colors ${
               viewMode === "print"
-                ? "bg-blue-600 text-white"
-                : "bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                ? "bg-[var(--ink)] text-[var(--paper)]"
+                : "hover:bg-[var(--border)]"
             }`}
           >
-            Print View
+            Print
           </button>
         </div>
         <button
           onClick={() => window.print()}
-          className="px-3 py-1 text-sm bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black rounded hover:opacity-90 transition-opacity"
+          className="px-4 py-2 text-xs font-mono uppercase tracking-wide bg-[var(--accent)] text-[var(--paper)] hover:opacity-90 transition-opacity"
         >
           Export PDF
         </button>
@@ -42,77 +42,78 @@ export default function ResumePage() {
 
     <div className={viewMode === "print" ? "text-sm" : ""}>
       {/* Header */}
-      <div className="text-center mb-8 pb-6 border-b border-neutral-200 dark:border-neutral-800">
-        <h1 className="text-3xl font-bold mb-2">{personal.name}</h1>
-        <div className="flex justify-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
-          <a href={`mailto:${personal.email}`} className="hover:text-blue-600">
+      <header className="text-center mb-8 pb-6 border-b border-[var(--border)]">
+        <div className="eyebrow mb-2">Resume</div>
+        <h1 className="text-3xl font-bold mb-3">{personal.name}</h1>
+        <div className="flex justify-center flex-wrap gap-4 text-sm">
+          <a href={`mailto:${personal.email}`} className="link-accent">
             {personal.email}
           </a>
-          <span>|</span>
+          <span className="text-[var(--border)]">|</span>
           <a
             href={`https://github.com/${personal.github}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-blue-600"
+            className="link-accent"
           >
             GitHub
           </a>
-          <span>|</span>
+          <span className="text-[var(--border)]">|</span>
           <a
             href={personal.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-blue-600"
+            className="link-accent"
           >
             LinkedIn
           </a>
         </div>
-      </div>
+      </header>
 
       {/* Education */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-          Education
+        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+          <span className="tag tag-muted">Education</span>
         </h2>
         <div className="flex justify-between items-start">
           <div>
             <p className="font-semibold">{education.degree}</p>
-            <p className="text-neutral-600 dark:text-neutral-400">{education.institution}</p>
+            <p className="text-[var(--muted)]">{education.institution}</p>
             {education.certificate && (
-              <p className="text-sm text-neutral-500">{education.certificate}</p>
+              <p className="text-sm text-[var(--muted)]">{education.certificate}</p>
             )}
           </div>
           <div className="text-right text-sm">
-            {education.gpa && <p>GPA: {education.gpa}</p>}
-            <p className="text-neutral-500">Expected {education.graduation}</p>
+            {education.gpa && <p className="font-mono">GPA: {education.gpa}</p>}
+            <p className="text-[var(--muted)]">Expected {education.graduation}</p>
           </div>
         </div>
       </div>
 
       {/* Experience */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-          Professional Experience
+        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+          <span className="tag tag-success">Professional Experience</span>
         </h2>
         <div className="space-y-6">
           {experience.map((exp) => (
-            <div key={exp.id}>
-              <div className="flex justify-between items-start mb-1">
+            <div key={exp.id} className="border-l-2 border-[var(--border)] pl-4">
+              <div className="flex justify-between items-start mb-2">
                 <div>
                   <span className="font-semibold">{exp.role}</span>
-                  <span className="text-neutral-500"> | </span>
-                  <span className="text-neutral-600 dark:text-neutral-400">{exp.company}</span>
+                  <span className="text-[var(--muted)]"> — </span>
+                  <span className="text-[var(--accent)]">{exp.company}</span>
                 </div>
-                <span className="text-sm text-neutral-500">{exp.period}</span>
+                <span className="text-sm font-mono text-[var(--muted)]">{exp.period}</span>
               </div>
-              <ul className="list-disc list-outside ml-4 text-sm space-y-1 text-neutral-700 dark:text-neutral-300">
+              <ul className="bullet-arrow space-y-1 text-sm text-[var(--muted)]">
                 {exp.accomplishments.map((acc, i) => (
-                  <li key={i}>{acc}</li>
+                  <li key={i} className="py-0.5">{acc}</li>
                 ))}
               </ul>
               {exp.technologies.length > 0 && (
-                <p className="text-xs text-neutral-500 mt-1">
-                  <span className="font-medium">Technologies:</span> {exp.technologies.join(", ")}
+                <p className="text-xs font-mono text-[var(--muted)] mt-2">
+                  {exp.technologies.join(" · ")}
                 </p>
               )}
             </div>
@@ -123,25 +124,23 @@ export default function ResumePage() {
       {/* Extracurriculars */}
       {extracurriculars.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-            Leadership & Activities
+          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <span className="tag">Leadership & Activities</span>
           </h2>
           <div className="space-y-4">
             {extracurriculars.map((extra) => (
-              <div key={extra.id}>
-                <div className="flex justify-between items-start mb-1">
+              <div key={extra.id} className="border-l-2 border-[var(--border)] pl-4">
+                <div className="flex justify-between items-start mb-2">
                   <div>
                     <span className="font-semibold">{extra.role}</span>
-                    <span className="text-neutral-500"> | </span>
-                    <span className="text-neutral-600 dark:text-neutral-400">
-                      {extra.organization}
-                    </span>
+                    <span className="text-[var(--muted)]"> — </span>
+                    <span className="text-[var(--accent)]">{extra.organization}</span>
                   </div>
-                  <span className="text-sm text-neutral-500">{extra.period}</span>
+                  <span className="text-sm font-mono text-[var(--muted)]">{extra.period}</span>
                 </div>
-                <ul className="list-disc list-outside ml-4 text-sm space-y-1 text-neutral-700 dark:text-neutral-300">
+                <ul className="bullet-arrow space-y-1 text-sm text-[var(--muted)]">
                   {extra.accomplishments.map((acc, i) => (
-                    <li key={i}>{acc}</li>
+                    <li key={i} className="py-0.5">{acc}</li>
                   ))}
                 </ul>
               </div>
@@ -152,39 +151,39 @@ export default function ResumePage() {
 
       {/* Skills */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-          Technical Skills
+        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+          <span className="tag tag-muted">Technical Skills</span>
         </h2>
-        <div className="space-y-2 text-sm">
-          <p>
-            <span className="font-semibold">Languages:</span>{" "}
-            <span className="text-neutral-600 dark:text-neutral-400">
-              {skills.languages.join(", ")}
+        <div className="space-y-3 text-sm">
+          <div className="flex gap-2">
+            <span className="font-semibold shrink-0 w-32">Languages</span>
+            <span className="text-[var(--muted)] font-mono text-xs">
+              {skills.languages.join(" · ")}
             </span>
-          </p>
-          <p>
-            <span className="font-semibold">Libraries & Frameworks:</span>{" "}
-            <span className="text-neutral-600 dark:text-neutral-400">
-              {skills.libraries.join(", ")}
+          </div>
+          <div className="flex gap-2">
+            <span className="font-semibold shrink-0 w-32">Libraries</span>
+            <span className="text-[var(--muted)] font-mono text-xs">
+              {skills.libraries.join(" · ")}
             </span>
-          </p>
-          <p>
-            <span className="font-semibold">Tools:</span>{" "}
-            <span className="text-neutral-600 dark:text-neutral-400">
-              {skills.tools.join(", ")}
+          </div>
+          <div className="flex gap-2">
+            <span className="font-semibold shrink-0 w-32">Tools</span>
+            <span className="text-[var(--muted)] font-mono text-xs">
+              {skills.tools.join(" · ")}
             </span>
-          </p>
+          </div>
         </div>
       </div>
 
       {/* Relevant Courses */}
       {education.relevantCourses && (
         <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-            Relevant Coursework
+          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <span className="tag tag-muted">Relevant Coursework</span>
           </h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {education.relevantCourses.join(" • ")}
+          <p className="text-sm text-[var(--muted)] font-mono text-xs">
+            {education.relevantCourses.join(" · ")}
           </p>
         </div>
       )}
@@ -192,11 +191,11 @@ export default function ResumePage() {
       {/* Self-Learning / External Courses */}
       {skills.externalCourses && skills.externalCourses.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-bold uppercase tracking-wide border-b border-neutral-300 dark:border-neutral-700 pb-1 mb-3">
-            Self-Learning
+          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <span className="tag tag-muted">Self-Learning</span>
           </h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {skills.externalCourses.join(" • ")}
+          <p className="text-sm text-[var(--muted)]">
+            {skills.externalCourses.join(" · ")}
           </p>
         </div>
       )}

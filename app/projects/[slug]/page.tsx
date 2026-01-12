@@ -19,83 +19,63 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
     notFound();
   }
 
-  // Get MDX content for this project
   const mdxContent = getProjectContent(params.slug);
   const contentElements = mdxContent ? parseMarkdownToElements(mdxContent) : null;
 
   return (
     <section>
       {/* Breadcrumb */}
-      <nav className="text-sm mb-6">
-        <Link
-          href="/"
-          className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-        >
+      <nav className="text-xs font-mono uppercase tracking-wide mb-8">
+        <Link href="/" className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors">
           Home
         </Link>
-        <span className="mx-2 text-neutral-400">/</span>
-        <Link
-          href="/projects"
-          className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-        >
+        <span className="mx-2 text-[var(--border)]">/</span>
+        <Link href="/projects" className="text-[var(--muted)] hover:text-[var(--accent)] transition-colors">
           Projects
         </Link>
-        <span className="mx-2 text-neutral-400">/</span>
-        <span className="text-neutral-700 dark:text-neutral-300">{project.name}</span>
+        <span className="mx-2 text-[var(--border)]">/</span>
+        <span className="text-[var(--ink)]">{project.name}</span>
       </nav>
 
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-          {project.featured && (
-            <span className="text-yellow-500 text-xl" title="Featured">★</span>
-          )}
-        </div>
+      <header className="border-b border-[var(--border)] pb-6 mb-8">
+        <div className="eyebrow mb-2">{project.type}</div>
+        <h1 className="text-3xl font-bold leading-tight mb-3">{project.name}</h1>
 
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <span className="px-2 py-1 bg-neutral-200 dark:bg-neutral-800 rounded">
-            {project.type}
-          </span>
-          <span className="text-neutral-500">{project.period}</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-[var(--muted)]">{project.period}</span>
           {project.status === "active" && (
-            <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
-              Active Development
-            </span>
+            <span className="tag tag-success">Active</span>
           )}
           {project.status === "wip" && (
-            <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
-              Work in Progress
-            </span>
+            <span className="tag" style={{ background: "var(--warning)" }}>WIP</span>
           )}
           {project.status === "complete" && (
-            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
-              Complete
-            </span>
+            <span className="tag tag-muted">Complete</span>
           )}
         </div>
-      </div>
+      </header>
 
       {/* Summary - only show if no MDX content */}
       {!contentElements && project.summary && (
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-6">
+        <p className="text-lg text-[var(--muted)] mb-8 leading-relaxed">
           {project.summary}
         </p>
       )}
 
       {/* Links */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex gap-3 mb-8">
         {project.github && (
           <a
             href={`https://github.com/${project.github.account}/${project.github.repo}${project.github.branch ? `/tree/${project.github.branch}` : ''}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black rounded-lg hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--ink)] text-[var(--paper)] text-sm font-mono uppercase tracking-wide hover:opacity-90 transition-opacity"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
-            View on GitHub
+            GitHub
           </a>
         )}
         {project.link && (
@@ -103,12 +83,12 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--border)] text-sm font-mono uppercase tracking-wide hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-            Visit Site
+            Visit
           </a>
         )}
       </div>
@@ -120,15 +100,16 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       ) : (
         <>
-          {/* Fallback to structured content */}
           {/* Technologies */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-3">Technologies</h2>
+            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <span className="tag tag-muted">Technologies</span>
+            </h2>
             <div className="flex flex-wrap gap-2">
               {project.technologies.map((tech: string) => (
                 <span
                   key={tech}
-                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                  className="px-3 py-1 text-sm font-mono border border-[var(--border)]"
                 >
                   {tech}
                 </span>
@@ -138,12 +119,13 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
           {/* Accomplishments */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-3">Key Accomplishments</h2>
-            <ul className="space-y-3">
+            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <span className="tag tag-success">Key Accomplishments</span>
+            </h2>
+            <ul className="bullet-arrow space-y-2">
               {project.accomplishments.map((acc: string, i: number) => (
-                <li key={i} className="flex gap-3">
-                  <span className="text-green-500 mt-1">✓</span>
-                  <span className="text-neutral-700 dark:text-neutral-300">{acc}</span>
+                <li key={i} className="text-[var(--muted)] py-1 border-b border-[var(--border)] last:border-0">
+                  {acc}
                 </li>
               ))}
             </ul>
@@ -154,9 +136,11 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       {/* Student Card - only for linear algebra project */}
       {project.slug === "linear-algebra-website" && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">From My Students</h2>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-6 text-sm">
-            A card from my Linear Algebra students - the &quot;Switzer Theorem&quot; states that
+          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <span className="tag">From My Students</span>
+          </h2>
+          <p className="text-[var(--muted)] mb-6 text-sm">
+            A card from my Linear Algebra students — the &quot;Switzer Theorem&quot; states that
             our education and my teaching are linearly dependent.
           </p>
           <Card3D />
@@ -166,12 +150,12 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       {/* Tags - only show if no MDX content */}
       {!contentElements && project.tags && project.tags.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-3">Tags</h2>
+          <h2 className="text-sm font-semibold mb-3">Tags</h2>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag: string) => (
               <span
                 key={tag}
-                className="px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded text-sm"
+                className="text-xs font-mono text-[var(--muted)]"
               >
                 #{tag}
               </span>
@@ -181,11 +165,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       )}
 
       {/* Back Link */}
-      <div className="mt-12 pt-6 border-t border-neutral-200 dark:border-neutral-800">
-        <Link
-          href="/projects"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
-        >
+      <div className="mt-12 pt-6 border-t border-[var(--border)]">
+        <Link href="/projects" className="link-accent text-sm">
           ← Back to All Projects
         </Link>
       </div>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantization × Interpretability</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --paper: #f8f6f1;
+            --accent: #c15f3c;
+            --accent-light: #e8d4cc;
+            --success: #2d6a4f;
+            --warning: #b5651d;
+            --muted: #6b6b6b;
+            --border: #d4d0c8;
+            --bf16: #3b82f6;
+            --fp16: #8b5cf6;
+            --int8: #f59e0b;
+            --int4: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 32px; }
+
+        header {
+            padding: 48px 0 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+            font-weight: 300;
+        }
+
+        /* Hero Stats - Compact */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin: 24px 0;
+        }
+
+        .stat {
+            background: var(--paper);
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-detail {
+            font-size: 0.65rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            background: white;
+        }
+
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .collapsible-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .collapsible-header .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            background: var(--accent);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .collapsible-header .tag.finding { background: var(--success); }
+        .collapsible-header .tag.method { background: var(--muted); }
+
+        .collapsible-header .arrow {
+            font-size: 1.2rem;
+            color: var(--muted);
+            transition: transform 0.2s;
+        }
+
+        .collapsible.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 0 20px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .collapsible.open .collapsible-content {
+            display: block;
+        }
+
+        /* Bullet Lists - High Signal */
+        .bullet-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .bullet-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bullet-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .bullet-list .key {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .bullet-list .value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.9em;
+        }
+
+        .bullet-list .note {
+            color: var(--muted);
+            font-size: 0.85em;
+        }
+
+        /* Data Tables - Compact */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            padding: 8px 12px;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 500;
+        }
+
+        .data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table .highlight { color: var(--accent); font-weight: 600; }
+        .data-table .success { color: var(--success); font-weight: 600; }
+        .data-table .warning { color: var(--warning); font-weight: 600; }
+
+        /* Key Insight Box */
+        .insight {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.95rem;
+        }
+
+        .insight strong {
+            color: var(--accent-light);
+        }
+
+        /* Scope Grid */
+        .scope-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .scope-item {
+            text-align: center;
+            padding: 12px;
+            background: #f5f5f5;
+        }
+
+        .scope-item .num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .scope-item .lbl {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Precision Legend */
+        .precision-legend {
+            display: flex;
+            gap: 16px;
+            margin: 16px 0 8px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .precision-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .precision-legend .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        .precision-legend .dot.bf16 { background: var(--bf16); }
+        .precision-legend .dot.fp16 { background: var(--fp16); }
+        .precision-legend .dot.int8 { background: var(--int8); }
+        .precision-legend .dot.int4 { background: var(--int4); }
+
+        /* Degradation Chart */
+        .degradation-chart {
+            margin: 16px 0;
+        }
+
+        .degrade-row {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            align-items: center;
+            margin: 16px 0;
+            gap: 12px;
+        }
+
+        .degrade-row .task {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .degrade-row .sub {
+            font-size: 0.65rem;
+            color: var(--muted);
+        }
+
+        .model-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .model-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--muted);
+            width: 70px;
+            text-align: right;
+        }
+
+        .stacked-bar {
+            display: flex;
+            height: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+            flex: 1;
+            background: #e5e5e5;
+        }
+
+        .bar-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .bar-segment.bf16-lost { background: #d97706; }
+        .bar-segment.int4 { background: #fbbf24; color: #78350f; }
+        .bar-segment.same {
+            background: repeating-linear-gradient(
+                45deg,
+                #d97706,
+                #d97706 4px,
+                #fbbf24 4px,
+                #fbbf24 8px
+            );
+            color: white;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        /* Tick marks for chart */
+        .chart-axis {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 12px;
+            margin-bottom: 8px;
+            padding-left: 78px;
+        }
+
+        .tick-marks {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--muted);
+            padding: 0 2px;
+        }
+
+        .tick-marks span {
+            position: relative;
+        }
+
+        .tick-marks span::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 3px;
+            background: var(--muted);
+        }
+
+        /* Nested collapsible for examples */
+        .nested-collapsible {
+            border: 1px solid var(--border);
+            margin: 16px 0;
+            background: #fafafa;
+        }
+
+        .nested-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .nested-header:hover {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .nested-content {
+            display: none;
+            padding: 0 16px 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .nested-collapsible.open .nested-content {
+            display: block;
+        }
+
+        .nested-collapsible.open .nested-arrow {
+            transform: rotate(180deg);
+        }
+
+        .nested-arrow {
+            font-size: 0.9rem;
+            color: var(--muted);
+            transition: transform 0.2s;
+        }
+
+        /* Code Example */
+        .code-example {
+            background: #1e1e1e;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .code-example .label {
+            color: #888;
+            font-size: 0.7rem;
+            margin-bottom: 8px;
+        }
+
+        .code-example pre {
+            color: #d4d4d4;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .code-example .comment { color: #6a9955; }
+        .code-example .keyword { color: #569cd6; }
+        .code-example .string { color: #ce9178; }
+        .code-example .truncated { color: #f44; background: rgba(244,68,68,0.2); padding: 0 4px; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 32px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-stats, .scope-grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="eyebrow">Anthropic Fellows Program</div>
+            <h1>Quantization × Interpretability</h1>
+            <p class="subtitle">Do SAEs trained on BF16 transfer to INT4? What capabilities break when you quantize?</p>
+        </header>
+
+        <!-- Hero Stats -->
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-value">99%</div>
+                <div class="stat-label">SAE Transfer</div>
+                <div class="stat-detail">BF16→INT4</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">-50%</div>
+                <div class="stat-label">Code (HumanEval)</div>
+                <div class="stat-detail">40%→20%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0%</div>
+                <div class="stat-label">Knowledge (MMLU)</div>
+                <div class="stat-detail">100%→100%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0.5×</div>
+                <div class="stat-label">Best SAE</div>
+                <div class="stat-detail">beats 8× by 2.3×</div>
+            </div>
+        </div>
+
+        <!-- TL;DR -->
+        <div class="insight">
+            <strong>TL;DR:</strong> BF16-trained SAEs work on INT4 models (99% correlation). Code generation breaks at INT4 (-50%), knowledge retrieval survives (0% loss). Undercomplete SAEs (0.5×) transfer 2.3× better than overcomplete (8×).
+        </div>
+
+        <!-- ==================== KEY FINDINGS ==================== -->
+
+        <!-- Finding 1: Degradation -->
+        <div class="collapsible open">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag finding">Finding 1</span> Degradation has structure</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="precision-legend">
+                    <span><span class="dot" style="background: #fbbf24;"></span> INT4</span>
+                    <span><span class="dot" style="background: #d97706;"></span> BF16 total</span>
+                    <span><span class="dot" style="background: repeating-linear-gradient(45deg, #d97706, #d97706 2px, #fbbf24 2px, #fbbf24 4px);"></span> Same</span>
+                </div>
+
+                <div class="degradation-chart">
+                    <!-- Tick marks -->
+                    <div class="chart-axis">
+                        <div></div>
+                        <div class="tick-marks">
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+                    <!-- Code / HumanEval -->
+                    <div class="degrade-row">
+                        <div><div class="task">Code</div><div class="sub">HumanEval</div></div>
+                        <div>
+                            <div class="model-row">
+                                <span class="model-label">Qwen3</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment int4" style="width: 20%;">20%</div>
+                                    <div class="bar-segment bf16-lost" style="width: 20%;">40%</div>
+                                </div>
+                            </div>
+                            <div class="model-row">
+                                <span class="model-label">StarCoder2</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment int4" style="width: 18%;">18%</div>
+                                    <div class="bar-segment bf16-lost" style="width: 17%;">35%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Math / GSM8K -->
+                    <div class="degrade-row">
+                        <div><div class="task">Math</div><div class="sub">GSM8K</div></div>
+                        <div>
+                            <div class="model-row">
+                                <span class="model-label">Qwen3</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment int4" style="width: 87%;">87%</div>
+                                    <div class="bar-segment bf16-lost" style="width: 6%;">93%</div>
+                                </div>
+                            </div>
+                            <div class="model-row">
+                                <span class="model-label">StarCoder2</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment int4" style="width: 71%;">71%</div>
+                                    <div class="bar-segment bf16-lost" style="width: 7%;">78%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Knowledge / MMLU-CS -->
+                    <div class="degrade-row">
+                        <div><div class="task">Knowledge</div><div class="sub">MMLU-CS</div></div>
+                        <div>
+                            <div class="model-row">
+                                <span class="model-label">Qwen3</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment same" style="width: 100%;">100%</div>
+                                </div>
+                            </div>
+                            <div class="model-row">
+                                <span class="model-label">StarCoder2</span>
+                                <div class="stacked-bar">
+                                    <div class="bar-segment same" style="width: 93%;">93%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight">
+                    <strong>Pattern:</strong> Generative tasks (code) break first. Discriminative tasks (knowledge) survive. Quantization adds noise to generation, not retrieval.
+                </div>
+
+                <!-- Nested collapsible for code example -->
+                <div class="nested-collapsible">
+                    <div class="nested-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Example: HumanEval/8 - sum_product function</span>
+                        <span class="nested-arrow">▼</span>
+                    </div>
+                    <div class="nested-content">
+                        <div class="code-example">
+                            <div class="label">BF16 (passes)</div>
+                            <pre><span class="keyword">if not</span> numbers: <span class="keyword">return</span> (<span class="string">0</span>, <span class="string">1</span>)
+total_sum = sum(numbers)
+total_product = <span class="string">1</span>
+<span class="keyword">for</span> num <span class="keyword">in</span> numbers: total_product *= num
+<span class="keyword">return</span> (total_sum, total_product)</pre>
+                        </div>
+                        <div class="code-example">
+                            <div class="label">INT4 (fails - truncated)</div>
+                            <pre><span class="comment"># Handle empty list case</span>
+<span class="keyword">if not</span> numbers: <span class="keyword">return</span> (<span class="string">0</span>, <span class="string">1</span>)
+<span class="comment"># Initialize sum and product</span>
+total_sum = <span class="string">0</span>  <span class="comment"># different approach</span>
+total_product = <span class="string">1</span>
+<span class="comment"># Iterate through the list</span>
+<span class="keyword">for</span> num <span class="keyword">in</span> <span class="truncated">← truncated</span></pre>
+                        </div>
+                        <ul class="bullet-list">
+                            <li><span class="key">INT4 adds verbose comments</span> <span class="note">wastes tokens before completing logic</span></li>
+                            <li><span class="key">Changes algorithm</span> <span class="note">manual sum loop vs built-in sum()</span></li>
+                            <li><span class="key">Gets truncated</span> <span class="note">same token limit, less code</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finding 2: Transfer -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag finding">Finding 2</span> SAEs transfer across precisions</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <ul class="bullet-list">
+                    <li><span class="key">Sample correlation:</span> <span class="value">99%</span> <span class="note">Same inputs → same features fire</span></li>
+                    <li><span class="key">Top-10 agreement:</span> <span class="value">89%</span> <span class="note">9/10 most active features match</span></li>
+                    <li><span class="key">Feature correlation:</span> <span class="value">95%</span> <span class="note">Each feature behaves consistently</span></li>
+                    <li><span class="key">Sparsity agreement:</span> <span class="value">99%</span> <span class="note">Same features stay silent/active</span></li>
+                </ul>
+
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Metric</th><th>FP16</th><th>INT8</th><th>INT4</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Sample Correlation</td><td class="success">99.9%</td><td class="success">99.7%</td><td class="highlight">99.0%</td></tr>
+                        <tr><td>Feature Correlation</td><td class="success">99.7%</td><td class="success">98.5%</td><td class="highlight">95.3%</td></tr>
+                        <tr><td>Top-10 Agreement</td><td class="success">97.2%</td><td class="success">94.1%</td><td class="highlight">88.9%</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="insight">
+                    <strong>Implication:</strong> Train interpretability tools on expensive BF16, deploy monitoring on cheap INT4. Features mean the same thing across precisions.
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== METHODOLOGY ==================== -->
+
+        <!-- Method -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag method">Method</span> How we ran experiments</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="scope-grid">
+                    <div class="scope-item"><div class="num">2</div><div class="lbl">Models</div></div>
+                    <div class="scope-item"><div class="num">4</div><div class="lbl">Precisions</div></div>
+                    <div class="scope-item"><div class="num">168</div><div class="lbl">SAEs</div></div>
+                    <div class="scope-item"><div class="num">16h</div><div class="lbl">H100 Time</div></div>
+                </div>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Models</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Qwen3-Coder-30B-A3B:</span> <span class="note">MoE architecture, d_model=2048, 48 layers</span></li>
+                    <li><span class="key">StarCoder2-15B:</span> <span class="note">Dense architecture, d_model=6144, 40 layers</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Precisions</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">BF16:</span> <span class="note">torch.bfloat16 - baseline full precision</span></li>
+                    <li><span class="key">FP16:</span> <span class="note">torch.float16 - half precision</span></li>
+                    <li><span class="key">INT8:</span> <span class="note">bitsandbytes load_in_8bit</span></li>
+                    <li><span class="key">INT4:</span> <span class="note">bitsandbytes NF4 quantization</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">SAE Training</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Hidden dim:</span> <span class="value">0.5× d_model</span> <span class="note">(undercomplete)</span></li>
+                    <li><span class="key">L1 coefficient:</span> <span class="value">5e-4</span></li>
+                    <li><span class="key">Epochs:</span> <span class="value">1000</span></li>
+                    <li><span class="key">Training data:</span> <span class="value">500 coding prompts</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Sample Prompts Used</h4>
+                <div class="code-example">
+                    <pre><span class="string">"Write a Python function to check if a number is prime"</span>
+<span class="string">"Implement a binary search algorithm"</span>
+<span class="string">"Create a function that reverses a linked list"</span>
+<span class="string">"Write a recursive fibonacci function"</span>
+<span class="comment"># ... 500 coding prompts from CodeSearchNet</span></pre>
+                </div>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Pipeline</h4>
+                <ul class="bullet-list">
+                    <li>1. Load model at each precision (BF16, FP16, INT8, INT4)</li>
+                    <li>2. Extract activations at 7-11 layers (early, middle, late)</li>
+                    <li>3. Train SAE per precision per layer</li>
+                    <li>4. Procrustes alignment: compare BF16 features vs quantized</li>
+                    <li>5. Semantic transfer: apply BF16-trained SAE to INT4 activations</li>
+                    <li>6. Benchmark: HumanEval (10), GSM8K (15), MMLU-CS (15)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Context -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag method">Context</span> Why this matters</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <h4 style="margin-top: 12px; font-size: 0.9rem;">Why this question matters</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Anthropic's mission:</span> <span class="note">Interpretability tools must work on deployed models. Production uses INT4, research uses BF16.</span></li>
+                    <li><span class="key">Safety gap:</span> <span class="note">If SAE features don't transfer, safety monitoring breaks when you quantize.</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Why code models?</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Ground truth:</span> <span class="note">Code runs or it doesn't. No ambiguity in measuring degradation.</span></li>
+                    <li><span class="key">Structured features:</span> <span class="note">Functions, loops, types → easier to verify feature meaning across precisions</span></li>
+                    <li><span class="key">Practical relevance:</span> <span class="note">Code models are deployed quantized in IDEs, APIs</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Personal interest</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Background:</span> <span class="note">Worked on benchmark infra at IBM, saw inconsistencies that were hard to explain</span></li>
+                    <li><span class="key">Question:</span> <span class="note">Can we see inside these models to understand what breaks?</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== MORE FINDINGS ==================== -->
+
+        <!-- Finding 3: Undercomplete -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag finding">Finding 3</span> Smaller SAEs transfer better</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <p style="margin: 12px 0; color: var(--muted); font-size: 0.9rem;">
+                    Counter-intuitively, SAEs with <em>fewer</em> features (0.5× model dimension) transfer across precisions 2.3× better than larger SAEs (8×).
+                </p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr><th>SAE Size</th><th>Alignment</th><th>Features Alive</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="highlight">0.5× (1024 features)</td><td class="highlight">79%</td><td>60%</td><td class="highlight">Best</td></tr>
+                        <tr><td>1× (2048 features)</td><td>71%</td><td>46%</td><td>Baseline</td></tr>
+                        <tr><td>2× (4096 features)</td><td>56%</td><td>20%</td><td>Common default</td></tr>
+                        <tr><td class="warning">8× (16384 features)</td><td class="warning">34%</td><td class="warning">1%</td><td class="warning">Worst</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="insight">
+                    <strong>Intuition:</strong> With limited capacity, the SAE must learn only the most fundamental features - ones that exist regardless of precision. Larger SAEs have room to memorize precision-specific artifacts that don't transfer.
+                </div>
+
+                <ul class="bullet-list">
+                    <li><span class="key">Compression forces generalization:</span> <span class="note">0.5× SAE can only fit ~1024 features, so it picks the universal ones</span></li>
+                    <li><span class="key">Overcomplete SAEs overfit:</span> <span class="note">8× SAE learns 16k features including BF16-specific noise patterns</span></li>
+                    <li><span class="key">Dead features correlate with poor transfer:</span> <span class="note">8× has 99% dead features, 0.5× has 40% dead</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== EVIDENCE ==================== -->
+
+        <!-- Evidence -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag method">Evidence</span> Why this is real</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <ul class="bullet-list">
+                    <li><span class="key">Multiple metrics converge:</span> <span class="note">Sample, feature, top-k, sparsity, Procrustes all agree</span></li>
+                    <li><span class="key">Cross-architecture:</span> <span class="note">Qwen3-30B (MoE) + StarCoder2-15B (Dense) both show 85-89% Procrustes alignment</span></li>
+                    <li><span class="key">Layer consistency:</span> <span class="note">7-11 layers tested, holds across early/middle/late</span></li>
+                    <li><span class="key">Systematic ablations:</span> <span class="note">5 hidden dims, 7 L1 values, 6 epoch counts, 7 data sizes</span></li>
+                </ul>
+
+                <h4 style="margin-top: 16px; font-size: 0.9rem;">Limitations</h4>
+                <ul class="bullet-list">
+                    <li><span class="key">Sample size:</span> <span class="note">500 prompts, 10-15 benchmark samples per task</span></li>
+                    <li><span class="key">Models:</span> <span class="note">Code-focused only. Claude/GPT untested</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== NEXT / IMPACT ==================== -->
+
+        <!-- Next -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag">Next</span> Future directions</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <ul class="bullet-list">
+                    <li><span class="key">Feature interpretation:</span> <span class="note">Verify "function def" feature means same thing across precisions</span></li>
+                    <li><span class="key">Circuit transfer:</span> <span class="note">Do attention patterns survive quantization?</span></li>
+                    <li><span class="key">Broader models:</span> <span class="note">Llama, Mistral, Claude-style architectures</span></li>
+                    <li><span class="key">Quant methods:</span> <span class="note">NF4 vs GPTQ vs AWQ</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Impact -->
+        <div class="collapsible">
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+                <h2><span class="tag">Impact</span> Why this matters for safety</h2>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <ul class="bullet-list">
+                    <li><span class="key">The gap:</span> <span class="note">Interpretability research uses BF16. Production uses INT4.</span></li>
+                    <li><span class="key">The question:</span> <span class="note">Do safety guarantees from BF16 transfer to INT4?</span></li>
+                    <li><span class="key">Our answer:</span> <span class="note">Features transfer (99%). SAEs can be cross-precision monitors.</span></li>
+                    <li><span class="key">Practical:</span> <span class="note">Train expensive interpretability on BF16, deploy monitoring on cheap INT4</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Quantization × Interpretability | Anthropic Fellows Program | 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // Open first finding by default
+        document.querySelectorAll('.collapsible')[0].classList.add('open');
+    </script>
+</body>
+</html>

@@ -1,13 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-::selection {
-  background-color: #47a3f3;
-  color: #fefefe;
-}
-
 :root {
+  /* Core palette */
+  --ink: #1a1a1a;
+  --paper: #f8f6f1;
+  --accent: #c15f3c;
+  --accent-light: #e8d4cc;
+  --success: #2d6a4f;
+  --warning: #b5651d;
+  --muted: #6b6b6b;
+  --border: #d4d0c8;
+
+  /* Syntax highlighting */
   --sh-class: #2d5e9d;
   --sh-identifier: #354150;
   --sh-sign: #8996a3;
@@ -21,8 +29,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --ink: #f0ede8;
+    --paper: #1a1a1a;
+    --accent: #e07a58;
+    --accent-light: #3d2a24;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --muted: #9ca3af;
+    --border: #2d2d2d;
+
     --sh-class: #4c97f8;
-    --sh-identifier: white;
+    --sh-identifier: #e5e5e5;
     --sh-keyword: #f47067;
     --sh-string: #0fa295;
   }
@@ -31,13 +48,115 @@
   }
 }
 
+::selection {
+  background-color: var(--accent);
+  color: var(--paper);
+}
+
 html {
   min-width: 360px;
 }
 
+body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* Monospace utility */
+.font-mono, code, pre, .mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Eyebrow text style */
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Tag/badge styles */
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  background: var(--accent);
+  color: var(--paper);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tag-success {
+  background: var(--success);
+}
+
+.tag-muted {
+  background: var(--muted);
+}
+
+/* Stat display */
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* Insight/highlight box */
+.insight-box {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 16px 20px;
+}
+
+.insight-box strong {
+  color: var(--accent-light);
+}
+
+/* Arrow bullets */
+.bullet-arrow {
+  list-style: none;
+}
+
+.bullet-arrow li {
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.bullet-arrow li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Link styles */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link-accent {
+  color: var(--accent);
+  transition: opacity 0.15s;
+}
+
+.link-accent:hover {
+  opacity: 0.8;
+}
+
+/* Border utility */
+.border-subtle {
+  border-color: var(--border);
+}
+
+/* Prose styles */
 .prose .anchor {
   @apply absolute invisible no-underline;
-
   margin-left: -1em;
   padding-right: 0.5em;
   width: 80%;
@@ -50,11 +169,18 @@ html {
 }
 
 .prose a {
-  @apply underline transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em];
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s;
+}
+
+.prose a:hover {
+  opacity: 0.8;
 }
 
 .prose .anchor:after {
-  @apply text-neutral-300 dark:text-neutral-700;
+  color: var(--muted);
   content: '#';
 }
 
@@ -63,15 +189,22 @@ html {
 }
 
 .prose pre {
-  @apply bg-neutral-50 dark:bg-neutral-900 rounded-lg overflow-x-auto border border-neutral-200 dark:border-neutral-900 py-2 px-3 text-sm;
+  background: #1e1e1e;
+  border-radius: 4px;
+  overflow-x: auto;
+  padding: 16px;
+  font-size: 0.8rem;
 }
 
 .prose code {
-  @apply px-1 py-0.5 rounded-lg;
+  @apply px-1 py-0.5 rounded;
+  background: var(--border);
+  font-size: 0.85em;
 }
 
 .prose pre code {
   @apply p-0;
+  background: transparent;
   border: initial;
   line-height: 1.5;
 }
@@ -81,32 +214,45 @@ html {
 }
 
 .prose img {
-  /* Don't apply styles to next/image */
   @apply m-0;
 }
 
 .prose p {
-  @apply my-4 text-neutral-800 dark:text-neutral-200;
+  margin: 1rem 0;
+  color: var(--ink);
 }
 
 .prose h1 {
-  @apply text-4xl font-medium tracking-tight mt-6 mb-2;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .prose h2 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .prose h3 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .prose h4 {
-  @apply text-lg font-medium tracking-tight mt-6 mb-2;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .prose strong {
-  @apply font-medium;
+  font-weight: 600;
 }
 
 .prose ul {
@@ -118,7 +264,6 @@ html {
 }
 
 .prose > :first-child {
-  /* Override removing top margin, causing layout shift */
   margin-top: 1.25em !important;
   margin-bottom: 1.25em !important;
 }
@@ -128,11 +273,10 @@ pre::-webkit-scrollbar {
 }
 
 pre {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Remove Safari input shadow on mobile */
 input[type='text'],
 input[type='email'] {
   -webkit-appearance: none;
@@ -149,4 +293,61 @@ table {
 
 .title {
   text-wrap: balance;
+}
+
+/* Data table styles */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+}
+
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.card-hover:hover {
+  border-color: var(--accent);
+  background-color: rgba(193, 95, 60, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card-hover:hover {
+    background-color: rgba(224, 122, 88, 0.05);
+  }
+}
+
+/* Collapsible styles */
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.collapsible-header:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  .collapsible-header:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
 }

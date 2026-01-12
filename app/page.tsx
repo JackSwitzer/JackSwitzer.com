@@ -6,63 +6,56 @@ export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
 
   return (
-    <section className="space-y-12">
-      {/* Header with Profile */}
-      <div className="flex items-start gap-6">
-        {/* Profile Image */}
-        <Image
-          src="/headshot.jpeg"
-          alt="Jack Switzer"
-          width={80}
-          height={80}
-          className="shrink-0 w-20 h-20 rounded-full object-cover"
-          priority
-        />
-
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">{personal.name}</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-3">
-            {education.degree} @ {education.institution}
-          </p>
-
-          {/* Links */}
-          <div className="flex flex-wrap gap-3 text-sm">
-            <a
-              href={`mailto:${personal.email}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Email
-            </a>
-            <a
-              href={`https://github.com/${personal.github}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              GitHub
-            </a>
-            <a
-              href={personal.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              LinkedIn
-            </a>
-            <Link
-              href="/resume"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Resume
-            </Link>
+    <section className="space-y-10">
+      {/* Header */}
+      <header className="border-b border-[var(--border)] pb-8">
+        <div className="flex items-start gap-5">
+          <Image
+            src="/headshot.jpeg"
+            alt="Jack Switzer"
+            width={72}
+            height={72}
+            className="shrink-0 w-[72px] h-[72px] rounded-full object-cover"
+            priority
+          />
+          <div>
+            <div className="eyebrow mb-1">{education.degree}</div>
+            <h1 className="text-3xl font-bold leading-tight mb-1">{personal.name}</h1>
+            <p className="text-[var(--muted)] text-sm">{education.institution}</p>
           </div>
         </div>
-      </div>
 
-      {/* About/Intro */}
+        {/* Links */}
+        <div className="flex flex-wrap gap-4 mt-5 text-sm">
+          <a href={`mailto:${personal.email}`} className="link-accent">
+            Email
+          </a>
+          <a
+            href={`https://github.com/${personal.github}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-accent"
+          >
+            GitHub
+          </a>
+          <a
+            href={personal.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link-accent"
+          >
+            LinkedIn
+          </a>
+          <Link href="/resume" className="link-accent">
+            Resume
+          </Link>
+        </div>
+      </header>
+
+      {/* About */}
       <div>
         <h2 className="text-lg font-semibold mb-3">About</h2>
-        <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">
+        <p className="text-[var(--muted)] leading-relaxed">
           I build things that work. Currently a Software Developer at IBM building AI-powered tools for
           mainframe modernization, while exploring how quantization degrades LLM capabilities through
           interpretability research. I've shipped projects across ML, web dev, and quant finance—from
@@ -74,39 +67,40 @@ export default function HomePage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Featured Experience</h2>
-          <Link
-            href="/projects"
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            View all projects
+          <Link href="/projects" className="link-accent text-sm">
+            View all projects →
           </Link>
         </div>
-        <div className="grid gap-3">
+
+        <div className="space-y-2">
           {featuredProjects.map((project) => (
             <Link
               key={project.slug}
               href={`/projects/${project.slug}`}
-              className="group flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+              className="group block p-4 border border-[var(--border)] card-hover"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                  {project.name}
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium group-hover:text-[var(--accent)] transition-colors">
+                      {project.name}
+                    </span>
+                    {project.status === "active" && (
+                      <span className="tag tag-success">Active</span>
+                    )}
+                    {project.status === "wip" && (
+                      <span className="tag" style={{ background: "var(--warning)" }}>WIP</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="tag tag-muted">{project.type}</span>
+                    <span className="text-[var(--muted)]">{project.period}</span>
+                  </div>
+                </div>
+                <span className="text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  →
                 </span>
-                <span className="text-xs px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 rounded shrink-0">
-                  {project.type}
-                </span>
-                {project.status === "active" && (
-                  <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded shrink-0">
-                    Active
-                  </span>
-                )}
-                {project.status === "wip" && (
-                  <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded shrink-0">
-                    WIP
-                  </span>
-                )}
               </div>
-              <span className="text-sm text-neutral-500 shrink-0 ml-2">{project.period}</span>
             </Link>
           ))}
         </div>

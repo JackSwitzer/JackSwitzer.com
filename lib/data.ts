@@ -284,7 +284,7 @@ export const projects: Project[] = [
   },
   {
     slug: "mthe393-control-systems",
-    name: "Control Systems - Transfer Function Identification",
+    name: "Black Box Deconstruction - Control Systems",
     type: "school",
     period: "Jan 2025 - Apr 2025",
     featured: true,

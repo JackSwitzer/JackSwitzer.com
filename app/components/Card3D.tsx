@@ -130,179 +130,240 @@ function MessageCard({
   );
 }
 
+// Styled inside left content
+function InsideLeftContent() {
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-3">
+      <div className="h-full flex flex-col gap-1">
+        {insideLeftMessages.map((msg, i) => (
+          <MessageCard key={i} {...msg} rotate={[-1, 0.5, -0.5][i]} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Styled inside right content
+function InsideRightContent() {
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-3">
+      <div className="h-full grid grid-cols-2 gap-1">
+        {insideRightMessages.map((msg, i) => (
+          <MessageCard key={i} {...msg} rotate={[1, -1, 0.5, -0.5, 1, -1][i]} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Styled back content
+function BackContent() {
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-4">
+      <div className="h-full flex flex-col gap-2">
+        {backMessages.map((msg, i) => (
+          <MessageCard key={i} {...msg} rotate={[-0.5, 0.5, -1][i]} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Card3D({ className = '' }: { className?: string }) {
-  const [currentPage, setCurrentPage] = useState(0); // 0=front, 1=inside, 2=back
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0); // 0=closed, 1=open showing inside, 2=flipped to back
   const [showOriginal, setShowOriginal] = useState(false);
 
+  const pageWidth = 280;
+  const pageHeight = 380;
+
   const goToPage = (page: number) => {
-    if (isAnimating || page === currentPage || page < 0 || page > 2) return;
-    setIsAnimating(true);
+    if (page < 0 || page > 2) return;
     setCurrentPage(page);
-    setTimeout(() => setIsAnimating(false), 600);
   };
 
-  const nextPage = () => goToPage(currentPage + 1);
-  const prevPage = () => goToPage(currentPage - 1);
+  const nextPage = () => goToPage(Math.min(currentPage + 1, 2));
+  const prevPage = () => goToPage(Math.max(currentPage - 1, 0));
 
-  const pageLabels = ['Front Cover', 'Inside', 'Back Cover'];
+  const pageLabels = ['Closed', 'Inside', 'Back'];
 
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       {/* Book container */}
       <div
         className="relative"
-        style={{ perspective: '2000px' }}
+        style={{
+          perspective: '1500px',
+          perspectiveOrigin: 'center center',
+        }}
       >
-        {/* Book wrapper */}
+        {/* Book - the pages are positioned side by side when open */}
         <div
           className="relative cursor-pointer"
           style={{
-            width: currentPage === 1 ? '580px' : '280px',
-            height: '380px',
+            width: currentPage === 1 ? pageWidth * 2 : pageWidth,
+            height: pageHeight,
             maxWidth: '95vw',
-            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
           onClick={() => {
             if (currentPage < 2) nextPage();
             else goToPage(0);
           }}
         >
-          {/* Front Cover */}
+          {/* Back cover - static, visible when book is open */}
           <div
-            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
+            className="absolute rounded-lg shadow-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800"
             style={{
-              transformStyle: 'preserve-3d',
-              transformOrigin: 'left center',
-              transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s',
-              transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)',
-              opacity: currentPage >= 1 ? 0 : 1,
-              pointerEvents: currentPage >= 1 ? 'none' : 'auto',
-              backfaceVisibility: 'hidden',
+              width: pageWidth,
+              height: pageHeight,
+              right: 0,
+              opacity: currentPage >= 1 ? 1 : 0,
+              transition: 'opacity 0.4s ease-in-out',
+            }}
+          >
+            {/* This is the "back" of the book visible when open - shows inside right */}
+            {showOriginal ? (
+              <Image
+                src="/card-images/card_inside_right.png"
+                alt="Inside right"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <InsideRightContent />
+            )}
+          </div>
+
+          {/* Inside left page - revealed when front cover flips */}
+          <div
+            className="absolute rounded-lg shadow-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800"
+            style={{
+              width: pageWidth,
+              height: pageHeight,
+              left: 0,
+              opacity: currentPage >= 1 ? 1 : 0,
+              transition: 'opacity 0.3s ease-in-out 0.3s',
             }}
           >
             {showOriginal ? (
               <Image
-                src="/card-images/card_cover.png"
-                alt="Switzer Theorem - Front Cover"
+                src="/card-images/card_inside_left.png"
+                alt="Inside left"
                 fill
                 className="object-cover"
-                priority
               />
             ) : (
-              <Image
-                src="/card-images/card_cover_clean.png"
-                alt="Switzer Theorem - Front Cover"
-                fill
-                className="object-cover"
-                priority
-              />
+              <InsideLeftContent />
             )}
           </div>
 
-          {/* Inside Spread */}
+          {/* Front cover - flips open to reveal inside */}
           <div
-            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
+            className="absolute rounded-lg shadow-xl overflow-hidden"
             style={{
-              transformStyle: 'preserve-3d',
-              transition: 'opacity 0.3s ease-in-out',
-              opacity: currentPage === 1 ? 1 : 0,
-              pointerEvents: currentPage === 1 ? 'auto' : 'none',
-            }}
-          >
-            {showOriginal ? (
-              <div className="absolute inset-0 flex">
-                <div className="relative flex-1">
-                  <Image
-                    src="/card-images/card_inside_left.png"
-                    alt="Student messages - left side"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative flex-1">
-                  <Image
-                    src="/card-images/card_inside_right.png"
-                    alt="Student messages - right side"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="absolute inset-0 flex bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40">
-                {/* Left page */}
-                <div className="flex-1 p-3 border-r border-amber-200/50 dark:border-amber-700/30 overflow-hidden">
-                  <div className="h-full flex flex-col gap-1">
-                    {insideLeftMessages.map((msg, i) => (
-                      <MessageCard
-                        key={i}
-                        {...msg}
-                        rotate={[-1, 0.5, -0.5][i]}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Spine shadow */}
-                <div className="w-1 bg-gradient-to-r from-amber-200/50 via-amber-300/30 to-amber-200/50 dark:from-amber-800/30 dark:via-amber-700/20 dark:to-amber-800/30" />
-                {/* Right page */}
-                <div className="flex-1 p-3 overflow-hidden">
-                  <div className="h-full grid grid-cols-2 gap-1">
-                    {insideRightMessages.map((msg, i) => (
-                      <MessageCard
-                        key={i}
-                        {...msg}
-                        rotate={[1, -1, 0.5, -0.5, 1, -1][i]}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Back Cover */}
-          <div
-            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
-            style={{
+              width: pageWidth,
+              height: pageHeight,
+              left: 0,
               transformStyle: 'preserve-3d',
               transformOrigin: 'right center',
-              transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s',
-              transform: currentPage <= 1 ? 'rotateY(180deg)' : 'rotateY(0deg)',
-              opacity: currentPage === 2 ? 1 : 0,
-              pointerEvents: currentPage === 2 ? 'auto' : 'none',
-              backfaceVisibility: 'hidden',
+              transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+              zIndex: currentPage >= 1 ? 1 : 10,
             }}
           >
-            {showOriginal ? (
-              <Image
-                src="/card-images/card_back.png"
-                alt="More student messages - Back Cover"
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-4">
-                <div className="h-full flex flex-col gap-2">
-                  {backMessages.map((msg, i) => (
-                    <MessageCard
-                      key={i}
-                      {...msg}
-                      rotate={[-0.5, 0.5, -1][i]}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Front of front cover */}
+            <div
+              className="absolute inset-0"
+              style={{ backfaceVisibility: 'hidden' }}
+            >
+              {showOriginal ? (
+                <Image
+                  src="/card-images/card_cover.png"
+                  alt="Front Cover"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <Image
+                  src="/card-images/card_cover_clean.png"
+                  alt="Front Cover"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              )}
+            </div>
+            {/* Back of front cover (inside left when flipped) - blank or subtle texture */}
+            <div
+              className="absolute inset-0 bg-amber-100 dark:bg-amber-900/50"
+              style={{
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+              }}
+            />
+          </div>
+
+          {/* Inside right page - flips to reveal back cover */}
+          <div
+            className="absolute rounded-lg shadow-xl overflow-hidden"
+            style={{
+              width: pageWidth,
+              height: pageHeight,
+              right: 0,
+              transformStyle: 'preserve-3d',
+              transformOrigin: 'left center',
+              transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: currentPage >= 2 ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              zIndex: currentPage >= 2 ? 1 : (currentPage >= 1 ? 10 : 1),
+              opacity: currentPage >= 1 ? 1 : 0,
+              pointerEvents: currentPage >= 1 ? 'auto' : 'none',
+            }}
+          >
+            {/* Front of this page (inside right) */}
+            <div
+              className="absolute inset-0"
+              style={{ backfaceVisibility: 'hidden' }}
+            >
+              {showOriginal ? (
+                <Image
+                  src="/card-images/card_inside_right.png"
+                  alt="Inside right"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <InsideRightContent />
+              )}
+            </div>
+            {/* Back of this page (back cover content) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+              }}
+            >
+              {showOriginal ? (
+                <Image
+                  src="/card-images/card_back.png"
+                  alt="Back cover"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <BackContent />
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation dots */}
+      {/* Navigation */}
       <div className="flex items-center gap-3">
         <button
           onClick={(e) => { e.stopPropagation(); prevPage(); }}
-          disabled={isAnimating || currentPage === 0}
+          disabled={currentPage === 0}
           className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
         >
@@ -316,7 +377,6 @@ export function Card3D({ className = '' }: { className?: string }) {
             <button
               key={page}
               onClick={(e) => { e.stopPropagation(); goToPage(page); }}
-              disabled={isAnimating}
               className={`w-2.5 h-2.5 rounded-full transition-all ${
                 currentPage === page
                   ? 'bg-neutral-800 dark:bg-neutral-200 scale-110'
@@ -329,7 +389,7 @@ export function Card3D({ className = '' }: { className?: string }) {
 
         <button
           onClick={(e) => { e.stopPropagation(); nextPage(); }}
-          disabled={isAnimating || currentPage === 2}
+          disabled={currentPage === 2}
           className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
         >
@@ -341,7 +401,9 @@ export function Card3D({ className = '' }: { className?: string }) {
 
       {/* Page label */}
       <p className="text-xs text-neutral-500 dark:text-neutral-400">
-        {pageLabels[currentPage]} — Click to {currentPage < 2 ? 'flip' : 'restart'}
+        {currentPage === 0 && 'Front Cover — Click to open'}
+        {currentPage === 1 && 'Inside — Click to flip'}
+        {currentPage === 2 && 'Back Cover — Click to close'}
       </p>
 
       {/* Toggle for original images */}

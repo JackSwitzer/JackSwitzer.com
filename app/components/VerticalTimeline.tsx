@@ -15,6 +15,17 @@ interface VerticalTimelineProps {
   items: TimelineItem[];
 }
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Academic year runs Sep-Aug
+const ACADEMIC_YEARS = [
+  { label: "2026-27", startYear: 2026, startMonth: 8, note: "4th Year" },
+  { label: "2025-26", startYear: 2025, startMonth: 8, note: "IBM Gap Year" },
+  { label: "2024-25", startYear: 2024, startMonth: 8, note: "3rd Year" },
+  { label: "2023-24", startYear: 2023, startMonth: 8, note: "2nd Year - Applied Math" },
+  { label: "2022-23", startYear: 2022, startMonth: 8, note: "1st Year" },
+];
+
 function getAbbreviatedTitle(title: string): string {
   const abbreviations: Record<string, string> = {
     "IBM Software Developer - WatsonX Code Assistant for Z": "IBM WatsonX",
@@ -25,214 +36,247 @@ function getAbbreviatedTitle(title: string): string {
     "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
     "Chrono - Linguistic Pattern Forecasting": "Chrono",
     "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
-    "QUANTT - Options Pricing Model": "Options Model",
-    "Started University": "Queen's",
-    "B.ASc. Graduation": "Graduation",
-    "Teaching Assistant: Linear Algebra I": "TA Lin Alg",
+    "QUANTT - Options Pricing Model": "Options",
+    "Queen's University": "Queen's",
+    "Teaching Assistant: Linear Algebra I": "TA",
     "Member → President, Future Blue Intern Council": "Future Blue",
     "Consultant → Project Manager": "QSC",
     "Campus Ambassador": "RBC Amb",
-    "Analyst → Project Manager": "QUANTT PM",
-    "Sol - Sunrise Alarm Clock": "Sol Lamp",
-    "NYT Games Solver": "NYT Games",
+    "Analyst → Project Manager": "QUANTT",
+    "Sol - Sunrise Alarm Clock": "Sol",
+    "NYT Games Solver": "NYT",
     "RBC Data Scientist": "RBC DS",
     "RBC Data Analyst": "RBC DA",
   };
   return abbreviations[title] || title;
 }
 
-// Timeline constants
-const TIMELINE_START = new Date(2022, 8, 1); // Sep 2022
-const TIMELINE_END = new Date(2027, 5, 1); // Jun 2027
-const TOTAL_MONTHS = (TIMELINE_END.getFullYear() - TIMELINE_START.getFullYear()) * 12 +
-                     (TIMELINE_END.getMonth() - TIMELINE_START.getMonth());
-
-function getMonthOffset(date: Date): number {
-  const months = (date.getFullYear() - TIMELINE_START.getFullYear()) * 12 +
-                 (date.getMonth() - TIMELINE_START.getMonth());
-  return Math.max(0, Math.min(months, TOTAL_MONTHS));
+function getMonthPosition(month: number, academicStartMonth: number): number {
+  // Convert calendar month to academic year position (0-11)
+  // Academic year starts in September (month 8)
+  const adjusted = month - academicStartMonth;
+  return adjusted < 0 ? adjusted + 12 : adjusted;
 }
 
-function getHeightPercent(startDate: Date, endDate: Date | undefined): number {
-  const start = getMonthOffset(startDate);
-  const end = endDate ? getMonthOffset(endDate) : getMonthOffset(new Date());
-  const duration = Math.max(end - start, 1);
-  return (duration / TOTAL_MONTHS) * 100;
+function itemOverlapsYear(item: TimelineItem, yearStart: Date, yearEnd: Date): boolean {
+  const itemEnd = item.endDate || new Date();
+  return item.startDate < yearEnd && itemEnd > yearStart;
 }
 
-function getTopPercent(startDate: Date): number {
-  return (getMonthOffset(startDate) / TOTAL_MONTHS) * 100;
+function getItemPositionInYear(
+  item: TimelineItem,
+  yearStart: Date,
+  yearEnd: Date
+): { startPct: number; endPct: number } {
+  const itemEnd = item.endDate || new Date();
+
+  // Clamp to year boundaries
+  const effectiveStart = item.startDate < yearStart ? yearStart : item.startDate;
+  const effectiveEnd = itemEnd > yearEnd ? yearEnd : itemEnd;
+
+  const yearMs = yearEnd.getTime() - yearStart.getTime();
+  const startPct = ((effectiveStart.getTime() - yearStart.getTime()) / yearMs) * 100;
+  const endPct = ((effectiveEnd.getTime() - yearStart.getTime()) / yearMs) * 100;
+
+  return { startPct: Math.max(0, startPct), endPct: Math.min(100, endPct) };
 }
 
-// Generate year markers
-function getYearMarkers(): { year: number; top: number }[] {
-  const markers = [];
-  for (let year = 2022; year <= 2027; year++) {
-    const date = new Date(year, 0, 1);
-    if (date >= TIMELINE_START && date <= TIMELINE_END) {
-      markers.push({ year, top: getTopPercent(date) });
-    }
-  }
-  return markers;
-}
+// Assign items to rows within a year to avoid overlap
+function assignRows(
+  items: TimelineItem[],
+  yearStart: Date,
+  yearEnd: Date
+): Map<string, number> {
+  const rows = new Map<string, number>();
+  const rowEnds: number[] = [];
 
-// Assign items to lanes to avoid overlap
-function assignLanes(items: TimelineItem[]): Map<string, number> {
-  const lanes = new Map<string, number>();
-  const laneEnds: number[] = []; // Track when each lane becomes free (month offset)
+  const yearItems = items
+    .filter(item => itemOverlapsYear(item, yearStart, yearEnd))
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-  // Sort by start date
-  const sorted = [...items].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  for (const item of yearItems) {
+    const { startPct } = getItemPositionInYear(item, yearStart, yearEnd);
+    const { endPct } = getItemPositionInYear(item, yearStart, yearEnd);
 
-  for (const item of sorted) {
-    const startMonth = getMonthOffset(item.startDate);
-    const endMonth = item.endDate ? getMonthOffset(item.endDate) : getMonthOffset(new Date());
-
-    // Find first lane where this item fits
-    let assignedLane = -1;
-    for (let i = 0; i < laneEnds.length; i++) {
-      if (laneEnds[i] <= startMonth) {
-        assignedLane = i;
-        laneEnds[i] = endMonth + 1; // Add gap
+    let assignedRow = -1;
+    for (let i = 0; i < rowEnds.length; i++) {
+      if (rowEnds[i] <= startPct + 1) {
+        assignedRow = i;
+        rowEnds[i] = endPct + 2;
         break;
       }
     }
 
-    // No existing lane works, create new one
-    if (assignedLane === -1) {
-      assignedLane = laneEnds.length;
-      laneEnds.push(endMonth + 1);
+    if (assignedRow === -1) {
+      assignedRow = rowEnds.length;
+      rowEnds.push(endPct + 2);
     }
 
-    lanes.set(item.id, assignedLane);
+    rows.set(item.id, assignedRow);
   }
 
-  return lanes;
+  return rows;
 }
 
 export function VerticalTimeline({ items }: VerticalTimelineProps) {
-  const yearMarkers = getYearMarkers();
-  const lanes = assignLanes(items);
-  const numLanes = Math.max(...Array.from(lanes.values())) + 1;
-
-  // Calculate lane width - leave room for year labels
-  const laneWidth = Math.min(140, (100 - 10) / numLanes); // 10% for year labels
-
   return (
-    <div className="relative" style={{ height: "1400px" }}>
-      {/* Year markers on left */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 border-r border-[var(--border)]">
-        {yearMarkers.map(({ year, top }) => (
-          <div
-            key={year}
-            className="absolute left-0 right-0 flex items-center"
-            style={{ top: `${top}%` }}
-          >
-            <span className="text-sm font-mono font-bold text-[var(--muted)] bg-[var(--paper)] pr-2">
-              {year}
-            </span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
-          </div>
-        ))}
-      </div>
+    <div className="space-y-0">
+      {ACADEMIC_YEARS.map((academicYear, yearIndex) => {
+        const yearStart = new Date(academicYear.startYear, academicYear.startMonth, 1);
+        const yearEnd = new Date(academicYear.startYear + 1, academicYear.startMonth, 1);
 
-      {/* Timeline area */}
-      <div className="absolute left-14 right-0 top-0 bottom-0">
-        {/* Horizontal grid lines for each year */}
-        {yearMarkers.map(({ year, top }) => (
-          <div
-            key={`grid-${year}`}
-            className="absolute left-0 right-0 h-px bg-[var(--border)] opacity-30"
-            style={{ top: `${top}%` }}
-          />
-        ))}
+        const yearItems = items.filter(item => itemOverlapsYear(item, yearStart, yearEnd));
+        const rows = assignRows(items, yearStart, yearEnd);
+        const numRows = yearItems.length > 0 ? Math.max(...yearItems.map(i => rows.get(i.id) || 0)) + 1 : 1;
+        const rowHeight = 52;
+        const timelineHeight = Math.max(numRows * rowHeight + 20, 80);
 
-        {/* Timeline items */}
-        {items.map((item) => {
-          const style = typeStyles[item.type];
-          const top = getTopPercent(item.startDate);
-          const height = getHeightPercent(item.startDate, item.endDate);
-          const lane = lanes.get(item.id) || 0;
-          const left = lane * laneWidth;
-          const hasLink = item.hasDetailPage && item.slug;
+        // Generate month markers
+        const monthMarkers = [];
+        for (let i = 0; i < 12; i++) {
+          const monthIndex = (academicYear.startMonth + i) % 12;
+          monthMarkers.push({
+            label: MONTHS[monthIndex],
+            position: (i / 12) * 100,
+            isSummer: monthIndex >= 4 && monthIndex <= 7, // May-Aug
+          });
+        }
 
-          const content = (
-            <div
-              className={`absolute overflow-hidden border-l-3 bg-[var(--paper)] border border-[var(--border)] ${
-                hasLink ? "hover:border-[var(--accent)] cursor-pointer" : ""
-              }`}
-              style={{
-                top: `${top}%`,
-                height: `${Math.max(height, 2)}%`,
-                left: `${left}%`,
-                width: `${laneWidth - 1}%`,
-                borderLeftWidth: "3px",
-                borderLeftColor: style.color,
-                minHeight: "60px",
-              }}
-            >
-              <div className="p-2 h-full flex flex-col">
-                {/* Title */}
-                <div className="flex items-start gap-1 mb-1">
-                  <span
-                    className="shrink-0 w-2 h-2 rounded-full mt-1"
-                    style={{ backgroundColor: style.color }}
-                  />
-                  <span className="text-xs font-semibold leading-tight line-clamp-2">
-                    {getAbbreviatedTitle(item.title)}
-                  </span>
-                </div>
-
-                {/* Subtitle */}
-                {item.subtitle && (
-                  <p className="text-[10px] text-[var(--muted)] line-clamp-1 mb-1">
-                    {item.subtitle}
-                  </p>
+        return (
+          <div key={academicYear.label} className="relative">
+            {/* Year header with pipe connector */}
+            <div className="flex items-stretch">
+              {/* Year label column */}
+              <div className="w-24 shrink-0 flex flex-col items-center">
+                {yearIndex > 0 && (
+                  <div className="w-0.5 h-4 bg-[var(--border)]" />
                 )}
-
-                {/* Summary - only show if enough height */}
-                {height > 8 && (item.summary || item.accomplishments?.[0]) && (
-                  <p className="text-[10px] text-[var(--muted)] line-clamp-2 mt-auto">
-                    {item.summary || item.accomplishments?.[0]}
-                  </p>
+                <div className="bg-[var(--ink)] text-[var(--paper)] px-3 py-2 text-center">
+                  <div className="text-sm font-mono font-bold">{academicYear.label}</div>
+                  <div className="text-[10px] opacity-80">{academicYear.note}</div>
+                </div>
+                {yearIndex < ACADEMIC_YEARS.length - 1 && (
+                  <div className="w-0.5 flex-1 bg-[var(--border)] min-h-[20px]" />
                 )}
               </div>
+
+              {/* Timeline area */}
+              <div className="flex-1 border border-[var(--border)] bg-[var(--paper)]">
+                {/* Month markers */}
+                <div className="relative h-6 border-b border-[var(--border)] flex">
+                  {monthMarkers.map((m, i) => (
+                    <div
+                      key={i}
+                      className={`flex-1 text-center text-[10px] font-mono leading-6 border-r border-[var(--border)] last:border-r-0 ${
+                        m.isSummer ? "bg-amber-50 text-amber-700" : "text-[var(--muted)]"
+                      }`}
+                    >
+                      {m.label}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Items area */}
+                <div className="relative" style={{ height: timelineHeight }}>
+                  {/* Month grid lines */}
+                  <div className="absolute inset-0 flex pointer-events-none">
+                    {monthMarkers.map((m, i) => (
+                      <div
+                        key={i}
+                        className={`flex-1 border-r border-[var(--border)] last:border-r-0 ${
+                          m.isSummer ? "bg-amber-50/30" : ""
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Timeline items */}
+                  {yearItems.map(item => {
+                    const { startPct, endPct } = getItemPositionInYear(item, yearStart, yearEnd);
+                    const row = rows.get(item.id) || 0;
+                    const style = typeStyles[item.type];
+                    const hasLink = item.hasDetailPage && item.slug;
+                    const width = Math.max(endPct - startPct, 5);
+
+                    const content = (
+                      <div
+                        className={`absolute flex items-center gap-1.5 px-2 py-1 text-xs border bg-[var(--paper)] overflow-hidden ${
+                          hasLink ? "hover:border-[var(--accent)] cursor-pointer" : ""
+                        }`}
+                        style={{
+                          left: `${startPct}%`,
+                          width: `${width}%`,
+                          top: row * rowHeight + 8,
+                          height: rowHeight - 12,
+                          borderLeftWidth: "3px",
+                          borderLeftColor: style.color,
+                          minWidth: "60px",
+                        }}
+                      >
+                        <span
+                          className="shrink-0 w-2 h-2 rounded-full"
+                          style={{ backgroundColor: style.color }}
+                        />
+                        <span className="font-medium truncate">
+                          {getAbbreviatedTitle(item.title)}
+                        </span>
+                        {item.subtitle && width > 15 && (
+                          <span className="text-[var(--muted)] truncate hidden sm:inline">
+                            · {item.subtitle}
+                          </span>
+                        )}
+                      </div>
+                    );
+
+                    if (hasLink) {
+                      return (
+                        <Link key={`${academicYear.label}-${item.id}`} href={`/projects/${item.slug}`}>
+                          {content}
+                        </Link>
+                      );
+                    }
+
+                    if (item.externalLink) {
+                      return (
+                        <a
+                          key={`${academicYear.label}-${item.id}`}
+                          href={item.externalLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {content}
+                        </a>
+                      );
+                    }
+
+                    return <div key={`${academicYear.label}-${item.id}`}>{content}</div>;
+                  })}
+
+                  {/* Empty state */}
+                  {yearItems.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-sm text-[var(--muted)]">
+                      Coming soon...
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          );
-
-          if (hasLink) {
-            return (
-              <Link key={item.id} href={`/projects/${item.slug}`}>
-                {content}
-              </Link>
-            );
-          }
-
-          if (item.externalLink) {
-            return (
-              <a
-                key={item.id}
-                href={item.externalLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {content}
-              </a>
-            );
-          }
-
-          return <div key={item.id}>{content}</div>;
-        })}
-      </div>
+          </div>
+        );
+      })}
 
       {/* Legend */}
-      <div className="absolute bottom-0 left-0 right-0 pt-4 border-t border-[var(--border)] bg-[var(--paper)] flex flex-wrap gap-4 text-xs">
+      <div className="pt-6 flex flex-wrap gap-4 text-xs">
         {Object.entries(typeStyles).map(([type, { color, label }]) => (
           <div key={type} className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
             <span className="text-[var(--muted)]">{label}</span>
           </div>
         ))}
+        <div className="flex items-center gap-1.5 ml-4 pl-4 border-l border-[var(--border)]">
+          <span className="w-3 h-3 bg-amber-100 border border-amber-300" />
+          <span className="text-[var(--muted)]">Summer</span>
+        </div>
       </div>
     </div>
   );

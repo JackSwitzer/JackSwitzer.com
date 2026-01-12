@@ -200,7 +200,7 @@ export const projects: Project[] = [
     slug: "slay-the-spire-rl",
     name: "Slay the Spire Watcher Solver",
     type: "research",
-    period: "2026",
+    period: "Jan 2026 - Apr 2026",
     featured: true,
     visible: true,
     status: "wip",

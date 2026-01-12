@@ -81,20 +81,6 @@ export function Card3D({
     [cardState, isAnimating]
   );
 
-  // Calculate transforms based on state
-  const getCardTransform = () => {
-    switch (cardState) {
-      case 'CLOSED_FRONT':
-        return 'translateX(-25%) rotateY(0deg)';
-      case 'OPEN':
-        return 'translateX(0%) rotateY(0deg)';
-      case 'CLOSED_BACK':
-        return 'translateX(25%) rotateY(180deg)';
-      default:
-        return 'translateX(-25%) rotateY(0deg)';
-    }
-  };
-
   const getLeftPanelTransform = () => {
     switch (cardState) {
       case 'CLOSED_FRONT':
@@ -109,15 +95,20 @@ export function Card3D({
   };
 
   const isOpen = cardState === 'OPEN';
+  const isClosed = cardState === 'CLOSED_FRONT' || cardState === 'CLOSED_BACK';
 
   return (
     <div className={`flex flex-col items-center gap-6 ${className}`}>
       {/* Card Scene - provides perspective */}
       <div
-        className="card-scene relative w-full max-w-3xl"
+        className="card-scene relative"
         style={{
           perspective: '2000px',
           perspectiveOrigin: 'center center',
+          // Width changes based on open/closed state
+          width: isClosed ? '300px' : '600px',
+          maxWidth: '100%',
+          transition: 'width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
         }}
       >
         {/* Card Container - handles full card flip for CLOSED_BACK */}
@@ -125,19 +116,22 @@ export function Card3D({
           className="card relative cursor-pointer"
           style={{
             transformStyle: 'preserve-3d',
-            transform: getCardTransform(),
+            transform: cardState === 'CLOSED_BACK' ? 'rotateY(180deg)' : 'rotateY(0deg)',
             transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
             width: '100%',
-            aspectRatio: '2 / 1.4',
+            aspectRatio: isClosed ? '1 / 1.4' : '2 / 1.4',
           }}
           onClick={handleCardClick}
         >
           {/* Right Panel (stationary - inside-right and back cover) */}
           <div
-            className="panel-right absolute right-0 top-0 h-full"
+            className="panel-right absolute top-0 h-full"
             style={{
-              width: '50%',
+              width: isClosed ? '100%' : '50%',
+              left: isClosed ? '0' : '50%',
               transformStyle: 'preserve-3d',
+              zIndex: 1,
+              transition: 'width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), left 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
             }}
           >
             {/* Inside Right Face (visible when open) */}
@@ -192,11 +186,11 @@ export function Card3D({
           <div
             className="panel-left absolute left-0 top-0 h-full"
             style={{
-              width: '50%',
+              width: isClosed ? '100%' : '50%',
               transformStyle: 'preserve-3d',
               transformOrigin: 'right center',
               transform: getLeftPanelTransform(),
-              transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
+              transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1), width 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
               zIndex: leftPanelZIndex,
             }}
           >

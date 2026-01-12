@@ -210,7 +210,7 @@ export const projects: Project[] = [
       "Designing behavioral cloning approach using official game run data",
       "Engineering high-level strategic features including kill probability calculations",
     ],
-    technologies: ["Python", "PyTorch", "Behavioral Cloning", "Reinforcement Learning"],
+    technologies: ["Python", "PyTorch", "RL", "Behavioral Cloning"],
     github: { repo: "StSRLSolver", account: "jackswitzer" },
   },
   {
@@ -227,7 +227,7 @@ export const projects: Project[] = [
       "Implemented efficient word search algorithms",
       "Created interactive web interface for solving puzzles",
     ],
-    technologies: ["TypeScript", "React", "Next.js", "Graph Algorithms"],
+    technologies: ["TypeScript", "Next.js", "React"],
     github: { repo: "NYT-Games", account: "jackswitzer" },
     link: "/nyt-games",
   },
@@ -261,7 +261,7 @@ export const projects: Project[] = [
       "Built comprehensive learning platform with interactive visualizations for core linear algebra concepts",
       "Used as primary resource for 80+ students across 2 tutorial sections",
     ],
-    technologies: ["Next.js", "TypeScript", "MDX", "Tailwind CSS", "KaTeX"],
+    technologies: ["Next.js", "TypeScript", "MDX", "KaTeX"],
     github: { repo: "apsc174", account: "JackSwitzerSchool" },
     link: "https://apsc174.jackswitzer.com",
   },
@@ -279,7 +279,7 @@ export const projects: Project[] = [
       "Used satellite imagery to simulate Gulf Stream and model garbage flow",
       "Implemented K-Means clustering leading to 20% efficiency improvement",
     ],
-    technologies: ["MATLAB", "Multi-Agent Systems", "K-Means Clustering"],
+    technologies: ["MATLAB", "Multi-Agent Systems", "K-Means"],
     github: { repo: "APSC-200", account: "JackSwitzerSchool" },
   },
   {
@@ -296,7 +296,7 @@ export const projects: Project[] = [
       "Designed stable control systems using MATLAB/Simulink",
       "Implemented PID controllers with tuning for optimal transient response",
     ],
-    technologies: ["MATLAB", "Simulink", "Control Theory", "PID"],
+    technologies: ["MATLAB", "Simulink", "PID Control"],
     github: { repo: "MTHE393", account: "JackSwitzerSchool" },
   },
   {
@@ -329,7 +329,7 @@ export const projects: Project[] = [
       "Participated in 10-week educational program in quantitative finance",
       "Implemented Monte Carlo simulation and Heston model to price AMD options to ~5% error",
     ],
-    technologies: ["Python", "Monte Carlo", "Heston Model"],
+    technologies: ["Python", "Monte Carlo", "Heston"],
   },
   {
     slug: "advent-of-code-2024",
@@ -409,7 +409,7 @@ export const projects: Project[] = [
       "Integrated with Kasa smart bulbs via python-kasa library",
       "Exposed as MCP server for Claude Desktop integration",
     ],
-    technologies: ["Python", "MCP", "Kasa API", "asyncio"],
+    technologies: ["Python", "MCP", "asyncio"],
     github: { repo: "Lamp", account: "jackswitzer" },
   },
 ];

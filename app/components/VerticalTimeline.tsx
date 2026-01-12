@@ -4,191 +4,236 @@ import Link from "next/link";
 import { type TimelineItem } from "@/lib/data";
 
 const typeStyles = {
-  work: { accent: "var(--accent)", label: "Work" },
-  education: { accent: "var(--success)", label: "Edu" },
-  leadership: { accent: "#7c3aed", label: "Lead" },
-  project: { accent: "var(--accent)", label: "Proj" },
-  hackathon: { accent: "#ec4899", label: "Hack" },
+  work: { color: "var(--accent)", label: "Work" },
+  education: { color: "var(--success)", label: "Edu" },
+  leadership: { color: "#7c3aed", label: "Lead" },
+  project: { color: "#f59e0b", label: "Proj" },
+  hackathon: { color: "#ec4899", label: "Hack" },
 };
 
 interface VerticalTimelineProps {
   items: TimelineItem[];
 }
 
-function formatDateShort(date: Date): string {
-  const month = date.toLocaleDateString("en-US", { month: "short" });
-  const year = date.getFullYear().toString().slice(-2);
-  return `${month} '${year}`;
-}
-
-function getAbbreviatedTitle(item: TimelineItem): string {
-  // Create abbreviated names for long titles
+function getAbbreviatedTitle(title: string): string {
   const abbreviations: Record<string, string> = {
-    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM - WatsonX Code Assistant",
-    "Quantization x Interpretability": "Quantization x Interp",
-    "Slay the Spire Watcher Solver": "StS Watcher Solver",
-    "Linear Algebra Learning Platform": "Lin Alg Platform",
-    "Black Box Deconstruction - Control Systems": "Control Systems",
-    "Gulf of Mexico Trash Collection Simulation": "Gulf Simulation",
-    "Chrono - Linguistic Pattern Forecasting": "Chrono (QHacks)",
-    "McGill FAIM Hackathon - Portfolio Optimization": "FAIM Hackathon",
-    "QUANTT - Options Pricing Model": "QUANTT Options",
-    "Started University": "Queen's Started",
+    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM WatsonX",
+    "Quantization x Interpretability": "Quant x Interp",
+    "Slay the Spire Watcher Solver": "StS Solver",
+    "Linear Algebra Learning Platform": "Lin Alg Site",
+    "Black Box Deconstruction - Control Systems": "Control Sys",
+    "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
+    "Chrono - Linguistic Pattern Forecasting": "Chrono",
+    "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
+    "QUANTT - Options Pricing Model": "Options Model",
+    "Started University": "Queen's",
     "B.ASc. Graduation": "Graduation",
-    "Teaching Assistant: Linear Algebra I": "TA - Linear Algebra",
-    "Member → President, Future Blue Intern Council": "Future Blue Council",
+    "Teaching Assistant: Linear Algebra I": "TA Lin Alg",
+    "Member → President, Future Blue Intern Council": "Future Blue",
     "Consultant → Project Manager": "QSC",
-    "Campus Ambassador": "RBC Ambassador",
-    "Analyst → Project Manager": "QUANTT",
+    "Campus Ambassador": "RBC Amb",
+    "Analyst → Project Manager": "QUANTT PM",
     "Sol - Sunrise Alarm Clock": "Sol Lamp",
+    "NYT Games Solver": "NYT Games",
+    "RBC Data Scientist": "RBC DS",
+    "RBC Data Analyst": "RBC DA",
   };
-
-  return abbreviations[item.title] || item.title;
+  return abbreviations[title] || title;
 }
 
-function getDurationMonths(item: TimelineItem): number {
-  const start = item.startDate;
-  const end = item.endDate || new Date();
-  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
-  return Math.max(1, months);
+// Timeline constants
+const TIMELINE_START = new Date(2022, 8, 1); // Sep 2022
+const TIMELINE_END = new Date(2027, 5, 1); // Jun 2027
+const TOTAL_MONTHS = (TIMELINE_END.getFullYear() - TIMELINE_START.getFullYear()) * 12 +
+                     (TIMELINE_END.getMonth() - TIMELINE_START.getMonth());
+
+function getMonthOffset(date: Date): number {
+  const months = (date.getFullYear() - TIMELINE_START.getFullYear()) * 12 +
+                 (date.getMonth() - TIMELINE_START.getMonth());
+  return Math.max(0, Math.min(months, TOTAL_MONTHS));
+}
+
+function getHeightPercent(startDate: Date, endDate: Date | undefined): number {
+  const start = getMonthOffset(startDate);
+  const end = endDate ? getMonthOffset(endDate) : getMonthOffset(new Date());
+  const duration = Math.max(end - start, 1);
+  return (duration / TOTAL_MONTHS) * 100;
+}
+
+function getTopPercent(startDate: Date): number {
+  return (getMonthOffset(startDate) / TOTAL_MONTHS) * 100;
+}
+
+// Generate year markers
+function getYearMarkers(): { year: number; top: number }[] {
+  const markers = [];
+  for (let year = 2022; year <= 2027; year++) {
+    const date = new Date(year, 0, 1);
+    if (date >= TIMELINE_START && date <= TIMELINE_END) {
+      markers.push({ year, top: getTopPercent(date) });
+    }
+  }
+  return markers;
+}
+
+// Assign items to lanes to avoid overlap
+function assignLanes(items: TimelineItem[]): Map<string, number> {
+  const lanes = new Map<string, number>();
+  const laneEnds: number[] = []; // Track when each lane becomes free (month offset)
+
+  // Sort by start date
+  const sorted = [...items].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+  for (const item of sorted) {
+    const startMonth = getMonthOffset(item.startDate);
+    const endMonth = item.endDate ? getMonthOffset(item.endDate) : getMonthOffset(new Date());
+
+    // Find first lane where this item fits
+    let assignedLane = -1;
+    for (let i = 0; i < laneEnds.length; i++) {
+      if (laneEnds[i] <= startMonth) {
+        assignedLane = i;
+        laneEnds[i] = endMonth + 1; // Add gap
+        break;
+      }
+    }
+
+    // No existing lane works, create new one
+    if (assignedLane === -1) {
+      assignedLane = laneEnds.length;
+      laneEnds.push(endMonth + 1);
+    }
+
+    lanes.set(item.id, assignedLane);
+  }
+
+  return lanes;
 }
 
 export function VerticalTimeline({ items }: VerticalTimelineProps) {
-  // Group items by year
-  const itemsByYear = items.reduce((acc, item) => {
-    const year = item.startDate.getFullYear();
-    if (!acc[year]) acc[year] = [];
-    acc[year].push(item);
-    return acc;
-  }, {} as Record<number, TimelineItem[]>);
+  const yearMarkers = getYearMarkers();
+  const lanes = assignLanes(items);
+  const numLanes = Math.max(...Array.from(lanes.values())) + 1;
 
-  const years = Object.keys(itemsByYear).map(Number).sort((a, b) => b - a); // Most recent first
+  // Calculate lane width - leave room for year labels
+  const laneWidth = Math.min(140, (100 - 10) / numLanes); // 10% for year labels
 
   return (
-    <div className="space-y-8">
-      {years.map((year) => (
-        <div key={year} className="relative">
-          {/* Year header */}
-          <div className="sticky top-0 z-10 bg-[var(--paper)] py-2 border-b border-[var(--border)] mb-4">
-            <span className="text-2xl font-bold font-mono">{year}</span>
+    <div className="relative" style={{ height: "1400px" }}>
+      {/* Year markers on left */}
+      <div className="absolute left-0 top-0 bottom-0 w-12 border-r border-[var(--border)]">
+        {yearMarkers.map(({ year, top }) => (
+          <div
+            key={year}
+            className="absolute left-0 right-0 flex items-center"
+            style={{ top: `${top}%` }}
+          >
+            <span className="text-sm font-mono font-bold text-[var(--muted)] bg-[var(--paper)] pr-2">
+              {year}
+            </span>
+            <div className="flex-1 h-px bg-[var(--border)]" />
           </div>
+        ))}
+      </div>
 
-          {/* Items for this year */}
-          <div className="space-y-3 pl-4 border-l-2 border-[var(--border)]">
-            {itemsByYear[year].map((item) => {
-              const style = typeStyles[item.type];
-              const duration = getDurationMonths(item);
-              const hasLink = item.hasDetailPage && item.slug;
+      {/* Timeline area */}
+      <div className="absolute left-14 right-0 top-0 bottom-0">
+        {/* Horizontal grid lines for each year */}
+        {yearMarkers.map(({ year, top }) => (
+          <div
+            key={`grid-${year}`}
+            className="absolute left-0 right-0 h-px bg-[var(--border)] opacity-30"
+            style={{ top: `${top}%` }}
+          />
+        ))}
 
-              const content = (
-                <div
-                  className={`relative p-4 border border-[var(--border)] bg-[var(--paper)] transition-all ${
-                    hasLink ? "card-hover cursor-pointer" : ""
-                  }`}
-                  style={{
-                    borderLeftWidth: "3px",
-                    borderLeftColor: style.accent,
-                  }}
-                >
-                  {/* Duration indicator line */}
-                  <div
-                    className="absolute -left-[calc(1rem+3px)] top-1/2 -translate-y-1/2 h-0.5"
-                    style={{
-                      width: "1rem",
-                      backgroundColor: style.accent,
-                    }}
+        {/* Timeline items */}
+        {items.map((item) => {
+          const style = typeStyles[item.type];
+          const top = getTopPercent(item.startDate);
+          const height = getHeightPercent(item.startDate, item.endDate);
+          const lane = lanes.get(item.id) || 0;
+          const left = lane * laneWidth;
+          const hasLink = item.hasDetailPage && item.slug;
+
+          const content = (
+            <div
+              className={`absolute overflow-hidden border-l-3 bg-[var(--paper)] border border-[var(--border)] ${
+                hasLink ? "hover:border-[var(--accent)] cursor-pointer" : ""
+              }`}
+              style={{
+                top: `${top}%`,
+                height: `${Math.max(height, 2)}%`,
+                left: `${left}%`,
+                width: `${laneWidth - 1}%`,
+                borderLeftWidth: "3px",
+                borderLeftColor: style.color,
+                minHeight: "60px",
+              }}
+            >
+              <div className="p-2 h-full flex flex-col">
+                {/* Title */}
+                <div className="flex items-start gap-1 mb-1">
+                  <span
+                    className="shrink-0 w-2 h-2 rounded-full mt-1"
+                    style={{ backgroundColor: style.color }}
                   />
-
-                  {/* Header row */}
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-2 flex-wrap min-w-0">
-                      <span
-                        className="tag text-[10px] uppercase shrink-0"
-                        style={{ backgroundColor: style.accent, color: "white" }}
-                      >
-                        {style.label}
-                      </span>
-                      <h3 className="font-semibold text-sm truncate">
-                        {getAbbreviatedTitle(item)}
-                      </h3>
-                      {item.hasDetailPage && (
-                        <span className="text-[var(--accent)] text-xs shrink-0">→</span>
-                      )}
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-mono text-[var(--muted)]">
-                        {formatDateShort(item.startDate)}
-                        {item.endDate && ` - ${formatDateShort(item.endDate)}`}
-                      </span>
-                      {duration > 1 && (
-                        <span className="block text-[10px] text-[var(--muted)]">
-                          {duration} mo
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Subtitle */}
-                  {item.subtitle && (
-                    <p className="text-xs text-[var(--muted)] mb-2">{item.subtitle}</p>
-                  )}
-
-                  {/* Summary or first accomplishment */}
-                  {(item.summary || item.accomplishments?.[0]) && (
-                    <p className="text-sm text-[var(--muted)] line-clamp-2">
-                      {item.summary || item.accomplishments?.[0]}
-                    </p>
-                  )}
-
-                  {/* Technologies (compact) */}
-                  {item.technologies && item.technologies.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {item.technologies.slice(0, 4).map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-1.5 py-0.5 text-[10px] font-mono bg-[var(--border)] text-[var(--muted)]"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {item.technologies.length > 4 && (
-                        <span className="text-[10px] text-[var(--muted)]">
-                          +{item.technologies.length - 4}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <span className="text-xs font-semibold leading-tight line-clamp-2">
+                    {getAbbreviatedTitle(item.title)}
+                  </span>
                 </div>
-              );
 
-              if (hasLink) {
-                return (
-                  <Link key={item.id} href={`/projects/${item.slug}`}>
-                    {content}
-                  </Link>
-                );
-              }
+                {/* Subtitle */}
+                {item.subtitle && (
+                  <p className="text-[10px] text-[var(--muted)] line-clamp-1 mb-1">
+                    {item.subtitle}
+                  </p>
+                )}
 
-              // For items with external links
-              if (item.externalLink) {
-                return (
-                  <a
-                    key={item.id}
-                    href={item.externalLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    {content}
-                  </a>
-                );
-              }
+                {/* Summary - only show if enough height */}
+                {height > 8 && (item.summary || item.accomplishments?.[0]) && (
+                  <p className="text-[10px] text-[var(--muted)] line-clamp-2 mt-auto">
+                    {item.summary || item.accomplishments?.[0]}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
 
-              return <div key={item.id}>{content}</div>;
-            })}
+          if (hasLink) {
+            return (
+              <Link key={item.id} href={`/projects/${item.slug}`}>
+                {content}
+              </Link>
+            );
+          }
+
+          if (item.externalLink) {
+            return (
+              <a
+                key={item.id}
+                href={item.externalLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {content}
+              </a>
+            );
+          }
+
+          return <div key={item.id}>{content}</div>;
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-0 left-0 right-0 pt-4 border-t border-[var(--border)] bg-[var(--paper)] flex flex-wrap gap-4 text-xs">
+        {Object.entries(typeStyles).map(([type, { color, label }]) => (
+          <div key={type} className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
+            <span className="text-[var(--muted)]">{label}</span>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

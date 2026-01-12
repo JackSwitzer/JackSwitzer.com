@@ -598,29 +598,19 @@ export function getTimelineItems(): TimelineItem[] {
     });
   });
 
-  // 4. Add education milestones
+  // 4. Add education as spanning item
   items.push({
-    id: "edu-start",
-    title: "Started University",
-    subtitle: "Queen's University - Math & Computer Engineering",
+    id: "edu-queens",
+    title: "Queen's University",
+    subtitle: "B.ASc. Math & Computer Engineering",
     type: "education",
     startDate: new Date(2022, 8, 1), // Sep 2022
-    hasDetailPage: true,
+    endDate: new Date(2027, 4, 1), // May 2027
+    hasDetailPage: false,
     institution: education.institution,
     degree: education.degree,
     gpa: education.gpa,
     courses: education.relevantCourses,
-  });
-
-  items.push({
-    id: "edu-grad",
-    title: "B.ASc. Graduation",
-    subtitle: education.institution,
-    type: "education",
-    startDate: new Date(2027, 4, 1), // May 2027
-    hasDetailPage: true,
-    institution: education.institution,
-    degree: education.degree,
   });
 
   // Sort by startDate ascending (2022 -> 2027)

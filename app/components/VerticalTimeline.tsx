@@ -20,9 +20,14 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 // Calendar years (Jan-Dec), most recent first
 const CALENDAR_YEARS = [2027, 2026, 2025, 2024, 2023, 2022];
 
-function getAbbreviatedTitle(title: string): string {
-  const abbreviations: Record<string, string> = {
-    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM WatsonX",
+// Clean, short titles - no subtitles needed, type tag shows context
+function getDisplayTitle(item: TimelineItem): string {
+  const titles: Record<string, string> = {
+    // Work
+    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM",
+    "RBC Data Scientist": "RBC",
+    "RBC Data Analyst": "RBC",
+    // Research/Projects
     "Quantization x Interpretability": "Quant x Interp",
     "Slay the Spire Watcher Solver": "StS Solver",
     "Linear Algebra Learning Platform": "Lin Alg Site",
@@ -30,23 +35,23 @@ function getAbbreviatedTitle(title: string): string {
     "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
     "Chrono - Linguistic Pattern Forecasting": "Chrono",
     "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
-    "QUANTT - Options Pricing Model": "Options",
-    "Teaching Assistant: Linear Algebra I": "TA Lin Alg",
-    "Consultant → Project Manager": "QSC",
-    "Campus Ambassador": "RBC Amb",
-    "Analyst → Project Manager": "QUANTT PM",
+    "QUANTT - Options Pricing Model": "QUANTT",
     "Sol - Sunrise Alarm Clock": "Sol",
     "NYT Games Solver": "NYT Games",
-    "RBC Data Scientist": "RBC DS",
-    "RBC Data Analyst": "RBC DA",
-    // Education items
-    "Queen's - Engineering": "Queen's",
-    "Queen's - Applied Math & Comp Eng": "Queen's",
+    // Leadership
+    "Teaching Assistant: Linear Algebra I": "Lin Alg TA",
+    "Consultant → Project Manager": "QSC",
+    "Campus Ambassador": "RBC Ambassador",
+    "Analyst → Project Manager": "QUANTT",
     "Future Blue President": "FUBU President",
     "Future Blue Member": "Future Blue",
-    "Anthropic Fellow": "Anthropic",
+    // Education
+    "Queen's - Engineering": "Queen's",
+    "Queen's - Applied Math & Comp Eng": "Queen's",
+    // Special
+    "Anthropic Fellow": "Anthropic Fellow 🤞",
   };
-  return abbreviations[title] || title;
+  return titles[item.title] || item.title;
 }
 
 function itemOverlapsYear(item: TimelineItem, yearStart: Date, yearEnd: Date): boolean {
@@ -116,25 +121,37 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
   const processedItems: ProcessedItem[] = [];
 
   for (const item of items) {
-    // Skip the full Queen's span - we'll add year-specific ones
+    // Skip the full Queen's span and QUANTT analyst (was 2 years, should be shorter)
     if (item.id === "edu-queens") continue;
+    // Skip items we'll handle specially
+    if (item.id === "project-quantt-analyst") continue;
     processedItems.push(item);
   }
 
+  // Add QUANTT with correct duration (just fall semester 2023)
+  processedItems.push({
+    id: "quantt-analyst",
+    title: "QUANTT - Options Pricing Model",
+    type: "project",
+    startDate: new Date(2023, 8, 1), // Sep 2023
+    endDate: new Date(2023, 11, 15), // Dec 2023
+    hasDetailPage: true,
+    slug: "quantt-analyst",
+  });
+
   // Add Queen's education by academic year (only during school: Sep-Apr)
   const queensYears = [
-    { id: "queens-1", title: "Queen's - Engineering", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30), note: "1st Year" },
-    { id: "queens-2", title: "Queen's - Applied Math & Comp Eng", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30), note: "2nd Year" },
-    { id: "queens-3", title: "Queen's - Applied Math & Comp Eng", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30), note: "3rd Year" },
+    { id: "queens-1", title: "Queen's - Engineering", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30) },
+    { id: "queens-2", title: "Queen's - Applied Math & Comp Eng", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30) },
+    { id: "queens-3", title: "Queen's - Applied Math & Comp Eng", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30) },
     // Gap year 2025-26 for IBM
-    { id: "queens-4", title: "Queen's - Applied Math & Comp Eng", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30), note: "4th Year" },
+    { id: "queens-4", title: "Queen's - Applied Math & Comp Eng", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30) },
   ];
 
   for (const q of queensYears) {
     processedItems.push({
       id: q.id,
       title: q.title,
-      subtitle: q.note,
       type: "education",
       startDate: q.start,
       endDate: q.end,
@@ -146,7 +163,6 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
   processedItems.push({
     id: "anthropic-fellow",
     title: "Anthropic Fellow",
-    subtitle: "Summer 2026 🤞",
     type: "work",
     startDate: new Date(2026, 4, 1), // May 2026
     endDate: new Date(2026, 7, 31), // Aug 2026
@@ -163,37 +179,37 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
         const yearItems = processedItems.filter(item => itemOverlapsYear(item, yearStart, yearEnd));
         const rows = assignRows(processedItems, yearStart, yearEnd);
         const numRows = yearItems.length > 0 ? Math.max(...yearItems.map(i => rows.get(i.id) || 0)) + 1 : 1;
-        const rowHeight = 44;
-        const timelineHeight = Math.max(numRows * rowHeight + 16, 70);
+        const rowHeight = 36;
+        const timelineHeight = Math.max(numRows * rowHeight + 12, 60);
 
         return (
           <div key={year} className="relative">
             {/* Year row */}
             <div className="flex items-stretch">
               {/* Year label column */}
-              <div className="w-16 shrink-0 flex flex-col items-center">
+              <div className="w-14 shrink-0 flex flex-col items-center">
                 {yearIndex > 0 && (
-                  <div className="w-0.5 h-3 bg-[var(--border)]" />
+                  <div className="w-0.5 h-2 bg-[var(--border)]" />
                 )}
-                <div className="bg-[var(--ink)] text-[var(--paper)] px-2 py-1.5 text-center">
-                  <div className="text-base font-mono font-bold">{year}</div>
+                <div className="bg-[var(--ink)] text-[var(--paper)] px-2 py-1 text-center">
+                  <div className="text-sm font-mono font-bold">{year}</div>
                 </div>
                 {yearIndex < CALENDAR_YEARS.length - 1 && (
-                  <div className="w-0.5 flex-1 bg-[var(--border)] min-h-[16px]" />
+                  <div className="w-0.5 flex-1 bg-[var(--border)] min-h-[12px]" />
                 )}
               </div>
 
               {/* Timeline area */}
               <div className="flex-1 border border-[var(--border)] border-l-0 bg-[var(--paper)]">
                 {/* Month markers */}
-                <div className="relative h-5 border-b border-[var(--border)] flex">
+                <div className="relative h-4 border-b border-[var(--border)] flex">
                   {MONTHS.map((month, i) => {
                     const isSummer = i >= 4 && i <= 7; // May-Aug
                     return (
                       <div
                         key={i}
-                        className={`flex-1 text-center text-[9px] font-mono leading-5 border-r border-[var(--border)] last:border-r-0 ${
-                          isSummer ? "bg-amber-50 text-amber-700" : "text-[var(--muted)]"
+                        className={`flex-1 text-center text-[8px] font-mono leading-4 border-r border-[var(--border)] last:border-r-0 ${
+                          isSummer ? "bg-amber-50 text-amber-600" : "text-[var(--muted)]"
                         }`}
                       >
                         {month}
@@ -211,7 +227,7 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
                       return (
                         <div
                           key={i}
-                          className={`flex-1 border-r border-[var(--border)] last:border-r-0 opacity-50 ${
+                          className={`flex-1 border-r border-[var(--border)] last:border-r-0 opacity-40 ${
                             isSummer ? "bg-amber-50/50" : ""
                           }`}
                         />
@@ -225,37 +241,28 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
                     const row = rows.get(item.id) || 0;
                     const style = typeStyles[item.type];
                     const hasLink = item.hasDetailPage && item.slug;
-                    const width = Math.max(endPct - startPct, 3);
+                    const width = Math.max(endPct - startPct, 2);
                     const isHopeful = (item as ProcessedItem).isHopeful;
 
                     const content = (
                       <div
-                        className={`absolute flex items-center gap-1 px-1.5 py-0.5 text-[11px] border bg-[var(--paper)] overflow-hidden whitespace-nowrap ${
+                        className={`absolute flex items-center gap-1 px-1.5 text-[10px] border bg-[var(--paper)] overflow-hidden whitespace-nowrap ${
                           hasLink ? "hover:border-[var(--accent)] cursor-pointer" : ""
                         } ${isHopeful ? "border-dashed opacity-70" : ""}`}
                         style={{
                           left: `${startPct}%`,
                           width: `${width}%`,
-                          top: row * rowHeight + 6,
-                          height: rowHeight - 10,
+                          top: row * rowHeight + 4,
+                          height: rowHeight - 8,
                           borderLeftWidth: "3px",
                           borderLeftColor: style.color,
                           borderLeftStyle: isHopeful ? "dashed" : "solid",
-                          minWidth: "50px",
+                          minWidth: "40px",
                         }}
                       >
-                        <span
-                          className="shrink-0 w-1.5 h-1.5 rounded-full"
-                          style={{ backgroundColor: style.color }}
-                        />
                         <span className="font-medium truncate">
-                          {getAbbreviatedTitle(item.title)}
+                          {getDisplayTitle(item)}
                         </span>
-                        {item.subtitle && width > 12 && (
-                          <span className="text-[var(--muted)] truncate text-[10px]">
-                            {item.subtitle}
-                          </span>
-                        )}
                       </div>
                     );
 
@@ -297,20 +304,16 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
       })}
 
       {/* Legend */}
-      <div className="pt-4 flex flex-wrap gap-3 text-[10px]">
+      <div className="pt-3 flex flex-wrap gap-3 text-[9px]">
         {Object.entries(typeStyles).map(([type, { color, label }]) => (
           <div key={type} className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: color }} />
+            <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: color }} />
             <span className="text-[var(--muted)]">{label}</span>
           </div>
         ))}
         <div className="flex items-center gap-1 ml-2 pl-2 border-l border-[var(--border)]">
-          <span className="w-2.5 h-2.5 bg-amber-100 border border-amber-300" />
+          <span className="w-2 h-2 bg-amber-100 border border-amber-200" />
           <span className="text-[var(--muted)]">Summer</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-4 h-2.5 border border-dashed border-[var(--muted)] opacity-70" />
-          <span className="text-[var(--muted)]">Hopeful 🤞</span>
         </div>
       </div>
     </div>

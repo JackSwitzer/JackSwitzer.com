@@ -1,147 +1,122 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import Image from 'next/image';
 
-// Dynamically import HTMLFlipBook to avoid SSR issues
-const HTMLFlipBook = dynamic(() => import('react-pageflip').then(mod => mod.default), {
-  ssr: false,
-  loading: () => (
-    <div className="w-[300px] h-[400px] bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse flex items-center justify-center">
-      <span className="text-neutral-400">Loading...</span>
-    </div>
-  ),
-});
-
-// Hard cover page (front/back)
-const CoverPage = React.forwardRef<HTMLDivElement, { src: string; alt: string }>(
-  ({ src, alt }, ref) => (
-    <div ref={ref} className="overflow-hidden" data-density="hard">
-      <div className="relative w-full h-full">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-    </div>
-  )
-);
-CoverPage.displayName = 'CoverPage';
-
-// Soft inside page
-const InsidePage = React.forwardRef<HTMLDivElement, { src: string; alt: string }>(
-  ({ src, alt }, ref) => (
-    <div ref={ref} className="bg-neutral-50 overflow-hidden" data-density="soft">
-      <div className="relative w-full h-full">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-    </div>
-  )
-);
-InsidePage.displayName = 'InsidePage';
-
 export function Card3D({ className = '' }: { className?: string }) {
-  const bookRef = useRef<any>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [view, setView] = useState<'front' | 'inside' | 'back'>('front');
+  const [isFlipping, setIsFlipping] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const goNext = () => {
-    bookRef.current?.pageFlip()?.flipNext();
+  const flipTo = (next: 'front' | 'inside' | 'back') => {
+    if (isFlipping || next === view) return;
+    setIsFlipping(true);
+    setTimeout(() => {
+      setView(next);
+      setTimeout(() => setIsFlipping(false), 300);
+    }, 300);
   };
 
-  const goPrev = () => {
-    bookRef.current?.pageFlip()?.flipPrev();
+  const handleClick = () => {
+    if (view === 'front') flipTo('inside');
+    else if (view === 'inside') flipTo('back');
+    else flipTo('front');
   };
-
-  if (!isClient) {
-    return (
-      <div className="w-[300px] h-[400px] bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse flex items-center justify-center">
-        <span className="text-neutral-400">Loading...</span>
-      </div>
-    );
-  }
 
   return (
     <div className={`flex flex-col items-center gap-6 ${className}`}>
-      {/* Flipbook container */}
-      <div className="rounded-lg overflow-hidden shadow-2xl">
-        {/* @ts-ignore */}
-        <HTMLFlipBook
-          ref={bookRef}
-          width={300}
-          height={400}
-          size="fixed"
-          minWidth={280}
-          maxWidth={400}
-          minHeight={350}
-          maxHeight={500}
-          showCover={true}
-          mobileScrollSupport={false}
-          flippingTime={600}
-          useMouseEvents={true}
-          swipeDistance={30}
-          clickEventForward={true}
-          usePortrait={false}
-          startZIndex={0}
-          autoSize={false}
-          maxShadowOpacity={0.4}
-          drawShadow={true}
-          showPageCorners={true}
-          disableFlipByClick={false}
+      {/* Card container with perspective */}
+      <div
+        style={{ perspective: '1000px' }}
+        className="transition-all duration-500 ease-in-out"
+      >
+        {/* Card */}
+        <div
+          className="relative cursor-pointer transition-all duration-500 ease-in-out"
+          style={{
+            width: view === 'inside' ? '500px' : '260px',
+            height: '360px',
+            maxWidth: '90vw',
+            transformStyle: 'preserve-3d',
+            transform: isFlipping ? 'rotateY(90deg)' : 'rotateY(0deg)',
+            transition: 'transform 0.3s ease-in-out, width 0.5s ease-in-out',
+          }}
+          onClick={handleClick}
         >
           {/* Front Cover */}
-          <CoverPage src="/card-images/card_cover.png" alt="Switzer Theorem - Front Cover" />
+          {view === 'front' && (
+            <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl">
+              <Image
+                src="/card-images/card_cover.png"
+                alt="Switzer Theorem - Front Cover"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
 
-          {/* Inside Left */}
-          <InsidePage src="/card-images/card_inside_left.png" alt="Student Messages - Left" />
-
-          {/* Inside Right */}
-          <InsidePage src="/card-images/card_inside_right.png" alt="Student Messages - Right" />
+          {/* Inside Spread */}
+          {view === 'inside' && (
+            <div className="absolute inset-0 flex gap-0.5">
+              <div className="relative flex-1 rounded-l-lg overflow-hidden shadow-lg">
+                <Image
+                  src="/card-images/card_inside_left.png"
+                  alt="Student messages - left side"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="relative flex-1 rounded-r-lg overflow-hidden shadow-lg">
+                <Image
+                  src="/card-images/card_inside_right.png"
+                  alt="Student messages - right side"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          )}
 
           {/* Back Cover */}
-          <CoverPage src="/card-images/card_back.png" alt="More Messages - Back Cover" />
-        </HTMLFlipBook>
+          {view === 'back' && (
+            <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl">
+              <Image
+                src="/card-images/card_back.png"
+                alt="More student messages - Back Cover"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={goPrev}
-          className="px-4 py-2 text-sm font-medium rounded-lg
-                     bg-neutral-100 dark:bg-neutral-800
-                     hover:bg-neutral-200 dark:hover:bg-neutral-700
-                     transition-colors"
-          aria-label="Previous page"
-        >
-          ← Prev
-        </button>
-        <span className="text-xs text-neutral-500 dark:text-neutral-400">
-          Click corners to flip
-        </span>
-        <button
-          onClick={goNext}
-          className="px-4 py-2 text-sm font-medium rounded-lg
-                     bg-neutral-100 dark:bg-neutral-800
-                     hover:bg-neutral-200 dark:hover:bg-neutral-700
-                     transition-colors"
-          aria-label="Next page"
-        >
-          Next →
-        </button>
+      {/* Page indicator dots */}
+      <div className="flex gap-2">
+        {(['front', 'inside', 'back'] as const).map((v) => (
+          <button
+            key={v}
+            onClick={() => flipTo(v)}
+            disabled={isFlipping}
+            className={`w-2.5 h-2.5 rounded-full transition-all ${
+              view === v
+                ? 'bg-neutral-800 dark:bg-neutral-200 scale-110'
+                : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500'
+            }`}
+            aria-label={`View ${v}`}
+          />
+        ))}
       </div>
+
+      {/* Label */}
+      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+        {view === 'front' && 'Front Cover — Click to open'}
+        {view === 'inside' && 'Inside — Click to flip'}
+        {view === 'back' && 'Back Cover — Click to restart'}
+      </p>
     </div>
   );
 }

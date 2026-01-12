@@ -1,16 +1,18 @@
 ---
-title: "MTHE393 Control Systems - Black Box Identification"
+title: "Autonomous Ship Stabilization - Black Box System Identification"
 projectType: school
 technologies:
   - MATLAB
   - Simulink
   - Control Theory
   - System Identification
+  - Signal Processing
 tags:
   - control-systems
   - transfer-functions
   - pid
   - system-identification
+  - bode-plots
 github:
   repo: MTHE393
   account: JackSwitzerSchool
@@ -19,41 +21,82 @@ visible: true
 status: complete
 period: "Jan 2025 - Apr 2025"
 accomplishments:
-  - "Deconstructed black-box systems to identify transfer functions through experimental system identification"
-  - "Designed stable control systems using MATLAB/Simulink"
-  - "Implemented PID controllers with tuning for optimal transient response"
-summary: "Analyzed unknown dynamic systems through experimental identification and designed stable control systems using MATLAB/Simulink."
+  - "Reverse-engineered unknown black-box system to derive transfer function from empirical frequency response data"
+  - "Designed PID controller with feedforward compensation exceeding all performance specs (0.3s rise time, <1% overshoot)"
+  - "Developed signal processing pipeline averaging 20-100 trials to extract clean responses from noisy data"
+  - "Achieved A+ as primary technical contributor in 4-person team"
+summary: "Reverse-engineered an unknown dynamical system for autonomous ship roll stabilization, deriving transfer functions from empirical Bode plots and designing a PID controller that exceeded all performance specifications."
 ---
 
-# MTHE393 Control Systems - Black Box Identification
+# Autonomous Ship Stabilization - Black Box System Identification
 
-Course project for MTHE393 at Queen's University focused on system identification and control system design.
+Course project for MTHE393 at Queen's University. Given an unknown "black-box" dynamical system, the objective was to reverse-engineer its transfer function and design a controller meeting strict performance targets.
 
-## Project Overview
+**Grade: A+ | Role: Primary technical contributor**
 
-Given unknown "black box" dynamic systems, the goal was to:
-1. Identify the transfer function through experimental methods
-2. Design a stable control system
-3. Implement and tune PID controllers for optimal performance
+## Problem Context
+
+Ships experience roll motion in rough waters, causing passenger discomfort, cargo instability, and increased fuel consumption. The goal was to design an autonomous stabilization system using fin stabilizer actuation controlled by gyroscopic roll angle sensors.
 
 ## Technical Approach
 
-### System Identification
-- Applied step response and frequency response methods to characterize unknown systems
-- Used MATLAB to fit experimental data to transfer function models
-- Validated models against actual system behavior
+### 1. LTI System Validation
 
-### Controller Design
-- Designed PID controllers based on identified system dynamics
-- Used root locus and Bode plot techniques for controller tuning
-- Optimized for transient response characteristics (overshoot, settling time)
+Before attempting identification, rigorously validated the black-box was Linear Time-Invariant:
 
-### Implementation
-- Built simulations in Simulink to verify controller performance
-- Compared theoretical predictions with experimental results
+- **Homogeneity**: Verified 2 × Output(sin(t)) = Output(2·sin(t))
+- **Superposition**: Verified Output(sin(t) + cos(10t)) = Output(sin(t)) + Output(cos(10t))
+- **Time-Invariance**: Confirmed identical responses under time shifts
 
-## Technologies
+### 2. Signal Processing & Noise Removal
 
-- **MATLAB**: Numerical analysis and system modeling
-- **Simulink**: Block diagram simulation
-- **Control Toolbox**: Transfer function analysis and controller design
+The black-box produced noisy outputs requiring sophisticated denoising:
+
+- Evaluated low-pass, high-pass, Gaussian, Chebyshev, and moving-average filters
+- Final approach: Pointwise averaging of 20-100 signals per frequency
+- Statistical analysis confirmed zero-mean Gaussian noise (μ ≈ 0.0015)
+
+### 3. Bode Plot Construction
+
+Systematic frequency response characterization:
+
+- Collected data across frequencies from 10⁻³ to 10⁴ Hz
+- Averaged 20 signals over 50 trials per frequency point
+- Used 6 periods per signal to ensure steady-state response
+- Derived transfer function coefficients through RMSE optimization
+
+### 4. Controller Design
+
+Designed PID controller with feedforward compensation:
+
+- Added feedforward gain (L=4010) to move RHP zeros to LHP for stability
+- Tuned for optimal transient response characteristics
+
+## Results
+
+| Metric | Target | Achieved |
+|--------|--------|----------|
+| Rise Time | 1 s | 0.328 s |
+| Overshoot | 1.9 | 1.005 |
+| Settling Time | 3 s | 0.58-1.37 s |
+| Steady State Error | ±0.05 | 0.002 |
+
+All performance specifications met or exceeded with significant margins.
+
+## Skills Demonstrated
+
+- **System Identification**: Reverse-engineering unknown systems from I/O data
+- **Signal Processing**: Statistical averaging, filter design, noise characterization
+- **Frequency Domain Analysis**: Empirical Bode plot construction
+- **Control Theory**: LTI validation, PID tuning, pole-zero stability analysis
+- **MATLAB/Simulink**: Simulation, optimization, data visualization
+
+## Relevance to AI/ML
+
+This project demonstrates skills directly transferable to AI systems work:
+- **System identification** parallels understanding model behavior from observations
+- **Empirical validation methodologies** apply to ML model evaluation
+- **Feedback control design** relates to RLHF and alignment techniques
+- **Rigorous experimental protocols** for characterizing complex systems
+
+[View Presentation](/projects/MTHE393-Group2-FinalPresentation.pptx)

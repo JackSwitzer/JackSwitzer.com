@@ -2,15 +2,20 @@
 
 ## High Priority
 
+### Content Updates Needed
+- [ ] Qwen SAE interpretability: Add MDX content when preliminary findings are ready to share
+- [ ] Chrono (QHacks 2025): Check repo for specific ML technique used, add demo link
+- [ ] MTHE393: Expand MDX with details from MTHE393-Group2-FinalPresentation.pptx
+
 ### Resume
-- [ ] Review and update resume content
-- [ ] Ensure all dates are current
-- [ ] Add recent projects/experience
+- [x] Review and update resume content (IBM, RBC bullets updated)
+- [x] Ensure all dates are current
+- [x] Add recent projects/experience
 - [ ] Check formatting consistency
 
 ### Content Cleanup
-- [ ] Review all project descriptions
-- [ ] Update project statuses (active/complete/wip)
+- [x] Review all project descriptions
+- [x] Update project statuses (active/complete/wip)
 - [ ] Check for broken links
 - [ ] Verify all images load correctly
 

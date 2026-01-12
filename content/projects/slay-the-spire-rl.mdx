@@ -13,40 +13,38 @@ tags:
 github:
   repo: StSRLSolver
   account: jackswitzer
-featured: true
-visible: true
-status: active
+featured: false
+visible: false
+status: paused
 period: "2025"
 accomplishments:
-  - "Developing a reinforcement learning agent targeting >96% win rate on Slay the Spire Watcher at Ascension 20 (highest difficulty)"
-  - "Trained behavioral cloning model on 77 million official game runs using self-play training loop"
-  - "Engineered 44 high-level strategic features including kill probability calculations, stance mechanics, and block efficiency predictions"
-summary: "A reinforcement learning agent designed to achieve exceptional performance in Slay the Spire, targeting >96% win rate at the highest difficulty."
+  - "Developing RL agent targeting 100% win rate on Slay the Spire Watcher at Ascension 20 (top players achieve ~90%)"
+  - "Designing behavioral cloning approach using official game run data"
+  - "Engineering high-level strategic features including kill probability calculations"
+summary: "A reinforcement learning agent for Slay the Spire - goal is to train a model that can beat every single seed at the highest difficulty."
 ---
 
 # StSRLSolver
 
-StSRLSolver is an artificial intelligence agent designed to achieve exceptional performance in the roguelike deck-building game Slay the Spire, specifically targeting greater than 96% win rate on the Watcher character at Ascension 20 (the highest difficulty level).
+An RL agent for Slay the Spire with an ambitious goal: beat every single seed at the highest difficulty (Ascension 20). Top human players achieve ~90% win rates, but no unlosable seeds have been proven - the question is whether ML can find a path to 100%.
+
+## Thesis
+
+The game has no proven unlosable seeds. If a model can learn to always win, it either proves perfect play exists or the model found strategies humans haven't discovered.
 
 ## Technical Approach
 
-### Strategic Decision-Making
-The agent pre-computes 44 high-level strategic features rather than using raw card data. This includes:
-- Kill probability calculations per enemy and for lethal lines
+### Strategic Features
+Engineering high-level strategic features rather than raw card data:
+- Kill probability calculations per enemy
 - Stance-specific mechanics (Wrath doubles damage)
-- Block efficiency and incoming damage predictions
+- Block efficiency and damage predictions
 
 ### Learning Architecture
-- **Line Evaluation Module**: Simulates card play sequences
-- **Combat Calculator**: Handles pre-computation of battle math
-- **Enemy Database**: Maintains difficulty assessments
-- **Neural Network**: Implements behavioral cloning approach
+- Behavioral cloning on official game run data
+- Neural network for decision evaluation
+- Modular system for training and inference
 
-### Training Methodology
-- Self-play training loop for continuous improvement
-- Behavioral cloning using 77 million official game runs (2018-2020 dataset)
-- Modular system supporting both active agent mode and training mode
+## Status
 
-## Current Status
-
-This project is actively in development, with the goal of achieving a 96%+ win rate - an exceptionally high performance metric for this difficulty tier that requires sophisticated strategy implementation beyond basic heuristics.
+Currently paused - will resume when time permits.

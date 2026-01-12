@@ -131,47 +131,57 @@ function MessageCard({
 }
 
 export function Card3D({ className = '' }: { className?: string }) {
-  const [view, setView] = useState<'front' | 'inside' | 'back'>('front');
-  const [isFlipping, setIsFlipping] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0); // 0=front, 1=inside, 2=back
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
 
-  const flipTo = (next: 'front' | 'inside' | 'back') => {
-    if (isFlipping || next === view) return;
-    setIsFlipping(true);
-    setTimeout(() => {
-      setView(next);
-      setTimeout(() => setIsFlipping(false), 300);
-    }, 300);
+  const goToPage = (page: number) => {
+    if (isAnimating || page === currentPage || page < 0 || page > 2) return;
+    setIsAnimating(true);
+    setCurrentPage(page);
+    setTimeout(() => setIsAnimating(false), 600);
   };
 
-  const handleClick = () => {
-    if (view === 'front') flipTo('inside');
-    else if (view === 'inside') flipTo('back');
-    else flipTo('front');
-  };
+  const nextPage = () => goToPage(currentPage + 1);
+  const prevPage = () => goToPage(currentPage - 1);
+
+  const pageLabels = ['Front Cover', 'Inside', 'Back Cover'];
 
   return (
-    <div className={`flex flex-col items-center gap-6 ${className}`}>
-      {/* Card container with perspective */}
+    <div className={`flex flex-col items-center gap-4 ${className}`}>
+      {/* Book container */}
       <div
-        style={{ perspective: '1000px' }}
-        className="transition-all duration-500 ease-in-out"
+        className="relative"
+        style={{ perspective: '2000px' }}
       >
-        {/* Card */}
+        {/* Book wrapper */}
         <div
-          className="relative cursor-pointer transition-all duration-500 ease-in-out"
+          className="relative cursor-pointer"
           style={{
-            width: view === 'inside' ? '600px' : '280px',
-            height: '400px',
+            width: currentPage === 1 ? '580px' : '280px',
+            height: '380px',
             maxWidth: '95vw',
-            transformStyle: 'preserve-3d',
-            transform: isFlipping ? 'rotateY(90deg)' : 'rotateY(0deg)',
-            transition: 'transform 0.3s ease-in-out, width 0.5s ease-in-out',
+            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
-          onClick={handleClick}
+          onClick={() => {
+            if (currentPage < 2) nextPage();
+            else goToPage(0);
+          }}
         >
-          {/* Front Cover - Keep as image */}
-          {view === 'front' && (
-            <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl">
+          {/* Front Cover */}
+          <div
+            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
+            style={{
+              transformStyle: 'preserve-3d',
+              transformOrigin: 'left center',
+              transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s',
+              transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+              opacity: currentPage >= 1 ? 0 : 1,
+              pointerEvents: currentPage >= 1 ? 'none' : 'auto',
+              backfaceVisibility: 'hidden',
+            }}
+          >
+            {showOriginal ? (
               <Image
                 src="/card-images/card_cover.png"
                 alt="Switzer Theorem - Front Cover"
@@ -179,79 +189,168 @@ export function Card3D({ className = '' }: { className?: string }) {
                 className="object-cover"
                 priority
               />
-            </div>
-          )}
+            ) : (
+              <Image
+                src="/card-images/card_cover_clean.png"
+                alt="Switzer Theorem - Front Cover"
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
+          </div>
 
-          {/* Inside Spread - Styled HTML */}
-          {view === 'inside' && (
-            <div className="absolute inset-0 flex rounded-lg overflow-hidden shadow-xl">
-              {/* Left page */}
-              <div className="flex-1 bg-amber-50 dark:bg-amber-950/30 p-3 border-r border-amber-200 dark:border-amber-800 overflow-hidden">
-                <div className="h-full flex flex-col gap-1">
-                  {insideLeftMessages.map((msg, i) => (
-                    <MessageCard
-                      key={i}
-                      {...msg}
-                      rotate={[-1, 0.5, -0.5][i]}
-                    />
-                  ))}
-                </div>
-              </div>
-              {/* Right page */}
-              <div className="flex-1 bg-amber-50 dark:bg-amber-950/30 p-3 overflow-hidden">
-                <div className="h-full grid grid-cols-2 gap-1">
-                  {insideRightMessages.map((msg, i) => (
-                    <MessageCard
-                      key={i}
-                      {...msg}
-                      rotate={[1, -1, 0.5, -0.5, 1, -1][i]}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Back Cover - Styled HTML */}
-          {view === 'back' && (
-            <div className="absolute inset-0 rounded-lg overflow-hidden shadow-xl bg-amber-50 dark:bg-amber-950/30 p-4">
-              <div className="h-full flex flex-col gap-2">
-                {backMessages.map((msg, i) => (
-                  <MessageCard
-                    key={i}
-                    {...msg}
-                    rotate={[-0.5, 0.5, -1][i]}
+          {/* Inside Spread */}
+          <div
+            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
+            style={{
+              transformStyle: 'preserve-3d',
+              transition: 'opacity 0.3s ease-in-out',
+              opacity: currentPage === 1 ? 1 : 0,
+              pointerEvents: currentPage === 1 ? 'auto' : 'none',
+            }}
+          >
+            {showOriginal ? (
+              <div className="absolute inset-0 flex">
+                <div className="relative flex-1">
+                  <Image
+                    src="/card-images/card_inside_left.png"
+                    alt="Student messages - left side"
+                    fill
+                    className="object-cover"
                   />
-                ))}
+                </div>
+                <div className="relative flex-1">
+                  <Image
+                    src="/card-images/card_inside_right.png"
+                    alt="Student messages - right side"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="absolute inset-0 flex bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40">
+                {/* Left page */}
+                <div className="flex-1 p-3 border-r border-amber-200/50 dark:border-amber-700/30 overflow-hidden">
+                  <div className="h-full flex flex-col gap-1">
+                    {insideLeftMessages.map((msg, i) => (
+                      <MessageCard
+                        key={i}
+                        {...msg}
+                        rotate={[-1, 0.5, -0.5][i]}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Spine shadow */}
+                <div className="w-1 bg-gradient-to-r from-amber-200/50 via-amber-300/30 to-amber-200/50 dark:from-amber-800/30 dark:via-amber-700/20 dark:to-amber-800/30" />
+                {/* Right page */}
+                <div className="flex-1 p-3 overflow-hidden">
+                  <div className="h-full grid grid-cols-2 gap-1">
+                    {insideRightMessages.map((msg, i) => (
+                      <MessageCard
+                        key={i}
+                        {...msg}
+                        rotate={[1, -1, 0.5, -0.5, 1, -1][i]}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Back Cover */}
+          <div
+            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden"
+            style={{
+              transformStyle: 'preserve-3d',
+              transformOrigin: 'right center',
+              transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s',
+              transform: currentPage <= 1 ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              opacity: currentPage === 2 ? 1 : 0,
+              pointerEvents: currentPage === 2 ? 'auto' : 'none',
+              backfaceVisibility: 'hidden',
+            }}
+          >
+            {showOriginal ? (
+              <Image
+                src="/card-images/card_back.png"
+                alt="More student messages - Back Cover"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 p-4">
+                <div className="h-full flex flex-col gap-2">
+                  {backMessages.map((msg, i) => (
+                    <MessageCard
+                      key={i}
+                      {...msg}
+                      rotate={[-0.5, 0.5, -1][i]}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Page indicator dots */}
-      <div className="flex gap-2">
-        {(['front', 'inside', 'back'] as const).map((v) => (
-          <button
-            key={v}
-            onClick={(e) => { e.stopPropagation(); flipTo(v); }}
-            disabled={isFlipping}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              view === v
-                ? 'bg-neutral-800 dark:bg-neutral-200 scale-110'
-                : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500'
-            }`}
-            aria-label={`View ${v}`}
-          />
-        ))}
+      {/* Navigation dots */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={(e) => { e.stopPropagation(); prevPage(); }}
+          disabled={isAnimating || currentPage === 0}
+          className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          aria-label="Previous page"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <div className="flex gap-2">
+          {[0, 1, 2].map((page) => (
+            <button
+              key={page}
+              onClick={(e) => { e.stopPropagation(); goToPage(page); }}
+              disabled={isAnimating}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${
+                currentPage === page
+                  ? 'bg-neutral-800 dark:bg-neutral-200 scale-110'
+                  : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500'
+              }`}
+              aria-label={`Go to ${pageLabels[page]}`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={(e) => { e.stopPropagation(); nextPage(); }}
+          disabled={isAnimating || currentPage === 2}
+          className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          aria-label="Next page"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
-      {/* Label */}
+      {/* Page label */}
       <p className="text-xs text-neutral-500 dark:text-neutral-400">
-        {view === 'front' && 'Front Cover — Click to open'}
-        {view === 'inside' && 'Inside — Click to flip'}
-        {view === 'back' && 'Back Cover — Click to restart'}
+        {pageLabels[currentPage]} — Click to {currentPage < 2 ? 'flip' : 'restart'}
       </p>
+
+      {/* Toggle for original images */}
+      <button
+        onClick={(e) => { e.stopPropagation(); setShowOriginal(!showOriginal); }}
+        className="text-xs text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors underline underline-offset-2"
+      >
+        {showOriginal ? 'Show styled version' : 'View original scanned card'}
+      </button>
     </div>
   );
 }

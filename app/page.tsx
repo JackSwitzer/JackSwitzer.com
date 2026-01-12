@@ -2,6 +2,7 @@ import Link from "next/link";
 import { personal, education, getFeaturedProjects } from "@/lib/data";
 import { Timeline } from "./components/Timeline";
 import { FocusCard } from "./components/FocusCard";
+import { Card3D } from "./components/Card3D";
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
@@ -64,6 +65,12 @@ export default function HomePage() {
           interpretability research. I've shipped projects across ML, web dev, and quant finance—from
           teaching platforms used by 120+ students to trading strategies using neural networks.
         </p>
+      </div>
+
+      {/* Student Card */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">From My Students</h2>
+        <Card3D />
       </div>
 
       {/* Current Focus */}

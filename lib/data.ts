@@ -426,3 +426,197 @@ export function getAllTechnologies() {
   projects.forEach(p => p.technologies.forEach(t => techs.add(t)));
   return Array.from(techs).sort();
 }
+
+// Timeline types and utilities
+export type TimelineType = "work" | "education" | "leadership" | "project" | "hackathon";
+
+export interface TimelineItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  type: TimelineType;
+  startDate: Date;
+  endDate?: Date;
+  hasDetailPage: boolean;
+  slug?: string;
+  summary?: string;
+  technologies?: string[];
+  accomplishments?: string[];
+  // Education-specific
+  institution?: string;
+  gpa?: string;
+  courses?: string[];
+  degree?: string;
+  externalLink?: string;
+}
+
+const monthMap: Record<string, number> = {
+  jan: 0, january: 0,
+  feb: 1, february: 1,
+  mar: 2, march: 2,
+  apr: 3, april: 3,
+  may: 4,
+  jun: 5, june: 5,
+  jul: 6, july: 6,
+  aug: 7, august: 7,
+  sep: 8, september: 8,
+  oct: 9, october: 9,
+  nov: 10, november: 10,
+  dec: 11, december: 11,
+};
+
+function parsePeriodString(period: string): { start: Date; end?: Date } {
+  // Handle formats:
+  // "May 2025 - April 2026" -> { start: Date(2025, 4), end: Date(2026, 3) }
+  // "Jan 2024" -> { start: Date(2024, 0), end: undefined }
+  // "2023-2024" -> { start: Date(2023, 0), end: Date(2024, 11) }
+  // "Dec 2024" -> { start: Date(2024, 11), end: undefined }
+  // "2026" -> { start: Date(2026, 0), end: undefined }
+
+  const normalized = period.toLowerCase().trim();
+
+  // Check for range with " - "
+  if (normalized.includes(" - ")) {
+    const [startPart, endPart] = normalized.split(" - ").map(s => s.trim());
+    return {
+      start: parseDate(startPart),
+      end: parseDate(endPart),
+    };
+  }
+
+  // Check for year range like "2023-2024"
+  const yearRangeMatch = normalized.match(/^(\d{4})-(\d{4})$/);
+  if (yearRangeMatch) {
+    return {
+      start: new Date(parseInt(yearRangeMatch[1]), 0, 1),
+      end: new Date(parseInt(yearRangeMatch[2]), 11, 31),
+    };
+  }
+
+  // Single date or year
+  return { start: parseDate(normalized), end: undefined };
+}
+
+function parseDate(str: string): Date {
+  const normalized = str.toLowerCase().trim();
+
+  // Just a year like "2026"
+  const yearOnly = normalized.match(/^(\d{4})$/);
+  if (yearOnly) {
+    return new Date(parseInt(yearOnly[1]), 0, 1);
+  }
+
+  // Month and year like "May 2025" or "Jan 2024"
+  const monthYear = normalized.match(/^([a-z]+)\s+(\d{4})$/);
+  if (monthYear) {
+    const month = monthMap[monthYear[1]] ?? 0;
+    const year = parseInt(monthYear[2]);
+    return new Date(year, month, 1);
+  }
+
+  // Fallback: try to extract year
+  const yearMatch = normalized.match(/(\d{4})/);
+  if (yearMatch) {
+    return new Date(parseInt(yearMatch[1]), 0, 1);
+  }
+
+  return new Date();
+}
+
+function mapProjectTypeToTimelineType(projectType: Project["type"]): TimelineType {
+  switch (projectType) {
+    case "work": return "work";
+    case "hackathon": return "hackathon";
+    default: return "project";
+  }
+}
+
+export function getTimelineItems(): TimelineItem[] {
+  const items: TimelineItem[] = [];
+  const processedIds = new Set<string>();
+
+  // 1. Add projects (visible only)
+  projects.filter(p => p.visible).forEach(project => {
+    const { start, end } = parsePeriodString(project.period);
+    processedIds.add(project.slug);
+
+    items.push({
+      id: `project-${project.slug}`,
+      title: project.name,
+      subtitle: project.type === "work"
+        ? experience.find(e => e.id === project.slug)?.company || project.type
+        : project.type.charAt(0).toUpperCase() + project.type.slice(1),
+      type: mapProjectTypeToTimelineType(project.type),
+      startDate: start,
+      endDate: end,
+      hasDetailPage: true,
+      slug: project.slug,
+      summary: project.summary,
+      technologies: project.technologies,
+      accomplishments: project.accomplishments,
+    });
+  });
+
+  // 2. Add experiences NOT already in projects
+  experience.forEach(exp => {
+    if (!processedIds.has(exp.id)) {
+      const { start, end } = parsePeriodString(exp.period);
+      items.push({
+        id: `exp-${exp.id}`,
+        title: exp.role,
+        subtitle: exp.company,
+        type: "work",
+        startDate: start,
+        endDate: end,
+        hasDetailPage: false,
+        summary: exp.accomplishments[0],
+        technologies: exp.technologies,
+        accomplishments: exp.accomplishments,
+      });
+    }
+  });
+
+  // 3. Add extracurriculars as leadership
+  extracurriculars.forEach(extra => {
+    const { start, end } = parsePeriodString(extra.period);
+    items.push({
+      id: `extra-${extra.id}`,
+      title: extra.role,
+      subtitle: extra.organization,
+      type: "leadership",
+      startDate: start,
+      endDate: end,
+      hasDetailPage: false,
+      accomplishments: extra.accomplishments,
+      externalLink: extra.link,
+    });
+  });
+
+  // 4. Add education milestones
+  items.push({
+    id: "edu-start",
+    title: "Started University",
+    subtitle: "Queen's University - Math & Computer Engineering",
+    type: "education",
+    startDate: new Date(2022, 8, 1), // Sep 2022
+    hasDetailPage: true,
+    institution: education.institution,
+    degree: education.degree,
+    gpa: education.gpa,
+    courses: education.relevantCourses,
+  });
+
+  items.push({
+    id: "edu-grad",
+    title: "B.ASc. Graduation",
+    subtitle: education.institution,
+    type: "education",
+    startDate: new Date(2027, 4, 1), // May 2027
+    hasDetailPage: true,
+    institution: education.institution,
+    degree: education.degree,
+  });
+
+  // Sort by startDate ascending (2022 -> 2027)
+  return items.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+}

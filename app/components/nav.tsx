@@ -16,8 +16,8 @@ const navItems = {
     name: 'resume',
     order: 2
   },
-  '/nyt-games': {
-    name: 'nyt games',
+  '/timeline': {
+    name: 'timeline',
     order: 3
   }
 }

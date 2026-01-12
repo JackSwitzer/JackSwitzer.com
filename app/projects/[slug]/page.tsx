@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getProjectBySlug, getVisibleProjects } from "@/lib/data";
+import { getProjectContent, parseMarkdownToElements } from "@/lib/mdx";
 import { notFound } from "next/navigation";
 import { Card3D } from "@/app/components/Card3D";
+import { MarkdownContent } from "@/app/components/MarkdownContent";
 
 export function generateStaticParams() {
   const projects = getVisibleProjects();
@@ -16,6 +18,10 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
   if (!project) {
     notFound();
   }
+
+  // Get MDX content for this project
+  const mdxContent = getProjectContent(params.slug);
+  const contentElements = mdxContent ? parseMarkdownToElements(mdxContent) : null;
 
   return (
     <section>
@@ -70,8 +76,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       </div>
 
-      {/* Summary */}
-      {project.summary && (
+      {/* Summary - only show if no MDX content */}
+      {!contentElements && project.summary && (
         <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-6">
           {project.summary}
         </p>
@@ -107,33 +113,43 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         )}
       </div>
 
-      {/* Technologies */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-3">Technologies</h2>
-        <div className="flex flex-wrap gap-2">
-          {project.technologies.map((tech: string) => (
-            <span
-              key={tech}
-              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
-            >
-              {tech}
-            </span>
-          ))}
+      {/* MDX Content - if available */}
+      {contentElements && contentElements.length > 0 ? (
+        <div className="mb-8">
+          <MarkdownContent elements={contentElements} />
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Fallback to structured content */}
+          {/* Technologies */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-3">Technologies</h2>
+            <div className="flex flex-wrap gap-2">
+              {project.technologies.map((tech: string) => (
+                <span
+                  key={tech}
+                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
 
-      {/* Accomplishments */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-3">Key Accomplishments</h2>
-        <ul className="space-y-3">
-          {project.accomplishments.map((acc: string, i: number) => (
-            <li key={i} className="flex gap-3">
-              <span className="text-green-500 mt-1">✓</span>
-              <span className="text-neutral-700 dark:text-neutral-300">{acc}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+          {/* Accomplishments */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-3">Key Accomplishments</h2>
+            <ul className="space-y-3">
+              {project.accomplishments.map((acc: string, i: number) => (
+                <li key={i} className="flex gap-3">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span className="text-neutral-700 dark:text-neutral-300">{acc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
 
       {/* Student Card - only for linear algebra project */}
       {project.slug === "linear-algebra-website" && (
@@ -147,8 +163,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       )}
 
-      {/* Tags */}
-      {project.tags && project.tags.length > 0 && (
+      {/* Tags - only show if no MDX content */}
+      {!contentElements && project.tags && project.tags.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-3">Tags</h2>
           <div className="flex flex-wrap gap-2">

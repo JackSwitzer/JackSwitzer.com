@@ -128,6 +128,10 @@ export const extracurriculars = [
       "Project Manager (3rd year): Managed 2 teams developing quantitative trading strategies using ML and NLP",
       "Taught data science and machine learning sessions to 60+ club members",
     ],
+    github: [
+      { repo: "Quantt-5", account: "JackSwitzerSchool" },
+      { repo: "Quantt-7", account: "JackSwitzerSchool" },
+    ],
   },
 ];
 

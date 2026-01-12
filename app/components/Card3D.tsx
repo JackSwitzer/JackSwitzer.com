@@ -209,7 +209,7 @@ export function Card3D({ className = '' }: { className?: string }) {
           onClick={nextPage}
         >
           {showOriginal ? (
-            <Image src="/card-images/card_cover.png" alt="Front Cover" fill className="object-cover" priority />
+            <Image src="/card-images/card_cover_processed.png" alt="Front Cover" fill className="object-cover" priority />
           ) : (
             <Image src="/card-images/card_cover_clean.png" alt="Front Cover" fill className="object-cover" priority />
           )}
@@ -231,7 +231,7 @@ export function Card3D({ className = '' }: { className?: string }) {
             style={{ width: pageWidth, height: pageHeight, left: 0 }}
           >
             {showOriginal ? (
-              <Image src="/card-images/card_inside_left.png" alt="Inside left" fill className="object-cover" />
+              <Image src="/card-images/card_inside_left_processed.png" alt="Inside left" fill className="object-cover" />
             ) : (
               <InsideLeftContent />
             )}
@@ -241,7 +241,7 @@ export function Card3D({ className = '' }: { className?: string }) {
             style={{ width: pageWidth, height: pageHeight, right: 0 }}
           >
             {showOriginal ? (
-              <Image src="/card-images/card_inside_right.png" alt="Inside right" fill className="object-cover" />
+              <Image src="/card-images/card_inside_right_processed.png" alt="Inside right" fill className="object-cover" />
             ) : (
               <InsideRightContent />
             )}
@@ -260,7 +260,7 @@ export function Card3D({ className = '' }: { className?: string }) {
           onClick={() => goToPage(0)}
         >
           {showOriginal ? (
-            <Image src="/card-images/card_back.png" alt="Back cover" fill className="object-cover" />
+            <Image src="/card-images/card_back_processed.png" alt="Back cover" fill className="object-cover" />
           ) : (
             <BackContent />
           )}

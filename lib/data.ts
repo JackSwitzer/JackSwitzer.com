@@ -86,12 +86,22 @@ export const experience = [
 
 export const extracurriculars = [
   {
-    id: "future-blue",
-    role: "Member → President, Future Blue Intern Council",
+    id: "future-blue-member",
+    role: "Future Blue Member",
     organization: "IBM",
-    period: "May 2025 - Apr 2026",
+    period: "May 2025 - Jul 2025",
     accomplishments: [
-      "President (Jul 2025 - Jan 2026): Led IBM's intern student council",
+      "Member of IBM's intern student council",
+    ],
+    link: "https://www.linkedin.com/posts/ashwinbalu_ibmcanada-internshipexperience-leadership-activity-7379305095907299328-ifXj",
+  },
+  {
+    id: "future-blue-president",
+    role: "Future Blue President",
+    organization: "IBM",
+    period: "Jul 2025 - Jan 2026",
+    accomplishments: [
+      "Led IBM's intern student council as President",
       "Organized 3 major networking events including meetings with IBM Canada President and 2 VPs",
       "Planned and executed holiday party and social events for intern community",
     ],
@@ -235,7 +245,7 @@ export const projects: Project[] = [
     slug: "qhacks2025-chrono",
     name: "Chrono - Linguistic Pattern Forecasting",
     type: "hackathon",
-    period: "Jan 2025",
+    period: "Jan 18 2025 - Jan 19 2025",
     featured: false,
     visible: true,
     status: "complete",
@@ -303,7 +313,7 @@ export const projects: Project[] = [
     slug: "faim-hackathon",
     name: "McGill FAIM Hackathon - Portfolio Optimization",
     type: "quant",
-    period: "Nov 2024",
+    period: "Oct 2024",
     featured: false,
     visible: true,
     status: "complete",
@@ -510,6 +520,15 @@ function parseDate(str: string): Date {
   const yearOnly = normalized.match(/^(\d{4})$/);
   if (yearOnly) {
     return new Date(parseInt(yearOnly[1]), 0, 1);
+  }
+
+  // Full date like "Jan 18 2025" or "January 18 2025"
+  const fullDate = normalized.match(/^([a-z]+)\s+(\d{1,2})\s+(\d{4})$/);
+  if (fullDate) {
+    const month = monthMap[fullDate[1]] ?? 0;
+    const day = parseInt(fullDate[2]);
+    const year = parseInt(fullDate[3]);
+    return new Date(year, month, day);
   }
 
   // Month and year like "May 2025" or "Jan 2024"

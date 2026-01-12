@@ -170,7 +170,7 @@ function BackContent() {
 }
 
 export function Card3D({ className = '' }: { className?: string }) {
-  const [currentPage, setCurrentPage] = useState(0); // 0=closed, 1=open showing inside, 2=flipped to back
+  const [currentPage, setCurrentPage] = useState(0); // 0=closed, 1=open, 2=back
   const [showOriginal, setShowOriginal] = useState(false);
 
   const pageWidth = 280;
@@ -186,9 +186,12 @@ export function Card3D({ className = '' }: { className?: string }) {
 
   const pageLabels = ['Closed', 'Inside', 'Back'];
 
+  // Calculate container width - expands when open
+  const containerWidth = currentPage >= 1 ? pageWidth * 2 : pageWidth;
+
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
-      {/* Book container */}
+      {/* Book container with perspective */}
       <div
         className="relative"
         style={{
@@ -196,11 +199,11 @@ export function Card3D({ className = '' }: { className?: string }) {
           perspectiveOrigin: 'center center',
         }}
       >
-        {/* Book - the pages are positioned side by side when open */}
+        {/* Book wrapper - width animates */}
         <div
           className="relative cursor-pointer"
           style={{
-            width: currentPage === 1 ? pageWidth * 2 : pageWidth,
+            width: containerWidth,
             height: pageHeight,
             maxWidth: '95vw',
             transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -210,18 +213,18 @@ export function Card3D({ className = '' }: { className?: string }) {
             else goToPage(0);
           }}
         >
-          {/* Back cover - static, visible when book is open */}
+          {/* === LAYER 1: Static inside-right (base layer, always at right) === */}
           <div
-            className="absolute rounded-lg shadow-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800"
+            className="absolute rounded-r-lg shadow-lg overflow-hidden"
             style={{
               width: pageWidth,
               height: pageHeight,
               right: 0,
               opacity: currentPage >= 1 ? 1 : 0,
-              transition: 'opacity 0.4s ease-in-out',
+              transition: 'opacity 0.4s ease-in-out 0.2s',
+              zIndex: 5,
             }}
           >
-            {/* This is the "back" of the book visible when open - shows inside right */}
             {showOriginal ? (
               <Image
                 src="/card-images/card_inside_right.png"
@@ -234,15 +237,16 @@ export function Card3D({ className = '' }: { className?: string }) {
             )}
           </div>
 
-          {/* Inside left page - revealed when front cover flips */}
+          {/* === LAYER 2: Static inside-left (revealed when front cover opens) === */}
           <div
-            className="absolute rounded-lg shadow-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800"
+            className="absolute rounded-l-lg shadow-lg overflow-hidden"
             style={{
               width: pageWidth,
               height: pageHeight,
               left: 0,
               opacity: currentPage >= 1 ? 1 : 0,
               transition: 'opacity 0.3s ease-in-out 0.3s',
+              zIndex: 5,
             }}
           >
             {showOriginal ? (
@@ -257,7 +261,9 @@ export function Card3D({ className = '' }: { className?: string }) {
             )}
           </div>
 
-          {/* Front cover - flips open to reveal inside */}
+          {/* === LAYER 3: Front Cover - flips open from right edge === */}
+          {/* When closed: shows front cover, sitting at left:0 */}
+          {/* When open: rotates -180deg around LEFT edge, revealing inside-left underneath */}
           <div
             className="absolute rounded-lg shadow-xl overflow-hidden"
             style={{
@@ -265,15 +271,15 @@ export function Card3D({ className = '' }: { className?: string }) {
               height: pageHeight,
               left: 0,
               transformStyle: 'preserve-3d',
-              transformOrigin: 'right center',
+              transformOrigin: 'left center',
               transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
               transform: currentPage >= 1 ? 'rotateY(-180deg)' : 'rotateY(0deg)',
-              zIndex: currentPage >= 1 ? 1 : 10,
+              zIndex: currentPage >= 1 ? 10 : 30,
             }}
           >
-            {/* Front of front cover */}
+            {/* Front face - the cover */}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 rounded-lg overflow-hidden"
               style={{ backfaceVisibility: 'hidden' }}
             >
               {showOriginal ? (
@@ -294,17 +300,21 @@ export function Card3D({ className = '' }: { className?: string }) {
                 />
               )}
             </div>
-            {/* Back of front cover (inside left when flipped) - blank or subtle texture */}
+            {/* Back face - blank/textured (visible when cover is flipped open) */}
             <div
-              className="absolute inset-0 bg-amber-100 dark:bg-amber-900/50"
+              className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/60 dark:to-amber-950/40"
               style={{
                 backfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)',
               }}
-            />
+            >
+              {/* Optional: could show inside-left content here if desired */}
+            </div>
           </div>
 
-          {/* Inside right page - flips to reveal back cover */}
+          {/* === LAYER 4: Right page flipper - flips to reveal back cover === */}
+          {/* When state 1: shows inside-right on front */}
+          {/* When state 2: flips 180deg around RIGHT edge, revealing back cover */}
           <div
             className="absolute rounded-lg shadow-xl overflow-hidden"
             style={{
@@ -312,17 +322,17 @@ export function Card3D({ className = '' }: { className?: string }) {
               height: pageHeight,
               right: 0,
               transformStyle: 'preserve-3d',
-              transformOrigin: 'left center',
+              transformOrigin: 'right center',
               transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
               transform: currentPage >= 2 ? 'rotateY(180deg)' : 'rotateY(0deg)',
-              zIndex: currentPage >= 2 ? 1 : (currentPage >= 1 ? 10 : 1),
+              zIndex: currentPage >= 2 ? 30 : 15,
               opacity: currentPage >= 1 ? 1 : 0,
               pointerEvents: currentPage >= 1 ? 'auto' : 'none',
             }}
           >
-            {/* Front of this page (inside right) */}
+            {/* Front face - inside right content */}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 rounded-lg overflow-hidden"
               style={{ backfaceVisibility: 'hidden' }}
             >
               {showOriginal ? (
@@ -336,9 +346,9 @@ export function Card3D({ className = '' }: { className?: string }) {
                 <InsideRightContent />
               )}
             </div>
-            {/* Back of this page (back cover content) */}
+            {/* Back face - back cover content */}
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 rounded-lg overflow-hidden"
               style={{
                 backfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)',

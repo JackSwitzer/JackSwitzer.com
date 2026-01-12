@@ -38,41 +38,49 @@ Course project for MTHE393 at Queen's University. Given an unknown "black-box" d
 
 Ships experience roll motion in rough waters, causing passenger discomfort, cargo instability, and increased fuel consumption. The goal was to design an autonomous stabilization system using fin stabilizer actuation controlled by gyroscopic roll angle sensors.
 
+![Ship roll stabilization concept](/projects/mthe393/ship-stabilization.png)
+
+## System Architecture
+
+The control system uses a feedback loop with PID control and feedforward gain compensation to stabilize roll angle.
+
+![Control system block diagram](/projects/mthe393/control-block-diagram.png)
+
 ## Technical Approach
 
 ### 1. LTI System Validation
 
 Before attempting identification, rigorously validated the black-box was Linear Time-Invariant:
 
-- **Homogeneity**: Verified 2 × Output(sin(t)) = Output(2·sin(t))
-- **Superposition**: Verified Output(sin(t) + cos(10t)) = Output(sin(t)) + Output(cos(10t))
-- **Time-Invariance**: Confirmed identical responses under time shifts
+- **Homogeneity**: Verified H(2x(t)) = 2H(x(t)) with 0.9997 correlation
+- **Superposition**: Verified H(x₁+x₂) = H(x₁) + H(x₂) with 0.9998 correlation
+- **Time-Invariance**: Confirmed identical responses under time shifts (RMSE = 0.0000)
 
 ### 2. Signal Processing & Noise Removal
 
-The black-box produced noisy outputs requiring sophisticated denoising:
+The black-box produced extremely noisy outputs requiring sophisticated denoising:
+
+![Signal processing: extracting clean response from noise](/projects/mthe393/signal-processing.png)
 
 - Evaluated low-pass, high-pass, Gaussian, Chebyshev, and moving-average filters
 - Final approach: Pointwise averaging of 20-100 signals per frequency
 - Statistical analysis confirmed zero-mean Gaussian noise (μ ≈ 0.0015)
 
-### 3. Bode Plot Construction
+### 3. Bode Plot Construction & Transfer Function Derivation
 
-Systematic frequency response characterization:
+Systematic frequency response characterization across 10⁻³ to 10⁴ Hz:
 
-- Collected data across frequencies from 10⁻³ to 10⁴ Hz
+![Bode plot analysis with optimized transfer function fit](/projects/mthe393/bode-plot-analysis.png)
+
 - Averaged 20 signals over 50 trials per frequency point
 - Used 6 periods per signal to ensure steady-state response
 - Derived transfer function coefficients through RMSE optimization
 
-### 4. Controller Design
+### 4. Controller Design & Results
 
-Designed PID controller with feedforward compensation:
+Designed PID controller with feedforward compensation (L=4010) to move RHP zeros to LHP for stability:
 
-- Added feedforward gain (L=4010) to move RHP zeros to LHP for stability
-- Tuned for optimal transient response characteristics
-
-## Results
+![Step response showing controller performance](/projects/mthe393/step-response.png)
 
 | Metric | Target | Achieved |
 |--------|--------|----------|
@@ -81,7 +89,7 @@ Designed PID controller with feedforward compensation:
 | Settling Time | 3 s | 0.58-1.37 s |
 | Steady State Error | ±0.05 | 0.002 |
 
-All performance specifications met or exceeded with significant margins.
+All performance specifications exceeded with significant margins.
 
 ## Skills Demonstrated
 
@@ -99,4 +107,4 @@ This project demonstrates skills directly transferable to AI systems work:
 - **Feedback control design** relates to RLHF and alignment techniques
 - **Rigorous experimental protocols** for characterizing complex systems
 
-[View Presentation](/projects/MTHE393-Group2-FinalPresentation.pptx)
+[View Full Presentation](/projects/MTHE393-Group2-FinalPresentation.pptx)

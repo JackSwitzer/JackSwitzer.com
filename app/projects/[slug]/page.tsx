@@ -4,6 +4,7 @@ import { getProjectContent, parseMarkdownToElements } from "@/lib/mdx";
 import { notFound } from "next/navigation";
 import { Card3D } from "@/app/components/Card3D";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
+import { SAEResearch } from "@/app/components/SAEResearch";
 
 export function generateStaticParams() {
   const projects = getVisibleProjects();
@@ -21,6 +22,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
   const mdxContent = getProjectContent(params.slug);
   const contentElements = mdxContent ? parseMarkdownToElements(mdxContent) : null;
+  const isResearchProject = project.slug === "qwen-interpretability";
 
   return (
     <section>
@@ -56,8 +58,8 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       </header>
 
-      {/* Summary - only show if no MDX content */}
-      {!contentElements && project.summary && (
+      {/* Summary */}
+      {project.summary && (
         <p className="text-lg text-[var(--muted)] mb-8 leading-relaxed">
           {project.summary}
         </p>
@@ -93,71 +95,57 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         )}
       </div>
 
+      {/* SAE Research - special embedded content */}
+      {isResearchProject && (
+        <div className="mb-8">
+          <SAEResearch />
+        </div>
+      )}
+
       {/* MDX Content - if available */}
-      {contentElements && contentElements.length > 0 ? (
+      {contentElements && contentElements.length > 0 && !isResearchProject && (
         <div className="mb-8">
           <MarkdownContent elements={contentElements} />
         </div>
-      ) : (
-        <>
-          {/* Technologies */}
-          <div className="mb-8">
-            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <span className="tag tag-muted">Technologies</span>
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.map((tech: string) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1 text-sm font-mono border border-[var(--border)]"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
+      )}
 
-          {/* Accomplishments */}
-          <div className="mb-8">
-            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <span className="tag tag-success">Key Accomplishments</span>
-            </h2>
-            <ul className="bullet-arrow space-y-2">
-              {project.accomplishments.map((acc: string, i: number) => (
-                <li key={i} className="text-[var(--muted)] py-1 border-b border-[var(--border)] last:border-0">
-                  {acc}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </>
+      {/* Accomplishments - only show if not research project and no MDX */}
+      {!isResearchProject && !contentElements && (
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <span className="tag tag-success">Key Accomplishments</span>
+          </h2>
+          <ul className="bullet-arrow space-y-2">
+            {project.accomplishments.map((acc: string, i: number) => (
+              <li key={i} className="text-[var(--muted)] py-1 border-b border-[var(--border)] last:border-0">
+                {acc}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* Student Card - only for linear algebra project */}
       {project.slug === "linear-algebra-website" && (
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
-            <span className="tag">From My Students</span>
-          </h2>
-          <p className="text-[var(--muted)] mb-6 text-sm">
-            A card from my Linear Algebra students — the &quot;Switzer Theorem&quot; states that
-            our education and my teaching are linearly dependent.
-          </p>
+        <div className="mb-8 p-6 border-2 border-[var(--accent)] bg-[var(--accent-light)]">
+          <h2 className="text-xl font-bold mb-4">Switzer&apos;s Theorem</h2>
           <Card3D />
+          <p className="text-[var(--muted)] mt-6 text-sm italic text-center">
+            A huge thank you to all of my amazing students for this wonderful card!
+          </p>
         </div>
       )}
 
-      {/* Tags - only show if no MDX content */}
-      {!contentElements && project.tags && project.tags.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold mb-3">Tags</h2>
+      {/* Technologies - at bottom */}
+      {project.technologies.length > 0 && (
+        <div className="mb-8 pt-6 border-t border-[var(--border)]">
           <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag: string) => (
+            {project.technologies.map((tech: string) => (
               <span
-                key={tag}
-                className="text-xs font-mono text-[var(--muted)]"
+                key={tech}
+                className="px-3 py-1.5 text-sm font-mono border border-[var(--border)] bg-[var(--paper)]"
               >
-                #{tag}
+                {tech}
               </span>
             ))}
           </div>
@@ -165,7 +153,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       )}
 
       {/* Back Link */}
-      <div className="mt-12 pt-6 border-t border-[var(--border)]">
+      <div className="pt-6 border-t border-[var(--border)]">
         <Link href="/projects" className="link-accent text-sm">
           ← Back to All Projects
         </Link>

@@ -4,23 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { HorizontalTimeline } from "@/app/components/HorizontalTimeline";
 import { TimelineDetailPanel } from "@/app/components/TimelineDetailPanel";
-import { getTimelineItems, getVisibleProjects, getAllTechnologies, type TimelineItem, type Project } from "@/lib/data";
+import { getTimelineItems, getVisibleProjects, type TimelineItem, type Project } from "@/lib/data";
 
-const PROJECT_TYPES = ["all", "work", "personal", "school", "hackathon", "consulting", "quant"] as const;
+const PROJECT_TYPES = ["all", "work", "research", "personal", "school", "hackathon", "quant"] as const;
 
 export default function ProjectsPage() {
   const [selectedItem, setSelectedItem] = useState<TimelineItem | null>(null);
   const [selectedType, setSelectedType] = useState<string>("all");
-  const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"timeline" | "list">("list");
 
   const timelineItems = getTimelineItems();
   const projects = getVisibleProjects();
-  const technologies = getAllTechnologies();
 
   const filteredProjects = projects.filter((p) => {
     if (selectedType !== "all" && p.type !== selectedType) return false;
-    if (selectedTech && !p.technologies.includes(selectedTech)) return false;
     return true;
   });
 
@@ -36,7 +33,7 @@ export default function ProjectsPage() {
             <div className="eyebrow mb-2">Portfolio</div>
             <h1 className="text-3xl font-bold leading-tight mb-2">Projects</h1>
             <p className="text-[var(--muted)] text-sm">
-              My journey from 2022 to present — work, education, leadership, and projects.
+              Work, research, and personal projects from 2022 to present.
             </p>
           </div>
 
@@ -77,57 +74,22 @@ export default function ProjectsPage() {
         </>
       ) : (
         <>
-          {/* Filters */}
-          <div className="space-y-3">
-            {/* Type Filter */}
-            <div className="flex flex-wrap gap-1">
-              {PROJECT_TYPES.map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setSelectedType(type)}
-                  className={`px-3 py-1 text-xs font-mono uppercase tracking-wide transition-colors ${
-                    selectedType === type
-                      ? "bg-[var(--accent)] text-[var(--paper)]"
-                      : "bg-[var(--border)] hover:bg-[var(--ink)] hover:text-[var(--paper)]"
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-
-            {/* Tech Filter */}
-            <div className="flex flex-wrap gap-1">
+          {/* Type Filter */}
+          <div className="flex flex-wrap gap-1">
+            {PROJECT_TYPES.map((type) => (
               <button
-                onClick={() => setSelectedTech(null)}
-                className={`px-2 py-0.5 text-xs font-mono transition-colors ${
-                  !selectedTech
-                    ? "bg-[var(--success)] text-[var(--paper)]"
-                    : "bg-transparent border border-[var(--border)] hover:border-[var(--accent)]"
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-3 py-1 text-xs font-mono uppercase tracking-wide transition-colors ${
+                  selectedType === type
+                    ? "bg-[var(--accent)] text-[var(--paper)]"
+                    : "bg-[var(--border)] hover:bg-[var(--ink)] hover:text-[var(--paper)]"
                 }`}
               >
-                All Tech
+                {type}
               </button>
-              {technologies.slice(0, 12).map((tech) => (
-                <button
-                  key={tech}
-                  onClick={() => setSelectedTech(tech === selectedTech ? null : tech)}
-                  className={`px-2 py-0.5 text-xs font-mono transition-colors ${
-                    selectedTech === tech
-                      ? "bg-[var(--success)] text-[var(--paper)]"
-                      : "bg-transparent border border-[var(--border)] hover:border-[var(--accent)]"
-                  }`}
-                >
-                  {tech}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
-
-          {/* Results count */}
-          <p className="text-xs font-mono text-[var(--muted)] uppercase tracking-wide">
-            {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
-          </p>
 
           {/* Featured Projects */}
           {featuredProjects.length > 0 && (
@@ -186,11 +148,6 @@ function ProjectCard({ project }: { project: Project }) {
           )}
           <div className="flex items-center gap-2 text-xs">
             <span className="tag tag-muted">{project.type}</span>
-            {project.github && (
-              <span className="font-mono text-[var(--muted)]">
-                {project.github.account}/{project.github.repo}
-              </span>
-            )}
           </div>
         </div>
         <div className="text-right shrink-0">

@@ -148,15 +148,14 @@ export const skills = {
 export type Project = {
   slug: string;
   name: string;
-  type: "work" | "personal" | "school" | "hackathon" | "consulting" | "quant";
+  type: "work" | "personal" | "school" | "hackathon" | "consulting" | "quant" | "research";
   period: string;
   featured: boolean;
   visible: boolean;
-  status: "active" | "complete" | "wip" | "paused";
+  status: "active" | "complete" | "wip";
   summary: string;
   accomplishments: string[];
   technologies: string[];
-  tags: string[];
   github?: { repo: string; account: string; branch?: string };
   link?: string;
 };
@@ -165,22 +164,20 @@ export const projects: Project[] = [
   {
     slug: "qwen-interpretability",
     name: "Quantization x Interpretability",
-    type: "personal",
+    type: "research",
     period: "Jan 2026",
     featured: true,
     visible: true,
     status: "active",
-    summary: "Research project investigating how model quantization affects interpretability tools. Found that SAEs transfer across precisions (99% correlation), code degrades 50% at INT4 while knowledge survives, and smaller SAEs transfer better.",
+    summary: "Research investigating how model quantization affects sparse autoencoders (SAEs). Found SAEs transfer across precisions (99% correlation), code generation degrades 50% at INT4 while knowledge retrieval survives, and undercomplete SAEs (fewer features than model dimension) transfer 2.3x better than overcomplete ones.",
     accomplishments: [
       "Discovered SAEs transfer across precisions with 99% sample correlation (BF16→INT4)",
       "Found structured degradation: code generation breaks 50% at INT4, knowledge retrieval stable",
-      "Counter-intuitive finding: 0.5x SAEs transfer 2.3x better than 8x SAEs",
+      "Undercomplete SAEs (0.5x model dimension, 1024 features) transfer 2.3x better than overcomplete (8x, 16k features)",
       "Trained 168 SAEs across 2 models (Qwen3-30B, StarCoder2-15B), 4 precisions, multiple layers",
     ],
-    technologies: ["Python", "SAE", "Interpretability", "LLM", "Quantization", "PyTorch", "bitsandbytes"],
-    tags: ["interpretability", "sae", "quantization", "mechanistic-interpretability", "anthropic-fellows"],
+    technologies: ["Python", "PyTorch", "SAELens", "bitsandbytes", "Transformers"],
     github: { repo: "QuantizationInterpretability", account: "JackSwitzer" },
-    link: "/projects/quantization-interpretability/research_summary.html",
   },
   {
     slug: "ibm-software-developer",
@@ -197,13 +194,12 @@ export const projects: Project[] = [
       "Shipped data dictionary feature to production: enriches LLM context with variable definitions, types, and usage patterns from legacy code",
       "Extended VSCode extension with A2A and MCP integrations, connecting IBM's existing profiling tools to AI workflows",
     ],
-    technologies: ["Python", "Java", "COBOL", "PL/1", "VSCode Extensions", "MCP", "A2A", "LLM", "AI Agents"],
-    tags: ["internship", "mainframe", "ai", "modernization", "watsonx"],
+    technologies: ["Python", "Java", "TypeScript", "COBOL", "PL/1", "VSCode Extensions", "MCP"],
   },
   {
     slug: "slay-the-spire-rl",
     name: "Slay the Spire Watcher Solver",
-    type: "personal",
+    type: "research",
     period: "2026",
     featured: true,
     visible: true,
@@ -214,8 +210,7 @@ export const projects: Project[] = [
       "Designing behavioral cloning approach using official game run data",
       "Engineering high-level strategic features including kill probability calculations",
     ],
-    technologies: ["Python", "Neural Networks", "Behavioral Cloning", "PyTorch"],
-    tags: ["behavioral-cloning", "self-play", "feature-engineering", "game-ai"],
+    technologies: ["Python", "PyTorch", "Behavioral Cloning", "Reinforcement Learning"],
     github: { repo: "StSRLSolver", account: "jackswitzer" },
   },
   {
@@ -232,8 +227,7 @@ export const projects: Project[] = [
       "Implemented efficient word search algorithms",
       "Created interactive web interface for solving puzzles",
     ],
-    technologies: ["TypeScript", "React", "Next.js", "Algorithms"],
-    tags: ["algorithms", "graph-search", "web-ui"],
+    technologies: ["TypeScript", "React", "Next.js", "Graph Algorithms"],
     github: { repo: "NYT-Games", account: "jackswitzer" },
     link: "/nyt-games",
   },
@@ -245,32 +239,29 @@ export const projects: Project[] = [
     featured: false,
     visible: true,
     status: "complete",
-    summary: "A hackathon project that forecasts linguistic patterns to predict how language evolves over time.",
+    summary: "Hackathon project forecasting linguistic patterns to predict how language evolves over time.",
     accomplishments: [
       "Built linguistic pattern forecasting system to predict language evolution",
       "Developed end-to-end ML pipeline including data preprocessing and voice synthesis",
       "Led team of 4 contributors across 52 commits in 36-hour hackathon",
     ],
-    technologies: ["Python", "NLP", "Machine Learning", "Flask", "AWS Polly"],
-    tags: ["nlp", "time-series-forecasting", "voice-synthesis"],
+    technologies: ["Python", "NLP", "Flask", "AWS Polly"],
     github: { repo: "QHacks2025", account: "JackSwitzerSchool" },
   },
   {
     slug: "linear-algebra-website",
     name: "Linear Algebra Learning Platform",
-    type: "personal",
+    type: "school",
     period: "Jan 2025 - Apr 2025",
     featured: true,
     visible: true,
     status: "complete",
-    summary: "Interactive website for teaching linear algebra fundamentals, built while TAing at Queen's University.",
+    summary: "Interactive website for teaching linear algebra fundamentals, built while TAing at Queen's University. Used as primary resource for 80+ students across 2 tutorial sections.",
     accomplishments: [
-      "Built comprehensive learning platform with interactive visualizations",
-      "Created custom MDX-based content system for mathematical notation",
+      "Built comprehensive learning platform with interactive visualizations for core linear algebra concepts",
       "Used as primary resource for 80+ students across 2 tutorial sections",
     ],
     technologies: ["Next.js", "TypeScript", "MDX", "Tailwind CSS", "KaTeX"],
-    tags: ["education", "math", "teaching"],
     github: { repo: "apsc174", account: "JackSwitzerSchool" },
     link: "https://apsc174.jackswitzer.com",
   },
@@ -288,8 +279,7 @@ export const projects: Project[] = [
       "Used satellite imagery to simulate Gulf Stream and model garbage flow",
       "Implemented K-Means clustering leading to 20% efficiency improvement",
     ],
-    technologies: ["MATLAB", "Multi-Agent Systems", "K-Means Clustering", "Simulation"],
-    tags: ["k-means", "multi-agent-systems", "optimization"],
+    technologies: ["MATLAB", "Multi-Agent Systems", "K-Means Clustering"],
     github: { repo: "APSC-200", account: "JackSwitzerSchool" },
   },
   {
@@ -306,8 +296,7 @@ export const projects: Project[] = [
       "Designed stable control systems using MATLAB/Simulink",
       "Implemented PID controllers with tuning for optimal transient response",
     ],
-    technologies: ["MATLAB", "Simulink", "Control Theory", "System Identification"],
-    tags: ["control-systems", "transfer-functions", "pid"],
+    technologies: ["MATLAB", "Simulink", "Control Theory", "PID"],
     github: { repo: "MTHE393", account: "JackSwitzerSchool" },
   },
   {
@@ -324,8 +313,7 @@ export const projects: Project[] = [
       "Used LSTM neural networks trained on Queen's University compute cluster",
       "Implemented Black-Litterman portfolio management technique",
     ],
-    technologies: ["Python", "LSTM", "Elastic Net", "Black-Litterman", "PyTorch", "HPC"],
-    tags: ["black-litterman", "lstm", "portfolio-optimization"],
+    technologies: ["Python", "PyTorch", "LSTM", "Black-Litterman"],
     github: { repo: "FAIM-Personal", account: "jackswitzer" },
   },
   {
@@ -341,8 +329,7 @@ export const projects: Project[] = [
       "Participated in 10-week educational program in quantitative finance",
       "Implemented Monte Carlo simulation and Heston model to price AMD options to ~5% error",
     ],
-    technologies: ["Python", "Monte Carlo", "Heston Model", "Options Pricing"],
-    tags: ["monte-carlo", "heston-model", "options-pricing"],
+    technologies: ["Python", "Monte Carlo", "Heston Model"],
   },
   {
     slug: "advent-of-code-2024",
@@ -358,7 +345,6 @@ export const projects: Project[] = [
       "Achieved 29 stars across various algorithmic problems",
     ],
     technologies: ["Python", "Rust", "Go", "Java", "C", "OCaml", "R"],
-    tags: ["algorithms", "polyglot", "competitive-programming"],
     github: { repo: "AdventofCode", account: "jackswitzer" },
   },
   {
@@ -375,8 +361,7 @@ export const projects: Project[] = [
       "Led 3-week sprint to refactor codebase and migrate to GitHub",
       "Built Excel visualization tool for dynamic forecast interaction",
     ],
-    technologies: ["Python", "Prophet", "LSTM", "PyTorch", "Excel", "Git"],
-    tags: ["lstm", "prophet", "time-series-forecasting"],
+    technologies: ["Python", "PyTorch", "Prophet", "LSTM"],
   },
   {
     slug: "rbc-data-analyst",
@@ -392,8 +377,7 @@ export const projects: Project[] = [
       "Conducted time series analysis with SARIMA achieving less than 5% error",
       "Designed and taught Python course to team of twelve",
     ],
-    technologies: ["Python", "SARIMA", "Pandas", "Data Visualization"],
-    tags: ["sarima", "time-series-forecasting", "automation"],
+    technologies: ["Python", "SARIMA", "Pandas"],
   },
   {
     slug: "qhacks2024-financial-advisor",
@@ -409,8 +393,24 @@ export const projects: Project[] = [
       "Integrated financial APIs for real-time market data",
     ],
     technologies: ["Python", "OpenAI API", "Flask"],
-    tags: ["hackathon", "ai", "finance", "chatbot"],
     github: { repo: "qhacks24", account: "jackswitzer" },
+  },
+  {
+    slug: "sol-sunrise-lamp",
+    name: "Sol - Sunrise Alarm Clock",
+    type: "personal",
+    period: "2026",
+    featured: false,
+    visible: true,
+    status: "complete",
+    summary: "Terminal-based sunrise alarm that gradually brightens Kasa smart bulbs, integrated as an MCP server for AI assistant control.",
+    accomplishments: [
+      "Built gradual sunrise simulation with configurable warmup duration",
+      "Integrated with Kasa smart bulbs via python-kasa library",
+      "Exposed as MCP server for Claude Desktop integration",
+    ],
+    technologies: ["Python", "MCP", "Kasa API", "asyncio"],
+    github: { repo: "Lamp", account: "jackswitzer" },
   },
 ];
 

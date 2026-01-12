@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 // Message data extracted from the card
@@ -169,17 +169,13 @@ function BackContent() {
 export function Card3D({ className = '' }: { className?: string }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [showOriginal, setShowOriginal] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const pageWidth = 280;
   const pageHeight = 380;
-  const animationDuration = 800;
 
   const goToPage = (page: number) => {
-    if (page < 0 || page > 2 || page === currentPage || isAnimating) return;
-    setIsAnimating(true);
+    if (page < 0 || page > 2 || page === currentPage) return;
     setCurrentPage(page);
-    setTimeout(() => setIsAnimating(false), animationDuration);
   };
 
   const nextPage = () => goToPage(Math.min(currentPage + 1, 2));
@@ -187,93 +183,52 @@ export function Card3D({ className = '' }: { className?: string }) {
 
   const pageLabels = ['Closed', 'Inside', 'Back'];
 
-  // Container width based on current page
-  const containerWidth = currentPage === 1 ? pageWidth * 2 : pageWidth;
-
-  // Calculate rotations based on current page
-  // Front cover: closed (0deg) when page 0, open (-180deg) when page 1 or 2
-  const frontCoverRotation = currentPage === 0 ? 0 : -180;
-
-  // Right page (inside right): flat (0deg) when page 1, flipped (-180deg) when page 2
-  const rightPageRotation = currentPage === 2 ? -180 : 0;
+  // Simple approach: just show the content for each state with a fade transition
+  // No 3D flipping - just crossfade between states
 
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       <div
         className="relative"
         style={{
-          perspective: '1500px',
-          perspectiveOrigin: 'center center',
+          width: currentPage === 1 ? pageWidth * 2 : pageWidth,
+          height: pageHeight,
+          maxWidth: '95vw',
+          transition: 'width 500ms ease-in-out',
         }}
       >
+        {/* State 0: Front cover */}
         <div
-          className="relative cursor-pointer"
+          className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
           style={{
-            width: containerWidth,
-            height: pageHeight,
-            maxWidth: '95vw',
-            transition: `width ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-            transformStyle: 'preserve-3d',
+            opacity: currentPage === 0 ? 1 : 0,
+            pointerEvents: currentPage === 0 ? 'auto' : 'none',
+            transition: 'opacity 400ms ease-in-out',
+            zIndex: currentPage === 0 ? 10 : 1,
           }}
-          onClick={() => {
-            if (currentPage < 2) nextPage();
-            else goToPage(0);
-          }}
+          onClick={nextPage}
         >
-          {/*
-            Layer structure (back to front):
-            1. Back cover - always at z:1, visible when page 2 or transitioning to it
-            2. Inside right - always at z:2, visible when page 1
-            3. Inside left - always at z:3, visible when page 1 or 2
-            4. Right page (flippable) - z:10, flips to reveal back cover
-            5. Front cover (flippable) - z:20, flips to reveal inside
-          */}
+          {showOriginal ? (
+            <Image src="/card-images/card_cover.png" alt="Front Cover" fill className="object-cover" priority />
+          ) : (
+            <Image src="/card-images/card_cover_clean.png" alt="Front Cover" fill className="object-cover" priority />
+          )}
+        </div>
 
-          {/* Layer 1: Back cover (bottom layer) */}
-          <div
-            className="absolute rounded-lg shadow-lg overflow-hidden"
-            style={{
-              width: pageWidth,
-              height: pageHeight,
-              left: 0,
-              zIndex: 1,
-            }}
-          >
-            {showOriginal ? (
-              <Image src="/card-images/card_back.png" alt="Back cover" fill className="object-cover" />
-            ) : (
-              <BackContent />
-            )}
-          </div>
-
-          {/* Layer 2: Inside right (under the flipping right page) */}
-          <div
-            className="absolute rounded-r-lg shadow-lg overflow-hidden"
-            style={{
-              width: pageWidth,
-              height: pageHeight,
-              left: pageWidth,
-              zIndex: 2,
-              opacity: currentPage >= 1 ? 1 : 0,
-              transition: `opacity ${animationDuration}ms`,
-            }}
-          >
-            {showOriginal ? (
-              <Image src="/card-images/card_inside_right.png" alt="Inside right" fill className="object-cover" />
-            ) : (
-              <InsideRightContent />
-            )}
-          </div>
-
-          {/* Layer 3: Inside left */}
+        {/* State 1: Inside spread */}
+        <div
+          className="absolute inset-0 cursor-pointer"
+          style={{
+            opacity: currentPage === 1 ? 1 : 0,
+            pointerEvents: currentPage === 1 ? 'auto' : 'none',
+            transition: 'opacity 400ms ease-in-out',
+            zIndex: currentPage === 1 ? 10 : 1,
+          }}
+          onClick={nextPage}
+        >
           <div
             className="absolute rounded-l-lg shadow-lg overflow-hidden"
-            style={{
-              width: pageWidth,
-              height: pageHeight,
-              left: 0,
-              zIndex: 3,
-            }}
+            style={{ width: pageWidth, height: pageHeight, left: 0 }}
           >
             {showOriginal ? (
               <Image src="/card-images/card_inside_left.png" alt="Inside left" fill className="object-cover" />
@@ -281,72 +236,34 @@ export function Card3D({ className = '' }: { className?: string }) {
               <InsideLeftContent />
             )}
           </div>
-
-          {/* Layer 4: Right page (flips from right edge to reveal back) */}
           <div
-            className="absolute rounded-lg shadow-xl overflow-hidden"
-            style={{
-              width: pageWidth,
-              height: pageHeight,
-              left: pageWidth,
-              zIndex: currentPage === 2 ? 5 : 10,
-              transformStyle: 'preserve-3d',
-              transformOrigin: 'left center',
-              transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1), opacity ${animationDuration}ms`,
-              transform: `rotateY(${rightPageRotation}deg)`,
-              opacity: currentPage >= 1 ? 1 : 0,
-              pointerEvents: currentPage >= 1 ? 'auto' : 'none',
-            }}
+            className="absolute rounded-r-lg shadow-lg overflow-hidden"
+            style={{ width: pageWidth, height: pageHeight, right: 0 }}
           >
-            {/* Front: inside right content */}
-            <div
-              className="absolute inset-0 rounded-lg overflow-hidden"
-              style={{ backfaceVisibility: 'hidden' }}
-            >
-              {showOriginal ? (
-                <Image src="/card-images/card_inside_right.png" alt="Inside right" fill className="object-cover" />
-              ) : (
-                <InsideRightContent />
-              )}
-            </div>
-            {/* Back: paper texture */}
-            <div
-              className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/60 dark:to-amber-950/40"
-              style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-            />
+            {showOriginal ? (
+              <Image src="/card-images/card_inside_right.png" alt="Inside right" fill className="object-cover" />
+            ) : (
+              <InsideRightContent />
+            )}
           </div>
+        </div>
 
-          {/* Layer 5: Front cover (flips from left edge to reveal inside) */}
-          <div
-            className="absolute rounded-lg shadow-xl overflow-hidden"
-            style={{
-              width: pageWidth,
-              height: pageHeight,
-              left: 0,
-              zIndex: 20,
-              transformStyle: 'preserve-3d',
-              transformOrigin: 'left center',
-              transition: `transform ${animationDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-              transform: `rotateY(${frontCoverRotation}deg)`,
-            }}
-          >
-            {/* Front: cover image */}
-            <div
-              className="absolute inset-0 rounded-lg overflow-hidden"
-              style={{ backfaceVisibility: 'hidden' }}
-            >
-              {showOriginal ? (
-                <Image src="/card-images/card_cover.png" alt="Front Cover" fill className="object-cover" priority />
-              ) : (
-                <Image src="/card-images/card_cover_clean.png" alt="Front Cover" fill className="object-cover" priority />
-              )}
-            </div>
-            {/* Back: paper texture (visible when flipped open) */}
-            <div
-              className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/60 dark:to-amber-950/40"
-              style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-            />
-          </div>
+        {/* State 2: Back cover */}
+        <div
+          className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
+          style={{
+            opacity: currentPage === 2 ? 1 : 0,
+            pointerEvents: currentPage === 2 ? 'auto' : 'none',
+            transition: 'opacity 400ms ease-in-out',
+            zIndex: currentPage === 2 ? 10 : 1,
+          }}
+          onClick={() => goToPage(0)}
+        >
+          {showOriginal ? (
+            <Image src="/card-images/card_back.png" alt="Back cover" fill className="object-cover" />
+          ) : (
+            <BackContent />
+          )}
         </div>
       </div>
 
@@ -354,7 +271,7 @@ export function Card3D({ className = '' }: { className?: string }) {
       <div className="flex items-center gap-3">
         <button
           onClick={(e) => { e.stopPropagation(); prevPageFn(); }}
-          disabled={currentPage === 0 || isAnimating}
+          disabled={currentPage === 0}
           className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
         >
@@ -368,7 +285,6 @@ export function Card3D({ className = '' }: { className?: string }) {
             <button
               key={page}
               onClick={(e) => { e.stopPropagation(); goToPage(page); }}
-              disabled={isAnimating}
               className={`w-2.5 h-2.5 rounded-full transition-all ${
                 currentPage === page
                   ? 'bg-neutral-800 dark:bg-neutral-200 scale-110'
@@ -381,7 +297,7 @@ export function Card3D({ className = '' }: { className?: string }) {
 
         <button
           onClick={(e) => { e.stopPropagation(); nextPage(); }}
-          disabled={currentPage === 2 || isAnimating}
+          disabled={currentPage === 2}
           className="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
         >

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getProjectBySlug, getVisibleProjects } from "@/lib/data";
 import { notFound } from "next/navigation";
+import { Card3D } from "@/app/components/Card3D";
 
 export function generateStaticParams() {
   const projects = getVisibleProjects();
@@ -133,6 +134,18 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           ))}
         </ul>
       </div>
+
+      {/* Student Card - only for linear algebra project */}
+      {project.slug === "linear-algebra-website" && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">From My Students</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6 text-sm">
+            A card from my Linear Algebra students - the &quot;Switzer Theorem&quot; states that
+            our education and my teaching are linearly dependent.
+          </p>
+          <Card3D />
+        </div>
+      )}
 
       {/* Tags */}
       {project.tags && project.tags.length > 0 && (

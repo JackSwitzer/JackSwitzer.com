@@ -5,7 +5,7 @@ export const personal = {
   email: "jackswitzer3@gmail.com",
   github: "jackswitzer",
   githubSchool: "JackSwitzerSchool",
-  linkedin: "https://linkedin.com/in/jackswitzer",
+  linkedin: "https://www.linkedin.com/in/jack-switzer-/",
 };
 
 export const education = {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { personal, education, getFeaturedProjects } from "@/lib/data";
 
 export default function HomePage() {
@@ -8,10 +9,15 @@ export default function HomePage() {
     <section className="space-y-12">
       {/* Header with Profile */}
       <div className="flex items-start gap-6">
-        {/* Profile Image Placeholder */}
-        <div className="shrink-0 w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-          JS
-        </div>
+        {/* Profile Image */}
+        <Image
+          src="/headshot.jpeg"
+          alt="Jack Switzer"
+          width={80}
+          height={80}
+          className="shrink-0 w-20 h-20 rounded-full object-cover"
+          priority
+        />
 
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-1">{personal.name}</h1>

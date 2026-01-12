@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HorizontalTimeline } from "@/app/components/HorizontalTimeline";
-import { TimelineDetailPanel } from "@/app/components/TimelineDetailPanel";
-import { getTimelineItems, getVisibleProjects, type TimelineItem, type Project } from "@/lib/data";
+import { VerticalTimeline } from "@/app/components/VerticalTimeline";
+import { getTimelineItems, getVisibleProjects, type Project } from "@/lib/data";
 
 const PROJECT_TYPES = ["all", "work", "research", "personal", "school", "hackathon", "quant"] as const;
 
 export default function ProjectsPage() {
-  const [selectedItem, setSelectedItem] = useState<TimelineItem | null>(null);
   const [selectedType, setSelectedType] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"timeline" | "list">("list");
 
@@ -64,14 +62,7 @@ export default function ProjectsPage() {
       </header>
 
       {viewMode === "timeline" ? (
-        <>
-          <TimelineDetailPanel item={selectedItem} />
-          <HorizontalTimeline
-            items={timelineItems}
-            selectedItem={selectedItem}
-            onSelectItem={setSelectedItem}
-          />
-        </>
+        <VerticalTimeline items={timelineItems} />
       ) : (
         <>
           {/* Type Filter */}

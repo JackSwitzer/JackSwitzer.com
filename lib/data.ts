@@ -157,7 +157,7 @@ export type Project = {
   accomplishments: string[];
   technologies: string[];
   tags: string[];
-  github?: { repo: string; account: string };
+  github?: { repo: string; account: string; branch?: string };
   link?: string;
 };
 

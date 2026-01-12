@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { personal, education, getFeaturedProjects } from "@/lib/data";
-import { Timeline } from "./components/Timeline";
-import { FocusCard } from "./components/FocusCard";
 
 export default function HomePage() {
   const featuredProjects = getFeaturedProjects();
@@ -66,39 +64,10 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Current Focus */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Current Focus</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FocusCard
-            title="IBM Mainframe Modernization"
-            subtitle="Software Developer"
-            description="Building AI agents to translate legacy COBOL/PL1 code to modern languages. Working on MCP tooling and VSCode extensions."
-            href="/projects/ibm-software-developer"
-            tags={["AI Agents", "MCP", "VSCode"]}
-            status="active"
-          />
-          <FocusCard
-            title="Interpretability Research"
-            subtitle="Personal Project"
-            description="Studying how quantization degrades LLM capabilities using Sparse Autoencoders on Qwen 3 Coder 30B."
-            href="/projects/qwen-interpretability"
-            tags={["SAE", "Quantization", "Mech Interp"]}
-            status="wip"
-          />
-        </div>
-      </div>
-
-      {/* Timeline */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Journey</h2>
-        <Timeline />
-      </div>
-
-      {/* Featured Projects */}
+      {/* Featured Experience */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Featured Projects</h2>
+          <h2 className="text-lg font-semibold">Featured Experience</h2>
           <Link
             href="/projects"
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
@@ -107,7 +76,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid gap-3">
-          {featuredProjects.slice(0, 6).map((project) => (
+          {featuredProjects.map((project) => (
             <Link
               key={project.slug}
               href={`/projects/${project.slug}`}

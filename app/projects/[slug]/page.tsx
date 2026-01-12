@@ -81,7 +81,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       <div className="flex gap-4 mb-8">
         {project.github && (
           <a
-            href={`https://github.com/${project.github.account}/${project.github.repo}`}
+            href={`https://github.com/${project.github.account}/${project.github.repo}${project.github.branch ? `/tree/${project.github.branch}` : ''}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black rounded-lg hover:opacity-90 transition-opacity"

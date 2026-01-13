@@ -57,7 +57,7 @@ export default function HomePage() {
         <h2 className="text-lg font-semibold mb-3">About</h2>
         <p className="text-[var(--muted)] leading-relaxed">
           Working to Learn. Learning at work. Passionate about understanding the un-understood.
-          Making the world better enjoyer.
+          Helping make the world better enjoyer.
         </p>
       </div>
 

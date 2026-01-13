@@ -38,6 +38,29 @@ function Collapsible({ title, tag, tagType = "default", defaultOpen = false, chi
   );
 }
 
+function NestedCollapsible({ title, children }: { title: string; children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border border-[var(--border)] mt-4 bg-[#fafafa] dark:bg-[var(--paper)]">
+      <div
+        className="flex justify-between items-center p-3 cursor-pointer text-sm"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{title}</span>
+        <span className={`text-[var(--muted)] transition-transform text-xs ${isOpen ? "rotate-180" : ""}`}>
+          ▼
+        </span>
+      </div>
+      {isOpen && (
+        <div className="px-3 pb-3 border-t border-[var(--border)]">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SAEResearch() {
   return (
     <div className="space-y-6">
@@ -140,6 +163,39 @@ export function SAEResearch() {
           <div className="insight-box mt-4">
             <strong>Pattern:</strong> Generative tasks (code) break first. Discriminative tasks (knowledge) survive. Quantization adds noise to generation, not retrieval.
           </div>
+
+          {/* Nested code example */}
+          <NestedCollapsible title="Example: HumanEval/8 - sum_product function">
+            <div className="space-y-4">
+              <div className="bg-[var(--paper)] border border-[var(--border)] p-3">
+                <div className="text-xs font-mono text-[var(--success)] mb-2">BF16 (passes)</div>
+                <pre className="text-xs font-mono overflow-x-auto whitespace-pre-wrap">
+{`if not numbers: return (0, 1)
+total_sum = sum(numbers)
+total_product = 1
+for num in numbers: total_product *= num
+return (total_sum, total_product)`}
+                </pre>
+              </div>
+              <div className="bg-[var(--paper)] border border-[var(--border)] p-3">
+                <div className="text-xs font-mono text-[var(--accent)] mb-2">INT4 (fails - truncated)</div>
+                <pre className="text-xs font-mono overflow-x-auto whitespace-pre-wrap">
+{`# Handle empty list case
+if not numbers: return (0, 1)
+# Initialize sum and product
+total_sum = 0  # different approach
+total_product = 1
+# Iterate through the list
+for num in `}<span className="text-red-500 bg-red-500/20 px-1">← truncated</span>
+                </pre>
+              </div>
+              <ul className="bullet-arrow text-sm space-y-1">
+                <li><span className="font-semibold">INT4 adds verbose comments</span> <span className="text-[var(--muted)]">— wastes tokens before completing logic</span></li>
+                <li><span className="font-semibold">Changes algorithm</span> <span className="text-[var(--muted)]">— manual sum loop vs built-in sum()</span></li>
+                <li><span className="font-semibold">Gets truncated</span> <span className="text-[var(--muted)]">— same token limit, less code</span></li>
+              </ul>
+            </div>
+          </NestedCollapsible>
         </div>
       </Collapsible>
 
@@ -295,11 +351,25 @@ export function SAEResearch() {
           <h4 className="font-semibold mt-4 mb-2">Pipeline</h4>
           <ul className="bullet-arrow text-sm space-y-1">
             <li>Load model at each precision (BF16, FP16, INT8, INT4)</li>
-            <li>Extract activations at 7-11 layers (early, middle, late)</li>
+            <li>Extract activations across early, middle, and late layers (7-11 per model)</li>
             <li>Train SAE per precision per layer</li>
             <li>Procrustes alignment: compare BF16 features vs quantized</li>
             <li>Semantic transfer: apply BF16-trained SAE to INT4 activations</li>
             <li>Benchmark: HumanEval (10), GSM8K (15), MMLU-CS (15)</li>
+          </ul>
+
+          <h4 className="font-semibold mt-4 mb-2">Ablations</h4>
+          <ul className="bullet-arrow text-sm space-y-1">
+            <li><span className="font-semibold">Hidden dimensions:</span> <span className="text-[var(--muted)]">5 sizes (0.5×, 1×, 2×, 4×, 8× model dim)</span></li>
+            <li><span className="font-semibold">L1 coefficients:</span> <span className="text-[var(--muted)]">7 values tested for sparsity tuning</span></li>
+            <li><span className="font-semibold">Training epochs:</span> <span className="text-[var(--muted)]">6 durations to find convergence</span></li>
+            <li><span className="font-semibold">Data sizes:</span> <span className="text-[var(--muted)]">7 corpus sizes for sample efficiency</span></li>
+          </ul>
+
+          <h4 className="font-semibold mt-4 mb-2">Key Validation</h4>
+          <ul className="bullet-arrow text-sm space-y-1">
+            <li><span className="font-semibold">Cross-architecture:</span> <span className="text-[var(--muted)]">Qwen3-30B (MoE) + StarCoder2-15B (Dense) both show 85-89% Procrustes alignment</span></li>
+            <li><span className="font-semibold">Layer consistency:</span> <span className="text-[var(--muted)]">Results hold across early/middle/late layers</span></li>
           </ul>
         </div>
       </Collapsible>

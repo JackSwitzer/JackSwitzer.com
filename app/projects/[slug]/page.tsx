@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Card3D } from "@/app/components/Card3D";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
 import { SAEResearch } from "@/app/components/SAEResearch";
+import { SolDemo } from "@/app/components/SolDemo";
 
 export function generateStaticParams() {
   const projects = getVisibleProjects();
@@ -132,6 +133,19 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           <Card3D />
           <p className="text-[var(--muted)] mt-6 text-sm italic text-center">
             A huge thank you to all of my amazing students for this wonderful card!
+          </p>
+        </div>
+      )}
+
+      {/* Sol Demo - interactive terminal simulation */}
+      {project.slug === "sol-sunrise-lamp" && (
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <span className="tag">Interactive Demo</span>
+          </h2>
+          <SolDemo />
+          <p className="text-xs text-[var(--muted)] mt-2 text-center">
+            Click &quot;Run Demo&quot; to see a compressed 8-second sunrise simulation
           </p>
         </div>
       )}

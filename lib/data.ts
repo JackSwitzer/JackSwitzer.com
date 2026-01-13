@@ -271,8 +271,8 @@ export const projects: Project[] = [
     name: "Linear Algebra Learning Platform",
     type: "school",
     period: "Jan 2025 - Apr 2025",
-    featured: false,
-    visible: false,
+    featured: true,
+    visible: true,
     status: "complete",
     summary: "Interactive website for teaching linear algebra fundamentals, built while TAing at Queen's University. Used as primary resource for 80+ students across 2 tutorial sections.",
     accomplishments: [

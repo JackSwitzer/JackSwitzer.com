@@ -79,9 +79,6 @@ export default function ResumePage() {
           <div>
             <p className="font-semibold">{education.degree}</p>
             <p className="text-[var(--muted)]">{education.institution}</p>
-            {education.certificate && (
-              <p className="text-sm text-[var(--muted)]">{education.certificate}</p>
-            )}
           </div>
           <div className="text-right text-sm">
             {education.gpa && <p className="font-mono">GPA: {education.gpa}</p>}

@@ -40,9 +40,9 @@ function getDisplayTitle(item: TimelineItem): string {
     "NYT Games Solver": "NYT Games",
     // Leadership
     "Teaching Assistant: Linear Algebra I": "Lin Alg TA",
-    "Consultant → Project Manager": "QSC",
+    "QSC Analyst → PM": "QSC",
     "Campus Ambassador": "RBC Ambassador",
-    "Analyst → Project Manager": "QUANTT PM",
+    "QUANTT PM": "QUANTT PM",
     "President - Future Blue": "Future Blue President",
     "Future Blue Member": "Future Blue",
     "Future Blue": "Future Blue",

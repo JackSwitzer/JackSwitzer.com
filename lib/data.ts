@@ -119,12 +119,12 @@ export const extracurriculars = [
   },
   {
     id: "qsc",
-    role: "Consultant → Project Manager",
+    role: "QSC Analyst → PM",
     organization: "Queen's Startup Consulting",
     period: "Sep 2024 - Apr 2025",
     accomplishments: [
-      "Consultant (Sep-Dec 2024): Provided strategic consulting to early-stage startups",
-      "Project Manager (Jan-Apr 2025): Led consulting engagements and managed client relationships",
+      "Analyst (Fall 2024): Provided strategic consulting to early-stage startups",
+      "Project Manager (Spring 2025): Led consulting engagements and managed client relationships",
     ],
   },
   {
@@ -139,7 +139,7 @@ export const extracurriculars = [
   },
   {
     id: "quantt",
-    role: "Analyst → Project Manager",
+    role: "QUANTT PM",
     organization: "QUANTT (Queen's Quantitative Trading Team)",
     period: "Sep 2024 - Mar 2025",
     accomplishments: [

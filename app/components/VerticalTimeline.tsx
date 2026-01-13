@@ -45,6 +45,7 @@ function getDisplayTitle(item: TimelineItem): string {
     "Analyst → Project Manager": "QUANTT PM",
     "President - Future Blue": "Future Blue President",
     "Future Blue Member": "Future Blue",
+    "Future Blue": "Future Blue",
     // Education - show year context
     "Queen's - 1st Year": "1st Year: Engineering",
     "Queen's - 2nd Year": "2nd Year: Applied Math",

@@ -56,10 +56,8 @@ export default function HomePage() {
       <div>
         <h2 className="text-lg font-semibold mb-3">About</h2>
         <p className="text-[var(--muted)] leading-relaxed">
-          I build things that work. Currently a Software Developer at IBM building AI-powered tools for
-          mainframe modernization, while exploring how quantization degrades LLM capabilities through
-          interpretability research. I've shipped projects across ML, web dev, and quant finance—from
-          teaching platforms used by 120+ students to trading strategies using neural networks.
+          Working to Learn. Learning at work. Passionate about understanding the un-understood.
+          Making the world better enjoyer.
         </p>
       </div>
 

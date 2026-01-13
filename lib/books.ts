@@ -18,7 +18,7 @@ export const currentlyReading: CurrentRead[] = [
     title: "Anna Karenina",
     author: "Leo Tolstoy",
     progress: "Page 311 / 817",
-    blurb: "Faulkner said the three greatest novels are Anna Karenina, Anna Karenina, and Anna Karenina. Part of a recent interest in Tsarist Russia and understanding the events leading to revolution and catastrophe.",
+    blurb: "\"The three greatest novels are Anna Karenina, Anna Karenina, and Anna Karenina.\" — Faulkner. Part of a recent interest in Tsarist Russia and the events leading to revolution and catastrophe.",
   },
   {
     title: "Stalin: Paradoxes of Power",
@@ -44,9 +44,7 @@ export const favouriteBooks: Book[] = [
   { title: "The Will of the Many", author: "James Islington", rating: 5 },
   { title: "Gideon the Ninth", author: "Tamsyn Muir", rating: 5 },
   { title: "The Anxious Generation", author: "Jonathan Haidt", rating: 5 },
-  { title: "Project Hail Mary", author: "Andy Weir", rating: 4 },
   { title: "Children of Time", author: "Adrian Tchaikovsky", rating: 4 },
-  { title: "Know My Name", author: "Chanel Miller", rating: 5 },
   { title: "The Tipping Point", author: "Malcolm Gladwell", rating: 5 },
   { title: "Outliers", author: "Malcolm Gladwell", rating: 5 },
   { title: "Where the Crawdads Sing", author: "Delia Owens", rating: 5 },

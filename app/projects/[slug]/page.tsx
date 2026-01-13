@@ -137,16 +137,13 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       )}
 
-      {/* Sol Demo - interactive terminal simulation */}
+      {/* Sol Demo - animated sunrise terminal */}
       {project.slug === "sol-sunrise-lamp" && (
         <div className="mb-8">
           <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="tag">Interactive Demo</span>
+            <span className="tag">Terminal UI</span>
           </h2>
           <SolDemo />
-          <p className="text-xs text-[var(--muted)] mt-2 text-center">
-            Click &quot;Run Demo&quot; to see a compressed 8-second sunrise simulation
-          </p>
         </div>
       )}
 

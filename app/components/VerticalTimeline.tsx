@@ -43,7 +43,7 @@ function getDisplayTitle(item: TimelineItem): string {
     "Consultant → Project Manager": "QSC",
     "Campus Ambassador": "RBC Ambassador",
     "Analyst → Project Manager": "QUANTT PM",
-    "Future Blue President": "FUBU President",
+    "President - Future Blue": "Future Blue President",
     "Future Blue Member": "Future Blue",
     // Education - show year context
     "Queen's - 1st Year": "1st Year: Engineering",
@@ -78,7 +78,17 @@ function getItemPositionInYear(
   return { startPct: Math.max(0, startPct), endPct: Math.min(100, endPct) };
 }
 
+// Type priority for layer ordering: education on top, then work, leadership, project, hackathon
+const TYPE_PRIORITY: Record<string, number> = {
+  education: 0,
+  work: 1,
+  leadership: 2,
+  project: 3,
+  hackathon: 4,
+};
+
 // Assign items to rows within a year to avoid overlap
+// Items are sorted by type priority first, then by start date
 function assignRows(
   items: TimelineItem[],
   yearStart: Date,
@@ -89,7 +99,13 @@ function assignRows(
 
   const yearItems = items
     .filter(item => itemOverlapsYear(item, yearStart, yearEnd))
-    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+    .sort((a, b) => {
+      // First sort by type priority
+      const typeDiff = (TYPE_PRIORITY[a.type] ?? 5) - (TYPE_PRIORITY[b.type] ?? 5);
+      if (typeDiff !== 0) return typeDiff;
+      // Then by start date
+      return a.startDate.getTime() - b.startDate.getTime();
+    });
 
   for (const item of yearItems) {
     const { startPct, endPct } = getItemPositionInYear(item, yearStart, yearEnd);

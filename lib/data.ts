@@ -53,7 +53,7 @@ export const experience = [
     company: "Queen's University",
     period: "Jan 2025 - Apr 2025",
     accomplishments: [
-      "Led 2 weekly tutorials teaching linear algebra fundamentals to 80+ students",
+      "Led 2 weekly tutorials, proctored midterms, ran pre-exam helpdesks and EngLinks review sessions for 80+ students",
       "Built learning platform (apsc174.jackswitzer.com) with interactive visualizations used by 80+ students",
     ],
     technologies: ["Next.js", "MDX", "TypeScript", "Tailwind CSS", "KaTeX"],
@@ -97,9 +97,9 @@ export const extracurriculars = [
   },
   {
     id: "future-blue-president",
-    role: "Future Blue President",
+    role: "President - Future Blue",
     organization: "IBM",
-    period: "Jul 2025 - Jan 2026",
+    period: "Jul 2025 - Apr 2026",
     accomplishments: [
       "Led IBM's intern student council as President",
       "Organized 3 major networking events including meetings with IBM Canada President and 2 VPs",
@@ -131,10 +131,9 @@ export const extracurriculars = [
     id: "quantt",
     role: "Analyst → Project Manager",
     organization: "QUANTT (Queen's Quantitative Trading Team)",
-    period: "Sep 2023 - Apr 2025",
+    period: "Sep 2024 - Mar 2025",
     accomplishments: [
-      "Analyst (2nd year): Learned quantitative finance fundamentals and built options pricing models",
-      "Project Manager (3rd year): Managed 2 teams developing quantitative trading strategies using ML and NLP",
+      "Project Manager: Managed 2 teams developing quantitative trading strategies using ML and NLP",
       "Taught data science and machine learning sessions to 60+ club members",
     ],
     github: [
@@ -227,7 +226,7 @@ export const projects: Project[] = [
     slug: "nyt-games",
     name: "NYT Games Solver",
     type: "personal",
-    period: "2025",
+    period: "Jan 2025 - Feb 2025",
     featured: false,
     visible: true,
     status: "complete",
@@ -409,7 +408,7 @@ export const projects: Project[] = [
     slug: "sol-sunrise-lamp",
     name: "Sol - Sunrise Alarm Clock",
     type: "personal",
-    period: "2026",
+    period: "Dec 2025",
     featured: false,
     visible: true,
     status: "complete",

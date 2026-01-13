@@ -92,6 +92,13 @@ export function SAEResearch() {
                 <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "20%" }}>40%</div>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
+              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "18%" }}>18%</div>
+                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "17%" }}>35%</div>
+              </div>
+            </div>
           </div>
 
           {/* Math */}
@@ -104,6 +111,13 @@ export function SAEResearch() {
                 <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "6%" }}></div>
               </div>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
+              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "71%" }}>71%</div>
+                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "7%" }}>78%</div>
+              </div>
+            </div>
           </div>
 
           {/* Knowledge */}
@@ -113,6 +127,12 @@ export function SAEResearch() {
               <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">Qwen3</span>
               <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
                 <div className="bg-gradient-to-r from-amber-600 to-yellow-400 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "100%" }}>100%</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
+              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-gradient-to-r from-amber-600 to-yellow-400 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "93%" }}>93%</div>
               </div>
             </div>
           </div>

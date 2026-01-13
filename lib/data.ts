@@ -11,9 +11,8 @@ export const personal = {
 export const education = {
   institution: "Queen's University",
   degree: "Bachelor of Applied Mathematics & Computer Engineering",
-  gpa: "3.7",
+  gpa: "3.35",
   graduation: "May 2027",
-  certificate: "Certificate in Business",
   relevantCourses: [
     "Object Oriented Programming",
     "Data Structures and Algorithms",

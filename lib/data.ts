@@ -519,8 +519,18 @@ function parsePeriodString(period: string): { start: Date; end?: Date } {
     };
   }
 
-  // Single date or year
-  return { start: parseDate(normalized), end: undefined };
+  // Single date or year - for single month entries, set end to end of that month
+  const start = parseDate(normalized);
+  // Check if it's a month+year format (e.g., "Oct 2024") - give it a 1-month duration
+  const monthYearMatch = normalized.match(/^([a-z]+)\s+(\d{4})$/);
+  if (monthYearMatch) {
+    const month = monthMap[monthYearMatch[1]] ?? 0;
+    const year = parseInt(monthYearMatch[2]);
+    // End at the last day of that month
+    const end = new Date(year, month + 1, 0); // day 0 of next month = last day of this month
+    return { start, end };
+  }
+  return { start, end: undefined };
 }
 
 function parseDate(str: string): Date {

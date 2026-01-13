@@ -20,18 +20,18 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 // Calendar years (Jan-Dec), most recent first
 const CALENDAR_YEARS = [2027, 2026, 2025, 2024, 2023, 2022];
 
-// Clean, short titles - no subtitles needed, type tag shows context
+// Clean titles with context where needed
 function getDisplayTitle(item: TimelineItem): string {
   const titles: Record<string, string> = {
     // Work
-    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM",
-    "RBC Data Scientist": "RBC",
-    "RBC Data Analyst": "RBC",
+    "IBM Software Developer - WatsonX Code Assistant for Z": "IBM: AI Tooling",
+    "RBC Data Scientist": "RBC: Data Science",
+    "RBC Data Analyst": "RBC: Data Analyst",
     // Research/Projects
     "Quantization x Interpretability": "Quant x Interp",
     "Slay the Spire Watcher Solver": "StS Solver",
     "Linear Algebra Learning Platform": "Lin Alg Site",
-    "Black Box Deconstruction - Control Systems": "Control Sys",
+    "Black Box Deconstruction - Control Systems": "Black Box",
     "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
     "Chrono - Linguistic Pattern Forecasting": "Chrono",
     "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
@@ -42,12 +42,14 @@ function getDisplayTitle(item: TimelineItem): string {
     "Teaching Assistant: Linear Algebra I": "Lin Alg TA",
     "Consultant → Project Manager": "QSC",
     "Campus Ambassador": "RBC Ambassador",
-    "Analyst → Project Manager": "QUANTT",
+    "Analyst → Project Manager": "QUANTT PM",
     "Future Blue President": "FUBU President",
     "Future Blue Member": "Future Blue",
-    // Education
-    "Queen's - Engineering": "Queen's",
-    "Queen's - Applied Math & Comp Eng": "Queen's",
+    // Education - show year context
+    "Queen's - 1st Year": "1st Year: Engineering",
+    "Queen's - 2nd Year": "2nd Year: Applied Math",
+    "Queen's - 3rd Year": "3rd Year: Applied Math",
+    "Queen's - 4th Year": "4th Year: Applied Math",
     // Special
     "Anthropic Fellow": "Anthropic Fellow 🤞",
   };
@@ -141,11 +143,11 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
 
   // Add Queen's education by academic year (only during school: Sep-Apr)
   const queensYears = [
-    { id: "queens-1", title: "Queen's - Engineering", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30) },
-    { id: "queens-2", title: "Queen's - Applied Math & Comp Eng", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30) },
-    { id: "queens-3", title: "Queen's - Applied Math & Comp Eng", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30) },
+    { id: "queens-1", title: "Queen's - 1st Year", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30) },
+    { id: "queens-2", title: "Queen's - 2nd Year", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30) },
+    { id: "queens-3", title: "Queen's - 3rd Year", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30) },
     // Gap year 2025-26 for IBM
-    { id: "queens-4", title: "Queen's - Applied Math & Comp Eng", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30) },
+    { id: "queens-4", title: "Queen's - 4th Year", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30) },
   ];
 
   for (const q of queensYears) {

@@ -313,7 +313,7 @@ export const projects: Project[] = [
     slug: "faim-hackathon",
     name: "McGill FAIM Hackathon - Portfolio Optimization",
     type: "quant",
-    period: "Oct 2024",
+    period: "Jan 2025",
     featured: false,
     visible: true,
     status: "complete",
@@ -420,7 +420,8 @@ export const projects: Project[] = [
       "Exposed as MCP server for Claude Desktop integration",
     ],
     technologies: ["Python", "MCP", "asyncio"],
-    github: { repo: "Lamp", account: "jackswitzer" },
+    github: { repo: "sol", account: "JackSwitzer" },
+    link: "https://github.com/JackSwitzer/sol",
   },
 ];
 

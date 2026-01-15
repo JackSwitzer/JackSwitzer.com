@@ -84,37 +84,30 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-lg font-mono">
-      {/* Main sky area */}
-      <div className="relative" style={{ height: 220 }}>
-        <SkyCanvas date={torontoTime.date} />
+    <div className="relative overflow-hidden rounded-lg font-mono" style={{ height: 220 }}>
+      {/* Sky background */}
+      <SkyCanvas date={torontoTime.date} />
 
-        {/* Test mode indicator */}
-        {(time || date || (scrub && !animating)) && (
-          <div
-            className="absolute top-2 right-2 text-xs px-2 py-1 rounded"
-            style={{
-              backgroundColor: "rgba(255, 100, 100, 0.3)",
-              color: "rgba(255, 255, 255, 0.7)",
-            }}
-          >
-            TEST MODE
-          </div>
-        )}
-      </div>
+      {/* Test mode indicator */}
+      {(time || date || (scrub && !animating)) && (
+        <div
+          className="absolute top-2 right-2 text-xs px-2 py-1 rounded"
+          style={{
+            backgroundColor: "rgba(255, 100, 100, 0.3)",
+            color: "rgba(255, 255, 255, 0.7)",
+          }}
+        >
+          TEST MODE
+        </div>
+      )}
 
-      {/* Bottom bar with date/time */}
-      <div
-        className="relative px-3 py-1.5 flex items-center justify-between"
-        style={{
-          backgroundColor: solar.borderColor,
-          transition: "background-color 1s ease",
-        }}
-      >
+      {/* Bottom overlay with date/time and animate button */}
+      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 flex items-center justify-between">
         <span
           className="text-sm font-medium tracking-wide"
           style={{
             color: "#ff6b35",
+            textShadow: "0 1px 3px rgba(0,0,0,0.5)",
           }}
         >
           {solar.isDaytime ? "☀" : "☽"} {torontoTime.formatted.full}
@@ -126,9 +119,9 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
           disabled={animating}
           className="text-xs px-2 py-1 rounded transition-colors"
           style={{
-            backgroundColor: animating ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)",
+            backgroundColor: animating ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.25)",
             color: "#ff6b35",
-            opacity: animating ? 0.5 : 1,
+            opacity: animating ? 0.6 : 1,
             cursor: animating ? "default" : "pointer",
           }}
         >
@@ -141,28 +134,18 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
 
 function SolDemoSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-lg font-mono">
+    <div
+      className="relative overflow-hidden rounded-lg font-mono"
+      style={{
+        height: 220,
+        background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
+      }}
+    >
       <div
-        className="relative"
-        style={{
-          height: 220,
-          background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
-        }}
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ color: "rgba(255, 255, 255, 0.3)" }}
       >
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ color: "rgba(255, 255, 255, 0.3)" }}
-        >
-          Loading...
-        </div>
-      </div>
-      <div
-        className="px-4 py-3 flex items-center justify-center"
-        style={{ backgroundColor: "#4a4a6a" }}
-      >
-        <span className="text-sm" style={{ color: "#1a1a1a" }}>
-          ...
-        </span>
+        Loading...
       </div>
     </div>
   );

@@ -61,14 +61,6 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
           visible={moon.isVisible}
         />
       )}
-
-      {/* Subtle horizon line */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[1px]"
-        style={{
-          backgroundColor: "rgba(255,255,255,0.1)",
-        }}
-      />
     </div>
   );
 }

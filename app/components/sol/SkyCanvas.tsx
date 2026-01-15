@@ -13,7 +13,7 @@ interface SkyCanvasProps {
 
 export function SkyCanvas({ date }: SkyCanvasProps) {
   const solar = useSolarPosition(date);
-  const moon = useMoonPhase(date);
+  const moon = useMoonPhase(date, solar.position.altitude, solar.position.azimuth);
 
   const skyGradient = getSkyGradientCSS(solar.colors);
   const groundColors = getGroundColors(solar.position.altitude);
@@ -59,6 +59,7 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
           position={moon.position}
           phaseInfo={moon.phaseInfo}
           visible={moon.isVisible}
+          shadowAngle={moon.shadowAngle}
         />
       )}
     </div>

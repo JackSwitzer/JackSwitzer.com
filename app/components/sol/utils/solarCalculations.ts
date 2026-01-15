@@ -269,55 +269,46 @@ function toMinutes(date: Date): number {
 }
 
 // Map solar position to screen coordinates for rendering
+// Uses azimuth for smooth continuous arc (no jumping)
 export function solarToScreen(
   sunPosition: SolarPosition,
   sunTimes: SunTimes,
   currentTime: Date
 ): ScreenPosition {
-  const { altitude } = sunPosition;
+  const { altitude, azimuth } = sunPosition;
 
-  // Use minutes since midnight for comparisons (avoids timezone issues)
-  const currentMins = toMinutes(currentTime);
-  const sunriseMins = toMinutes(sunTimes.sunrise);
-  const sunsetMins = toMinutes(sunTimes.sunset);
-  const noonMins = toMinutes(sunTimes.solarNoon);
-
-  // X position based on time of day
-  // Sunrise = right (90%), Solar noon = center (50%), Sunset = left (10%)
+  // X position based on azimuth for smooth continuous movement
+  // East (90°) = right side, South (180°) = center, West (270°) = left side
+  // Sun rises in east, arcs through south, sets in west
   let x: number;
 
-  if (currentMins <= sunriseMins) {
-    // Before sunrise - sun on far right (below horizon)
-    x = 95;
-  } else if (currentMins >= sunsetMins) {
-    // After sunset - sun on far left (below horizon)
-    x = 5;
-  } else if (currentMins <= noonMins) {
-    // Morning: sunrise (90%) -> noon (50%)
-    const progress = (currentMins - sunriseMins) / (noonMins - sunriseMins);
-    x = 90 - progress * 40; // 90 -> 50
+  if (azimuth >= 90 && azimuth <= 270) {
+    // Sun in southern sky (visible arc): 90° -> 90%, 180° -> 50%, 270° -> 10%
+    x = 90 - ((azimuth - 90) / 180) * 80;
+  } else if (azimuth < 90) {
+    // Sun in eastern sky (before/after rise): smoothly approach from right
+    x = 90 + ((90 - azimuth) / 90) * 10; // 0° -> 100%, 90° -> 90%
   } else {
-    // Afternoon: noon (50%) -> sunset (10%)
-    const progress = (currentMins - noonMins) / (sunsetMins - noonMins);
-    x = 50 - progress * 40; // 50 -> 10
+    // Sun in western sky (after set): smoothly exit to left
+    x = 10 - ((azimuth - 270) / 90) * 10; // 270° -> 10%, 360° -> 0%
   }
 
   // Y position based on altitude
   const horizonY = 80;
-  const peakY = 25; // Don't go too close to top
-  const maxAltitude = 25; // January max altitude for Toronto is ~25°
+  const peakY = 25;
+  const maxAltitude = 70; // Max possible for Toronto
 
+  let y: number;
   if (altitude <= 0) {
-    return { x, y: 100 }; // Below horizon
+    y = 100; // Below horizon
+  } else {
+    const altitudeRatio = Math.min(altitude / maxAltitude, 1);
+    y = horizonY - (horizonY - peakY) * altitudeRatio;
   }
 
-  // Linear mapping for altitude
-  const altitudeRatio = Math.min(altitude / maxAltitude, 1);
-  const y = horizonY - (horizonY - peakY) * altitudeRatio;
-
   return {
-    x: Math.max(10, Math.min(90, x)),
-    y: Math.max(peakY, Math.min(horizonY, y)),
+    x: Math.max(0, Math.min(100, x)),
+    y: Math.max(peakY, Math.min(100, y)),
   };
 }
 

@@ -385,59 +385,30 @@ export function getMoonAltAz(
 }
 
 // Get moon position with screen coordinates
-// Uses time-based X positioning (like sun) for visual consistency
+// Uses azimuth for smooth continuous arc (matches sun positioning)
 export function getMoonPosition(date: Date = new Date()): MoonPosition {
   const { altitude, azimuth } = getMoonAltAz(date);
 
-  // Get moonrise/set times for today to calculate X position based on time
-  const moonTimes = getMoonRiseSet(date);
-
-  const currentMins = date.getHours() * 60 + date.getMinutes();
-
+  // X position based on azimuth for smooth continuous movement
+  // East (90°) = right side, South (180°) = center, West (270°) = left side
   let x: number;
+
+  if (azimuth >= 90 && azimuth <= 270) {
+    // Moon in southern sky (visible arc): 90° -> 90%, 180° -> 50%, 270° -> 10%
+    x = 90 - ((azimuth - 90) / 180) * 80;
+  } else if (azimuth < 90) {
+    // Moon in eastern sky: smoothly approach from right
+    x = 90 + ((90 - azimuth) / 90) * 10;
+  } else {
+    // Moon in western sky: smoothly exit to left
+    x = 10 - ((azimuth - 270) / 90) * 10;
+  }
+
+  // Y position based on altitude
   const horizonY = 80;
   const peakY = 15;
   const maxAltitude = 70;
 
-  if (moonTimes.rise && moonTimes.set && moonTimes.transit) {
-    const riseMins = moonTimes.rise.getHours() * 60 + moonTimes.rise.getMinutes();
-    const setMins = moonTimes.set.getHours() * 60 + moonTimes.set.getMinutes();
-    const transitMins = moonTimes.transit.getHours() * 60 + moonTimes.transit.getMinutes();
-
-    // Handle case where moonset is after midnight (next day)
-    const adjustedSetMins = setMins < riseMins ? setMins + 1440 : setMins;
-    const adjustedTransitMins = transitMins < riseMins ? transitMins + 1440 : transitMins;
-    const adjustedCurrentMins = currentMins < riseMins && moonTimes.set && setMins < riseMins
-      ? currentMins + 1440
-      : currentMins;
-
-    if (adjustedCurrentMins < riseMins) {
-      // Before moonrise
-      x = 95;
-    } else if (adjustedCurrentMins > adjustedSetMins) {
-      // After moonset
-      x = 5;
-    } else if (adjustedCurrentMins <= adjustedTransitMins) {
-      // Rising: moonrise (90%) -> transit (50%)
-      const progress = (adjustedCurrentMins - riseMins) / (adjustedTransitMins - riseMins);
-      x = 90 - progress * 40;
-    } else {
-      // Setting: transit (50%) -> moonset (10%)
-      const progress = (adjustedCurrentMins - adjustedTransitMins) / (adjustedSetMins - adjustedTransitMins);
-      x = 50 - progress * 40;
-    }
-  } else {
-    // Fallback to azimuth-based if no rise/set times (circumpolar cases)
-    if (azimuth >= 90 && azimuth <= 270) {
-      x = 90 - ((azimuth - 90) / 180) * 80;
-    } else if (azimuth < 90) {
-      x = 90 + ((90 - azimuth) / 90) * 5;
-    } else {
-      x = 10 - ((azimuth - 270) / 90) * 5;
-    }
-  }
-
-  // Y position based on altitude
   let y: number;
   if (altitude <= 0) {
     y = 100; // Below horizon
@@ -449,7 +420,7 @@ export function getMoonPosition(date: Date = new Date()): MoonPosition {
   return {
     altitude,
     azimuth,
-    x: Math.max(5, Math.min(95, x)),
+    x: Math.max(0, Math.min(100, x)),
     y: Math.max(peakY, Math.min(100, y)),
   };
 }
@@ -502,6 +473,41 @@ export function getMoonRiseSet(
 export function isMoonVisible(date: Date = new Date()): boolean {
   const { altitude } = getMoonAltAz(date);
   return altitude > -5; // Same buffer as sun for visual consistency
+}
+
+// Calculate the rotation angle for moon shadow rendering
+// The illuminated side of the moon always faces the sun
+// Returns angle in degrees where 0 = sun to the right, 90 = sun above, etc.
+export function getMoonShadowAngle(
+  date: Date,
+  sunAltitude: number,
+  sunAzimuth: number
+): number {
+  const moonPos = getMoonAltAz(date);
+
+  // Calculate the angle from moon to sun
+  // This determines which direction the lit portion should face
+  const moonAz = moonPos.azimuth;
+  const moonAlt = moonPos.altitude;
+
+  // Simple 2D angle calculation based on azimuth difference
+  // The sun's direction relative to the moon determines shadow orientation
+  let azDiff = sunAzimuth - moonAz;
+
+  // Normalize to -180 to 180
+  while (azDiff > 180) azDiff -= 360;
+  while (azDiff < -180) azDiff += 360;
+
+  // Calculate vertical component based on altitude difference
+  const altDiff = sunAltitude - moonAlt;
+
+  // Convert to angle: atan2(vertical, horizontal)
+  // This gives us the direction the sun is relative to the moon
+  const angle = Math.atan2(altDiff, azDiff) * (180 / Math.PI);
+
+  // The shadow should be opposite to the sun direction
+  // Add 180 to point shadow away from sun, then adjust for rendering
+  return angle;
 }
 
 // Get next significant moon phase

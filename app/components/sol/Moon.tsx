@@ -7,9 +7,10 @@ interface MoonProps {
   position: MoonPosition;
   phaseInfo: MoonPhaseInfo;
   visible: boolean;
+  shadowAngle?: number;
 }
 
-export function Moon({ position, phaseInfo, visible }: MoonProps) {
+export function Moon({ position, phaseInfo, visible, shadowAngle = 0 }: MoonProps) {
   const { x, y, altitude } = position;
   const { phase, illumination, isWaxing } = phaseInfo;
 
@@ -81,8 +82,15 @@ export function Moon({ position, phaseInfo, visible }: MoonProps) {
             boxShadow: "0 0 15px rgba(240, 240, 232, 0.5)",
           }}
         >
-          {/* Shadow overlay for phase */}
-          <MoonShadow phase={phase} isWaxing={isWaxing} illumination={illumination} />
+          {/* Shadow overlay for phase - rotated to face sun */}
+          <div
+            className="absolute inset-0"
+            style={{
+              transform: `rotate(${shadowAngle}deg)`,
+            }}
+          >
+            <MoonShadow phase={phase} isWaxing={isWaxing} illumination={illumination} />
+          </div>
         </div>
       </div>
     </div>

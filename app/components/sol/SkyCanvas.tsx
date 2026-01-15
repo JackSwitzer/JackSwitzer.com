@@ -18,9 +18,12 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
   const skyGradient = getSkyGradientCSS(solar.colors);
   const groundColors = getGroundColors(solar.position.altitude);
 
-  // Show sun during day, moon at night (with some overlap during twilight)
+  // Show sun when above horizon (with some buffer for glow effect)
   const showSun = solar.position.altitude > -5;
-  const showMoon = solar.position.altitude < 10 && moon.isVisible;
+
+  // Show moon when it's above the horizon (based on accurate astronomical calculation)
+  // moon.isVisible already checks altitude > 0
+  const showMoon = moon.isVisible;
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -29,7 +32,7 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
         className="absolute inset-0"
         style={{
           background: skyGradient,
-          transition: "background 2s ease",
+          transition: "background 0.3s ease",
         }}
       />
 
@@ -59,30 +62,13 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
         />
       )}
 
-      {/* Horizon/ground area */}
+      {/* Subtle horizon line */}
       <div
-        className="absolute bottom-0 left-0 right-0"
+        className="absolute bottom-0 left-0 right-0 h-[1px]"
         style={{
-          height: "15%",
+          backgroundColor: "rgba(255,255,255,0.1)",
         }}
-      >
-        {/* Horizon line */}
-        <div
-          className="h-[2px]"
-          style={{
-            backgroundColor: groundColors.horizon,
-            transition: "background-color 2s ease",
-          }}
-        />
-        {/* Ground */}
-        <div
-          className="h-full"
-          style={{
-            backgroundColor: groundColors.ground,
-            transition: "background-color 2s ease",
-          }}
-        />
-      </div>
+      />
     </div>
   );
 }

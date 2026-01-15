@@ -1,14 +1,282 @@
-// Accurate lunar calculations for moon phase and position
-// Based on astronomical algorithms
+// Accurate lunar calculations using Meeus's algorithms
+// Reference: "Astronomical Algorithms" by Jean Meeus, Chapter 47
+// Provides ~0.5° accuracy for moon position
 
 import { TORONTO_LAT, TORONTO_LON, TORONTO_TZ } from "./solarCalculations";
 
 // Synodic month (new moon to new moon) in days
-const SYNODIC_MONTH = 29.53058867;
+const SYNODIC_MONTH = 29.530588861;
 
-// Known new moon reference (UTC)
-// January 11, 2024 at 11:57 UTC was a new moon
+// Known new moon reference (UTC) - January 11, 2024 at 11:57 UTC
 const KNOWN_NEW_MOON = new Date("2024-01-11T11:57:00Z");
+
+// Convert degrees to radians
+function toRad(deg: number): number {
+  return (deg * Math.PI) / 180;
+}
+
+// Convert radians to degrees
+function toDeg(rad: number): number {
+  return (rad * 180) / Math.PI;
+}
+
+// Normalize angle to 0-360 range
+function normalize360(deg: number): number {
+  let result = deg % 360;
+  if (result < 0) result += 360;
+  return result;
+}
+
+// Get Julian Day from Date
+function getJulianDay(date: Date): number {
+  return date.getTime() / 86400000 + 2440587.5;
+}
+
+// Get Julian Century from Julian Day (J2000.0 epoch)
+function getJulianCentury(jd: number): number {
+  return (jd - 2451545.0) / 36525;
+}
+
+// Get Toronto timezone offset in minutes
+function getTorontoOffset(date: Date): number {
+  const utcDate = new Date(date.toLocaleString("en-US", { timeZone: "UTC" }));
+  const torontoDate = new Date(date.toLocaleString("en-US", { timeZone: TORONTO_TZ }));
+  return (utcDate.getTime() - torontoDate.getTime()) / 60000;
+}
+
+// ============================================================================
+// LUNAR POSITION CALCULATIONS (Meeus Chapter 47)
+// ============================================================================
+
+interface LunarOrbitalElements {
+  Lp: number;  // Moon's mean longitude (degrees)
+  D: number;   // Mean elongation of the Moon (degrees)
+  M: number;   // Sun's mean anomaly (degrees)
+  Mp: number;  // Moon's mean anomaly (degrees)
+  F: number;   // Moon's argument of latitude (degrees)
+  omega: number; // Longitude of Moon's ascending node (degrees)
+}
+
+// Calculate lunar orbital elements for a given Julian Century
+function getLunarOrbitalElements(T: number): LunarOrbitalElements {
+  // Moon's mean longitude (degrees)
+  const Lp = normalize360(
+    218.3164477 + 481267.88123421 * T - 0.0015786 * T * T + T * T * T / 538841 - T * T * T * T / 65194000
+  );
+
+  // Mean elongation of the Moon (degrees)
+  const D = normalize360(
+    297.8501921 + 445267.1114034 * T - 0.0018819 * T * T + T * T * T / 545868 - T * T * T * T / 113065000
+  );
+
+  // Sun's mean anomaly (degrees)
+  const M = normalize360(
+    357.5291092 + 35999.0502909 * T - 0.0001536 * T * T + T * T * T / 24490000
+  );
+
+  // Moon's mean anomaly (degrees)
+  const Mp = normalize360(
+    134.9633964 + 477198.8675055 * T + 0.0087414 * T * T + T * T * T / 69699 - T * T * T * T / 14712000
+  );
+
+  // Moon's argument of latitude (angular distance from ascending node)
+  const F = normalize360(
+    93.2720950 + 483202.0175233 * T - 0.0036539 * T * T - T * T * T / 3526000 + T * T * T * T / 863310000
+  );
+
+  // Longitude of Moon's ascending node
+  const omega = normalize360(
+    125.0445479 - 1934.1362891 * T + 0.0020754 * T * T + T * T * T / 467441 - T * T * T * T / 60616000
+  );
+
+  return { Lp, D, M, Mp, F, omega };
+}
+
+// Periodic terms for lunar longitude (sigma l) - simplified set for ~0.5° accuracy
+// Format: [D, M, Mp, F, coefficient in 0.000001 degrees]
+const LONGITUDE_TERMS: [number, number, number, number, number][] = [
+  [0, 0, 1, 0, 6288774],
+  [2, 0, -1, 0, 1274027],
+  [2, 0, 0, 0, 658314],
+  [0, 0, 2, 0, 213618],
+  [0, 1, 0, 0, -185116],
+  [0, 0, 0, 2, -114332],
+  [2, 0, -2, 0, 58793],
+  [2, -1, -1, 0, 57066],
+  [2, 0, 1, 0, 53322],
+  [2, -1, 0, 0, 45758],
+  [0, 1, -1, 0, -40923],
+  [1, 0, 0, 0, -34720],
+  [0, 1, 1, 0, -30383],
+  [2, 0, 0, -2, 15327],
+  [0, 0, 1, 2, -12528],
+  [0, 0, 1, -2, 10980],
+  [4, 0, -1, 0, 10675],
+  [0, 0, 3, 0, 10034],
+  [4, 0, -2, 0, 8548],
+  [2, 1, -1, 0, -7888],
+];
+
+// Periodic terms for lunar latitude (sigma b) - simplified set
+const LATITUDE_TERMS: [number, number, number, number, number][] = [
+  [0, 0, 0, 1, 5128122],
+  [0, 0, 1, 1, 280602],
+  [0, 0, 1, -1, 277693],
+  [2, 0, 0, -1, 173237],
+  [2, 0, -1, 1, 55413],
+  [2, 0, -1, -1, 46271],
+  [2, 0, 0, 1, 32573],
+  [0, 0, 2, 1, 17198],
+  [2, 0, 1, -1, 9266],
+  [0, 0, 2, -1, 8822],
+  [2, -1, 0, -1, 8216],
+  [2, 0, -2, -1, 4324],
+  [2, 0, 1, 1, 4200],
+  [2, 1, 0, -1, -3359],
+  [2, -1, -1, 1, 2463],
+  [2, -1, 0, 1, 2211],
+  [2, -1, -1, -1, 2065],
+  [0, 1, -1, -1, -1870],
+  [4, 0, -1, -1, 1828],
+  [0, 1, 0, 1, -1794],
+];
+
+// Calculate Moon's geocentric ecliptic coordinates
+function getMoonEclipticCoords(date: Date): { longitude: number; latitude: number; distance: number } {
+  const jd = getJulianDay(date);
+  const T = getJulianCentury(jd);
+  const elements = getLunarOrbitalElements(T);
+
+  // Calculate eccentricity correction factor
+  const E = 1 - 0.002516 * T - 0.0000074 * T * T;
+  const E2 = E * E;
+
+  // Sum longitude terms
+  let sigmaL = 0;
+  for (const [d, m, mp, f, coef] of LONGITUDE_TERMS) {
+    const arg = d * elements.D + m * elements.M + mp * elements.Mp + f * elements.F;
+    let term = coef * Math.sin(toRad(arg));
+    // Apply eccentricity correction for terms involving M
+    if (Math.abs(m) === 1) term *= E;
+    if (Math.abs(m) === 2) term *= E2;
+    sigmaL += term;
+  }
+
+  // Sum latitude terms
+  let sigmaB = 0;
+  for (const [d, m, mp, f, coef] of LATITUDE_TERMS) {
+    const arg = d * elements.D + m * elements.M + mp * elements.Mp + f * elements.F;
+    let term = coef * Math.sin(toRad(arg));
+    if (Math.abs(m) === 1) term *= E;
+    if (Math.abs(m) === 2) term *= E2;
+    sigmaB += term;
+  }
+
+  // Additional corrections
+  const A1 = normalize360(119.75 + 131.849 * T);
+  const A2 = normalize360(53.09 + 479264.29 * T);
+  const A3 = normalize360(313.45 + 481266.484 * T);
+
+  sigmaL += 3958 * Math.sin(toRad(A1));
+  sigmaL += 1962 * Math.sin(toRad(elements.Lp - elements.F));
+  sigmaL += 318 * Math.sin(toRad(A2));
+
+  sigmaB += -2235 * Math.sin(toRad(elements.Lp));
+  sigmaB += 382 * Math.sin(toRad(A3));
+  sigmaB += 175 * Math.sin(toRad(A1 - elements.F));
+  sigmaB += 175 * Math.sin(toRad(A1 + elements.F));
+  sigmaB += 127 * Math.sin(toRad(elements.Lp - elements.Mp));
+  sigmaB += -115 * Math.sin(toRad(elements.Lp + elements.Mp));
+
+  // Moon's geocentric ecliptic longitude and latitude
+  const longitude = normalize360(elements.Lp + sigmaL / 1000000);
+  const latitude = sigmaB / 1000000;
+
+  // Distance calculation (simplified) - in km
+  const distance = 385000.56; // Mean distance, could add perturbations
+
+  return { longitude, latitude, distance };
+}
+
+// Mean obliquity of the ecliptic
+function getMeanObliquity(T: number): number {
+  const seconds = 21.448 - T * (46.8150 + T * (0.00059 - T * 0.001813));
+  return 23 + (26 + seconds / 60) / 60;
+}
+
+// Convert ecliptic to equatorial coordinates
+function eclipticToEquatorial(
+  longitude: number,
+  latitude: number,
+  T: number
+): { rightAscension: number; declination: number } {
+  const obliquity = toRad(getMeanObliquity(T));
+  const lon = toRad(longitude);
+  const lat = toRad(latitude);
+
+  // Right ascension
+  const sinRA = Math.sin(lon) * Math.cos(obliquity) - Math.tan(lat) * Math.sin(obliquity);
+  const cosRA = Math.cos(lon);
+  let ra = toDeg(Math.atan2(sinRA, cosRA));
+  if (ra < 0) ra += 360;
+
+  // Declination
+  const sinDec = Math.sin(lat) * Math.cos(obliquity) + Math.cos(lat) * Math.sin(obliquity) * Math.sin(lon);
+  const dec = toDeg(Math.asin(sinDec));
+
+  return { rightAscension: ra, declination: dec };
+}
+
+// Calculate Local Sidereal Time (degrees)
+function getLocalSiderealTime(date: Date, longitude: number): number {
+  const jd = getJulianDay(date);
+  const T = (jd - 2451545.0) / 36525;
+
+  // Greenwich Mean Sidereal Time at 0h UT
+  let theta0 = 280.46061837 + 360.98564736629 * (jd - 2451545.0) +
+    0.000387933 * T * T - T * T * T / 38710000;
+
+  theta0 = normalize360(theta0);
+
+  // Local Sidereal Time
+  const lst = normalize360(theta0 + longitude);
+
+  return lst;
+}
+
+// Convert equatorial to horizontal (altitude/azimuth) coordinates
+function equatorialToHorizontal(
+  rightAscension: number,
+  declination: number,
+  date: Date,
+  latitude: number,
+  longitude: number
+): { altitude: number; azimuth: number } {
+  const lst = getLocalSiderealTime(date, longitude);
+  const hourAngle = normalize360(lst - rightAscension);
+  const ha = toRad(hourAngle);
+  const dec = toRad(declination);
+  const lat = toRad(latitude);
+
+  // Calculate altitude
+  const sinAlt = Math.sin(dec) * Math.sin(lat) + Math.cos(dec) * Math.cos(lat) * Math.cos(ha);
+  const altitude = toDeg(Math.asin(sinAlt));
+
+  // Calculate azimuth
+  const cosA = (Math.sin(dec) - Math.sin(lat) * sinAlt) / (Math.cos(lat) * Math.cos(toRad(altitude)));
+  let azimuth = toDeg(Math.acos(Math.max(-1, Math.min(1, cosA))));
+
+  // Correct azimuth based on hour angle
+  if (Math.sin(ha) > 0) {
+    azimuth = 360 - azimuth;
+  }
+
+  return { altitude, azimuth };
+}
+
+// ============================================================================
+// PUBLIC API
+// ============================================================================
 
 export type MoonPhaseName =
   | "New Moon"
@@ -25,12 +293,12 @@ export interface MoonPhaseInfo {
   illumination: number; // 0-1 (percentage of moon illuminated)
   age: number; // days since new moon
   phaseName: MoonPhaseName;
-  isWaxing: boolean; // true if moon is growing
+  isWaxing: boolean;
 }
 
 export interface MoonPosition {
   altitude: number; // degrees above horizon
-  azimuth: number; // degrees from north
+  azimuth: number; // degrees from north (0-360, clockwise)
   x: number; // screen position 0-100
   y: number; // screen position 0-100
 }
@@ -40,7 +308,6 @@ export function getMoonPhase(date: Date = new Date()): number {
   const daysSinceNewMoon =
     (date.getTime() - KNOWN_NEW_MOON.getTime()) / (1000 * 60 * 60 * 24);
 
-  // Normalize to 0-1 range
   let phase = (daysSinceNewMoon % SYNODIC_MONTH) / SYNODIC_MONTH;
   if (phase < 0) phase += 1;
 
@@ -59,17 +326,12 @@ export function getMoonAge(date: Date = new Date()): number {
 }
 
 // Get illumination percentage (0-1)
-// Uses cosine function: 0 at new moon, 1 at full moon
 export function getMoonIllumination(phase: number): number {
-  // Illumination follows a cosine curve
-  // At phase 0 (new moon): illumination = 0
-  // At phase 0.5 (full moon): illumination = 1
   return (1 - Math.cos(phase * 2 * Math.PI)) / 2;
 }
 
 // Get the name of the current moon phase
 export function getMoonPhaseName(phase: number): MoonPhaseName {
-  // 8 phases, each covering ~3.69 days
   if (phase < 0.0625 || phase >= 0.9375) return "New Moon";
   if (phase < 0.1875) return "Waxing Crescent";
   if (phase < 0.3125) return "First Quarter";
@@ -91,83 +353,119 @@ export function getMoonPhaseInfo(date: Date = new Date()): MoonPhaseInfo {
   return { phase, illumination, age, phaseName, isWaxing };
 }
 
-// Simplified moon position calculation
-// The moon rises about 50 minutes later each day and follows a similar arc to the sun
-// This is a simplified model - for exact position you'd need full ephemeris calculations
-export function getMoonPosition(date: Date = new Date()): MoonPosition {
-  const moonAge = getMoonAge(date);
+// Get accurate moon position (altitude/azimuth) for Toronto
+export function getMoonAltAz(
+  date: Date,
+  lat: number = TORONTO_LAT,
+  lon: number = TORONTO_LON
+): { altitude: number; azimuth: number; declination: number } {
+  const jd = getJulianDay(date);
+  const T = getJulianCentury(jd);
 
-  // Get Toronto time
-  const torontoTime = new Date(
-    date.toLocaleString("en-US", { timeZone: TORONTO_TZ })
+  // Get ecliptic coordinates
+  const ecliptic = getMoonEclipticCoords(date);
+
+  // Convert to equatorial
+  const equatorial = eclipticToEquatorial(ecliptic.longitude, ecliptic.latitude, T);
+
+  // Convert to horizontal
+  const horizontal = equatorialToHorizontal(
+    equatorial.rightAscension,
+    equatorial.declination,
+    date,
+    lat,
+    lon
   );
-  const hours = torontoTime.getHours() + torontoTime.getMinutes() / 60;
 
-  // Moon rises ~50 minutes later each day
-  // At new moon, moon rises/sets roughly with the sun
-  // At full moon, moon rises at sunset and sets at sunrise
-  // Moon's transit delay is roughly moonAge * 50 minutes
+  return {
+    altitude: horizontal.altitude,
+    azimuth: horizontal.azimuth,
+    declination: equatorial.declination,
+  };
+}
 
-  const moonDelayHours = (moonAge * 50) / 60; // Hours after solar noon for lunar transit
+// Get moon position with screen coordinates
+export function getMoonPosition(date: Date = new Date()): MoonPosition {
+  const { altitude, azimuth } = getMoonAltAz(date);
 
-  // Calculate hour angle relative to moon's transit
-  // Moon transits at approximately solar noon + delay hours
-  const transitHour = 12 + moonDelayHours;
-  const hourAngle = (hours - transitHour) * 15; // 15 degrees per hour
+  // Convert altitude/azimuth to screen coordinates
+  // X: East (90°) = right, South (180°) = center, West (270°) = left
+  // Normalize azimuth to screen position (90° = 90%, 180° = 50%, 270° = 10%)
+  let x: number;
+  if (azimuth >= 90 && azimuth <= 270) {
+    // Moon is in southern sky (visible arc)
+    x = 90 - ((azimuth - 90) / 180) * 80; // 90% -> 10%
+  } else if (azimuth < 90) {
+    // Moon is rising in east
+    x = 90 + ((90 - azimuth) / 90) * 5; // Beyond right edge
+  } else {
+    // Moon is setting in west
+    x = 10 - ((azimuth - 270) / 90) * 5; // Beyond left edge
+  }
 
-  // Simplified altitude calculation
-  // Moon can reach max altitude of ~70° at Toronto's latitude
-  // Uses cosine curve based on hour angle
-  const maxAltitude = 70;
-  const altitude = maxAltitude * Math.cos((hourAngle * Math.PI) / 180);
-
-  // Azimuth calculation
-  // Similar to sun: east at rise, south at transit, west at set
-  // Range roughly 90° (east) to 270° (west) during visible portion
-  let azimuth = 180 + hourAngle; // 180 = south at transit
-  if (azimuth < 0) azimuth += 360;
-  if (azimuth >= 360) azimuth -= 360;
-
-  // Convert to screen coordinates
-  // X: east=right (100), west=left (0)
-  // Y: horizon=85, peak=15
-  const padding = 10;
-  const normalizedAzimuth = (azimuth - 90) / 180; // 0 at east (90°), 1 at west (270°)
-  const x = padding + (1 - Math.max(0, Math.min(1, normalizedAzimuth))) * (100 - 2 * padding);
-
-  const horizonY = 85;
-  const peakY = 15;
+  // Y position based on altitude
+  const horizonY = 80;
+  const peakY = 15; // Moon can go higher than sun due to wider declination range
+  const maxAltitude = 70; // Max possible altitude for Toronto
 
   let y: number;
   if (altitude <= 0) {
     y = 100; // Below horizon
   } else {
     const altitudeRatio = Math.min(altitude / maxAltitude, 1);
-    y = horizonY - (horizonY - peakY) * Math.sin(altitudeRatio * (Math.PI / 2));
+    y = horizonY - (horizonY - peakY) * altitudeRatio;
   }
 
   return {
     altitude,
     azimuth,
-    x: Math.max(0, Math.min(100, x)),
+    x: Math.max(5, Math.min(95, x)),
     y: Math.max(peakY, Math.min(100, y)),
   };
 }
 
-// Get the angle for the moon's terminator (shadow edge) for rendering
-// Returns angle in degrees where the shadow should be
-export function getMoonTerminatorAngle(phase: number): number {
-  // At new moon (0) and full moon (0.5), terminator is at edge
-  // First quarter (0.25): terminator at 90° (right edge illuminated)
-  // Last quarter (0.75): terminator at 270° (left edge illuminated)
+// Calculate approximate moonrise time for a given date
+export function getMoonRiseSet(
+  date: Date,
+  lat: number = TORONTO_LAT,
+  lon: number = TORONTO_LON
+): { rise: Date | null; set: Date | null; transit: Date | null } {
+  // Search for moonrise/set by checking altitude at intervals
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
 
-  if (phase < 0.5) {
-    // Waxing: shadow on left, moving right
-    return 270 - phase * 360;
-  } else {
-    // Waning: shadow on right, moving left
-    return 90 + (phase - 0.5) * 360;
+  let rise: Date | null = null;
+  let set: Date | null = null;
+  let transit: Date | null = null;
+  let maxAlt = -90;
+  let prevAlt = getMoonAltAz(startOfDay, lat, lon).altitude;
+
+  // Check every 10 minutes
+  for (let mins = 10; mins <= 1440; mins += 10) {
+    const checkTime = new Date(startOfDay.getTime() + mins * 60000);
+    const { altitude } = getMoonAltAz(checkTime, lat, lon);
+
+    // Detect horizon crossing
+    if (prevAlt <= 0 && altitude > 0 && !rise) {
+      // Moonrise - interpolate for more accuracy
+      const ratio = -prevAlt / (altitude - prevAlt);
+      rise = new Date(startOfDay.getTime() + (mins - 10 + ratio * 10) * 60000);
+    } else if (prevAlt > 0 && altitude <= 0 && !set) {
+      // Moonset - interpolate
+      const ratio = prevAlt / (prevAlt - altitude);
+      set = new Date(startOfDay.getTime() + (mins - 10 + ratio * 10) * 60000);
+    }
+
+    // Track transit (highest point)
+    if (altitude > maxAlt) {
+      maxAlt = altitude;
+      transit = checkTime;
+    }
+
+    prevAlt = altitude;
   }
+
+  return { rise, set, transit };
 }
 
 // Determine if moon is above horizon
@@ -183,7 +481,6 @@ export function getNextMoonPhase(date: Date = new Date()): {
 } {
   const currentPhase = getMoonPhase(date);
 
-  // Define phase boundaries
   const phases: Array<{ threshold: number; name: MoonPhaseName }> = [
     { threshold: 0, name: "New Moon" },
     { threshold: 0.25, name: "First Quarter" },
@@ -192,9 +489,8 @@ export function getNextMoonPhase(date: Date = new Date()): {
     { threshold: 1, name: "New Moon" },
   ];
 
-  // Find next phase
-  let nextPhaseThreshold: number;
-  let nextPhaseName: MoonPhaseName;
+  let nextPhaseThreshold: number = 1;
+  let nextPhaseName: MoonPhaseName = "New Moon";
 
   for (const p of phases) {
     if (p.threshold > currentPhase) {
@@ -204,12 +500,8 @@ export function getNextMoonPhase(date: Date = new Date()): {
     }
   }
 
-  // Calculate days until next phase
-  const daysUntilNextPhase =
-    (nextPhaseThreshold! - currentPhase) * SYNODIC_MONTH;
-  const nextPhaseDate = new Date(
-    date.getTime() + daysUntilNextPhase * 24 * 60 * 60 * 1000
-  );
+  const daysUntilNextPhase = (nextPhaseThreshold - currentPhase) * SYNODIC_MONTH;
+  const nextPhaseDate = new Date(date.getTime() + daysUntilNextPhase * 24 * 60 * 60 * 1000);
 
-  return { phase: nextPhaseName!, date: nextPhaseDate };
+  return { phase: nextPhaseName, date: nextPhaseDate };
 }

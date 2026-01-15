@@ -51,16 +51,33 @@ export function useTorontoTime(options: UseTorontoTimeOptions = {}): TorontoTime
   const [scrubOffset, setScrubOffset] = useState(0);
 
   const getTorontoDate = useCallback((): Date => {
-    let baseDate: Date;
+    const now = new Date();
 
-    if (testDate) {
-      baseDate = parseDateString(testDate);
-    } else {
-      // Get current time in Toronto
-      const now = new Date();
-      const torontoString = now.toLocaleString("en-US", { timeZone: TORONTO_TZ });
-      baseDate = new Date(torontoString);
-    }
+    // Get Toronto time components directly using Intl
+    const torontoFormatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: TORONTO_TZ,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: false,
+    });
+
+    const parts = torontoFormatter.formatToParts(now);
+    const getPart = (type: string) => parseInt(parts.find(p => p.type === type)?.value || "0");
+
+    // Build a date with Toronto's time components
+    // We create it with these values so getHours()/getMinutes() return Toronto time
+    let baseDate = new Date(
+      testDate ? parseInt(testDate.split("-")[0]) : getPart("year"),
+      testDate ? parseInt(testDate.split("-")[1]) - 1 : getPart("month") - 1,
+      testDate ? parseInt(testDate.split("-")[2]) : getPart("day"),
+      getPart("hour"),
+      getPart("minute"),
+      getPart("second")
+    );
 
     if (testTime) {
       baseDate = parseTimeString(testTime, baseDate);
@@ -68,7 +85,9 @@ export function useTorontoTime(options: UseTorontoTimeOptions = {}): TorontoTime
 
     if (scrubMode) {
       // Add scrub offset (in minutes)
-      baseDate = new Date(baseDate.getTime() + scrubOffset * 60 * 1000);
+      const totalMinutes = baseDate.getHours() * 60 + baseDate.getMinutes() + scrubOffset;
+      const wrappedMinutes = ((totalMinutes % 1440) + 1440) % 1440; // Wrap around 24 hours
+      baseDate.setHours(Math.floor(wrappedMinutes / 60), wrappedMinutes % 60);
     }
 
     return baseDate;

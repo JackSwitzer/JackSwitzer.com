@@ -1,27 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
-
 interface SunProps {
-  x: number; // 0-100 screen position
-  y: number; // 0-100 screen position
+  x: number;
+  y: number;
   color: string;
-  altitude: number; // Sun altitude for size variation
+  altitude: number;
 }
 
 export function Sun({ x, y, color, altitude }: SunProps) {
-  // Scale sun size based on altitude (larger near horizon for visual effect)
-  const scale = useMemo(() => {
-    if (altitude <= 0) return 1;
-    if (altitude <= 10) return 1 + (10 - altitude) * 0.03; // Slightly larger near horizon
-    return 1;
-  }, [altitude]);
-
   // Don't render if below horizon
-  if (altitude <= -5) return null;
+  if (altitude <= -2) return null;
 
   // Fade out near horizon
-  const opacity = altitude < 0 ? Math.max(0, (altitude + 5) / 5) : 1;
+  const opacity = altitude < 0 ? Math.max(0, (altitude + 2) / 2) : 1;
 
   return (
     <div
@@ -29,12 +20,11 @@ export function Sun({ x, y, color, altitude }: SunProps) {
       style={{
         left: `${x}%`,
         top: `${y}%`,
-        transform: `translate(-50%, -50%) scale(${scale})`,
+        transform: "translate(-50%, -50%)",
         opacity,
-        transition: "left 1s ease-out, top 1s ease-out, opacity 0.5s ease",
+        transition: "left 0.15s linear, top 0.15s linear, opacity 0.3s ease",
       }}
     >
-      {/* ASCII-style sun with rays */}
       <pre
         className="font-mono text-xs leading-none whitespace-pre"
         style={{

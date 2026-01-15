@@ -30,7 +30,7 @@ export function useSolarPosition(date: Date): SolarState {
   return useMemo(() => {
     const position = getSolarPosition(date, TORONTO_LAT, TORONTO_LON);
     const sunTimes = getSunTimes(date, TORONTO_LAT, TORONTO_LON);
-    const screenPosition = solarToScreen(position, sunTimes);
+    const screenPosition = solarToScreen(position, sunTimes, date);
     const timeOfDay = getTimeOfDay(position.altitude);
     const isDaytime = position.altitude > 0;
     const colors = getSkyColors(position.altitude);

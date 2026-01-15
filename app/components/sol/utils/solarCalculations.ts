@@ -141,7 +141,16 @@ function getHourAngleSunrise(lat: number, declination: number, elevation: number
   return toDeg(Math.acos(cosHA));
 }
 
+// Get Toronto timezone offset in minutes (handles DST)
+function getTorontoOffset(date: Date): number {
+  // Create a date string in Toronto timezone and parse it to find offset
+  const utcDate = new Date(date.toLocaleString("en-US", { timeZone: "UTC" }));
+  const torontoDate = new Date(date.toLocaleString("en-US", { timeZone: TORONTO_TZ }));
+  return (utcDate.getTime() - torontoDate.getTime()) / 60000;
+}
+
 // Get solar position for a given date and location
+// IMPORTANT: The date should have hours/minutes representing Toronto local time
 export function getSolarPosition(
   date: Date,
   lat: number = TORONTO_LAT,
@@ -153,16 +162,19 @@ export function getSolarPosition(
   const declination = getSunDeclination(t);
   const eqTime = getEquationOfTime(t);
 
-  // Time offset from UTC in minutes
-  const timeOffset = date.getTimezoneOffset();
+  // Use Toronto timezone offset (not local system timezone)
+  const timeOffset = getTorontoOffset(date);
 
-  // True solar time
+  // True solar time - use the hours/minutes from the date directly
+  // (these should already represent Toronto time)
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
   const timeInMinutes = hours * 60 + minutes + seconds / 60;
 
-  const trueSolarTime = timeInMinutes + eqTime + 4 * lon - timeOffset;
+  // NOAA formula: trueSolarTime = localTime + eqTime + 4*longitude + timezoneOffset
+  // timeOffset is positive for west of UTC (e.g., 300 for EST)
+  const trueSolarTime = timeInMinutes + eqTime + 4 * lon + timeOffset;
 
   // Hour angle
   let hourAngle = trueSolarTime / 4 - 180;
@@ -208,11 +220,17 @@ export function getSunTimes(
   const declination = getSunDeclination(t);
   const eqTime = getEquationOfTime(t);
 
-  // Solar noon
-  const solarNoonMinutes = 720 - 4 * lon - eqTime;
-  const solarNoon = new Date(noon);
+  // Get Toronto timezone offset (300 for EST, 240 for EDT)
+  const tzOffset = getTorontoOffset(date);
+
+  // Solar noon in local Toronto time
+  // Formula: 720 - 4*longitude - eqTime gives UTC minutes
+  // Subtract timezone offset to get local time
+  const solarNoonMinutes = 720 - 4 * lon - eqTime - tzOffset;
+
+  const solarNoon = new Date(date);
   solarNoon.setHours(0, 0, 0, 0);
-  solarNoon.setMinutes(solarNoonMinutes + date.getTimezoneOffset());
+  solarNoon.setMinutes(solarNoonMinutes);
 
   // Sunrise and sunset (sun center at -0.833 degrees for atmospheric refraction)
   const hourAngle = getHourAngleSunrise(lat, declination, -0.833);
@@ -220,13 +238,13 @@ export function getSunTimes(
   const sunriseMinutes = solarNoonMinutes - hourAngle * 4;
   const sunsetMinutes = solarNoonMinutes + hourAngle * 4;
 
-  const sunrise = new Date(noon);
+  const sunrise = new Date(date);
   sunrise.setHours(0, 0, 0, 0);
-  sunrise.setMinutes(sunriseMinutes + date.getTimezoneOffset());
+  sunrise.setMinutes(sunriseMinutes);
 
-  const sunset = new Date(noon);
+  const sunset = new Date(date);
   sunset.setHours(0, 0, 0, 0);
-  sunset.setMinutes(sunsetMinutes + date.getTimezoneOffset());
+  sunset.setMinutes(sunsetMinutes);
 
   // Civil twilight (sun at -6 degrees)
   const civilHourAngle = getHourAngleSunrise(lat, declination, -6);
@@ -234,64 +252,71 @@ export function getSunTimes(
   const dawnMinutes = solarNoonMinutes - civilHourAngle * 4;
   const duskMinutes = solarNoonMinutes + civilHourAngle * 4;
 
-  const dawn = new Date(noon);
+  const dawn = new Date(date);
   dawn.setHours(0, 0, 0, 0);
-  dawn.setMinutes(dawnMinutes + date.getTimezoneOffset());
+  dawn.setMinutes(dawnMinutes);
 
-  const dusk = new Date(noon);
+  const dusk = new Date(date);
   dusk.setHours(0, 0, 0, 0);
-  dusk.setMinutes(duskMinutes + date.getTimezoneOffset());
+  dusk.setMinutes(duskMinutes);
 
   return { sunrise, sunset, solarNoon, dawn, dusk };
+}
+
+// Convert Date to minutes since midnight
+function toMinutes(date: Date): number {
+  return date.getHours() * 60 + date.getMinutes();
 }
 
 // Map solar position to screen coordinates for rendering
 export function solarToScreen(
   sunPosition: SolarPosition,
-  sunTimes: SunTimes
+  sunTimes: SunTimes,
+  currentTime: Date
 ): ScreenPosition {
-  const { altitude, azimuth } = sunPosition;
+  const { altitude } = sunPosition;
 
-  // Get sunrise and sunset azimuths for proper X mapping
-  const sunrisePos = getSolarPosition(sunTimes.sunrise);
-  const sunsetPos = getSolarPosition(sunTimes.sunset);
+  // Use minutes since midnight for comparisons (avoids timezone issues)
+  const currentMins = toMinutes(currentTime);
+  const sunriseMins = toMinutes(sunTimes.sunrise);
+  const sunsetMins = toMinutes(sunTimes.sunset);
+  const noonMins = toMinutes(sunTimes.solarNoon);
 
-  // Normalize azimuth to screen X
-  // East (sunrise) = right side (high X), West (sunset) = left side (low X)
-  const azimuthRange = sunsetPos.azimuth - sunrisePos.azimuth;
-  let normalizedAzimuth: number;
+  // X position based on time of day
+  // Sunrise = right (90%), Solar noon = center (50%), Sunset = left (10%)
+  let x: number;
 
-  if (azimuthRange > 0) {
-    normalizedAzimuth = (azimuth - sunrisePos.azimuth) / azimuthRange;
+  if (currentMins <= sunriseMins) {
+    // Before sunrise - sun on far right (below horizon)
+    x = 95;
+  } else if (currentMins >= sunsetMins) {
+    // After sunset - sun on far left (below horizon)
+    x = 5;
+  } else if (currentMins <= noonMins) {
+    // Morning: sunrise (90%) -> noon (50%)
+    const progress = (currentMins - sunriseMins) / (noonMins - sunriseMins);
+    x = 90 - progress * 40; // 90 -> 50
   } else {
-    // Handle wrap-around case (azimuth crossing 0/360)
-    const adjustedSunset = sunsetPos.azimuth + 360;
-    const adjustedAzimuth = azimuth < sunrisePos.azimuth ? azimuth + 360 : azimuth;
-    normalizedAzimuth = (adjustedAzimuth - sunrisePos.azimuth) / (adjustedSunset - sunrisePos.azimuth);
+    // Afternoon: noon (50%) -> sunset (10%)
+    const progress = (currentMins - noonMins) / (sunsetMins - noonMins);
+    x = 50 - progress * 40; // 50 -> 10
   }
 
-  // Invert: east=right (100%), west=left (0%)
-  // Also add padding so sun doesn't go to extreme edges
-  const padding = 10;
-  const x = padding + (1 - normalizedAzimuth) * (100 - 2 * padding);
-
-  // Map altitude to Y position
-  // altitude <= 0 (at/below horizon) -> y = 85% (near bottom)
-  // altitude = max (~70° for Toronto summer) -> y = 10% (near top)
-  const horizonY = 85;
-  const peakY = 15;
-  const maxAltitude = 70; // Toronto max solar elevation
+  // Y position based on altitude
+  const horizonY = 80;
+  const peakY = 25; // Don't go too close to top
+  const maxAltitude = 25; // January max altitude for Toronto is ~25°
 
   if (altitude <= 0) {
-    return { x: Math.max(0, Math.min(100, x)), y: 100 }; // Below horizon
+    return { x, y: 100 }; // Below horizon
   }
 
-  // Use sine curve for natural arc appearance
+  // Linear mapping for altitude
   const altitudeRatio = Math.min(altitude / maxAltitude, 1);
-  const y = horizonY - (horizonY - peakY) * Math.sin(altitudeRatio * (Math.PI / 2));
+  const y = horizonY - (horizonY - peakY) * altitudeRatio;
 
   return {
-    x: Math.max(0, Math.min(100, x)),
+    x: Math.max(10, Math.min(90, x)),
     y: Math.max(peakY, Math.min(horizonY, y)),
   };
 }

@@ -7,7 +7,6 @@ import { useTorontoTime } from "./sol/hooks/useTorontoTime";
 import { useSolarPosition } from "./sol/hooks/useSolarPosition";
 
 interface SolDemoProps {
-  // Optional test overrides (can also use URL params)
   testTime?: string;
   testDate?: string;
   scrubMode?: boolean;
@@ -16,29 +15,69 @@ interface SolDemoProps {
 export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [animating, setAnimating] = useState(false);
+  const [animationStartTime, setAnimationStartTime] = useState(0); // Starting minute of day
+  const [animationElapsed, setAnimationElapsed] = useState(0); // Minutes elapsed in animation
 
-  // Get test params from URL or props
   const time = testTime || searchParams.get("time");
   const date = testDate || searchParams.get("date");
   const scrub = scrubMode || searchParams.get("scrub") === "true";
-  const speed = Number(searchParams.get("speed")) || 60;
 
-  // Get Toronto time (with optional test overrides)
+  // Animation: 20 seconds for full day = 1440 minutes / 20 seconds = 72 min per second
+  // At 50ms intervals: 72 / 20 = 3.6 minutes per tick
+  const ANIMATION_DURATION = 20000; // 20 seconds
+  const TICK_INTERVAL = 50;
+  const MINUTES_PER_TICK = 1440 / (ANIMATION_DURATION / TICK_INTERVAL);
+
+  // Calculate current animation time (wraps around midnight)
+  const currentAnimationMinute = animating
+    ? (animationStartTime + animationElapsed) % 1440
+    : 0;
+  const animationTimeString = animating
+    ? `${Math.floor(currentAnimationMinute / 60).toString().padStart(2, '0')}:${Math.floor(currentAnimationMinute % 60).toString().padStart(2, '0')}`
+    : null;
+
   const torontoTime = useTorontoTime({
-    testTime: time,
+    testTime: animationTimeString || time,
     testDate: date,
-    scrubMode: scrub,
-    scrubSpeed: speed,
+    scrubMode: scrub && !animating,
+    scrubSpeed: 60,
     updateInterval: 1000,
   });
 
-  // Get solar position for border color
   const solar = useSolarPosition(torontoTime.date);
 
-  // Client-side only rendering to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle animation
+  useEffect(() => {
+    if (!animating) return;
+
+    const interval = setInterval(() => {
+      setAnimationElapsed(prev => {
+        const next = prev + MINUTES_PER_TICK;
+        if (next >= 1440) {
+          // Full cycle complete - stop at starting time
+          setAnimating(false);
+          return 0;
+        }
+        return next;
+      });
+    }, TICK_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [animating]);
+
+  const startAnimation = () => {
+    // Capture current Toronto time as starting point
+    const now = torontoTime.date;
+    const startMinutes = now.getHours() * 60 + now.getMinutes();
+    setAnimationStartTime(startMinutes);
+    setAnimationElapsed(0);
+    setAnimating(true);
+  };
 
   if (!mounted) {
     return <SolDemoSkeleton />;
@@ -46,154 +85,84 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
 
   return (
     <div className="relative overflow-hidden rounded-lg font-mono">
-      {/* Terminal frame with dynamic border */}
-      <div
-        className="relative"
-        style={{
-          backgroundColor: "#0a0a1a",
-        }}
-      >
-        {/* Top border */}
-        <div
-          className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap"
-          style={{
-            color: solar.borderColor,
-            transition: "color 1s ease",
-          }}
-        >
-          {"█".repeat(120)}
-        </div>
+      {/* Main sky area */}
+      <div className="relative" style={{ height: 220 }}>
+        <SkyCanvas date={torontoTime.date} />
 
-        {/* Middle content with side borders */}
-        <div className="relative flex">
-          {/* Left border column */}
+        {/* Test mode indicator */}
+        {(time || date || (scrub && !animating)) && (
           <div
-            className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col"
+            className="absolute top-2 right-2 text-xs px-2 py-1 rounded"
             style={{
-              color: solar.borderColor,
-              transition: "color 1s ease",
+              backgroundColor: "rgba(255, 100, 100, 0.3)",
+              color: "rgba(255, 255, 255, 0.7)",
             }}
           >
-            {Array(20)
-              .fill("█")
-              .map((char, i) => (
-                <span key={i}>{char}</span>
-              ))}
+            TEST MODE
           </div>
-
-          {/* Main sky canvas */}
-          <div className="flex-1 relative" style={{ height: 240 }}>
-            <SkyCanvas date={torontoTime.date} />
-
-            {/* Date/time overlay */}
-            <div
-              className="absolute left-1/2 transform -translate-x-1/2 text-sm"
-              style={{
-                bottom: "25%",
-                color: "rgba(255, 255, 255, 0.6)",
-                textShadow: "0 0 8px rgba(0,0,0,0.9)",
-              }}
-            >
-              {solar.isDaytime ? "☀" : "☽"} {torontoTime.formatted.full}
-            </div>
-
-            {/* Test mode indicator */}
-            {(time || date || scrub) && (
-              <div
-                className="absolute top-2 right-2 text-xs px-2 py-1 rounded"
-                style={{
-                  backgroundColor: "rgba(255, 100, 100, 0.3)",
-                  color: "rgba(255, 255, 255, 0.7)",
-                }}
-              >
-                TEST MODE
-              </div>
-            )}
-          </div>
-
-          {/* Right border column */}
-          <div
-            className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col"
-            style={{
-              color: solar.borderColor,
-              transition: "color 1s ease",
-            }}
-          >
-            {Array(20)
-              .fill("█")
-              .map((char, i) => (
-                <span key={i}>{char}</span>
-              ))}
-          </div>
-        </div>
-
-        {/* Bottom border */}
-        <div
-          className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap"
-          style={{
-            color: solar.borderColor,
-            transition: "color 1s ease",
-          }}
-        >
-          {"█".repeat(120)}
-        </div>
+        )}
       </div>
 
-      {/* Scrub mode controls */}
-      {scrub && (
-        <div className="mt-2 text-xs text-center text-[var(--muted)]">
-          Scrubbing through 24 hours at {speed}x speed
-        </div>
-      )}
+      {/* Bottom bar with date/time */}
+      <div
+        className="relative px-3 py-1.5 flex items-center justify-between"
+        style={{
+          backgroundColor: solar.borderColor,
+          transition: "background-color 1s ease",
+        }}
+      >
+        <span
+          className="text-sm font-medium tracking-wide"
+          style={{
+            color: "#ff6b35",
+          }}
+        >
+          {solar.isDaytime ? "☀" : "☽"} {torontoTime.formatted.full}
+        </span>
+
+        {/* Animation button */}
+        <button
+          onClick={startAnimation}
+          disabled={animating}
+          className="text-xs px-2 py-1 rounded transition-colors"
+          style={{
+            backgroundColor: animating ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)",
+            color: "#ff6b35",
+            opacity: animating ? 0.5 : 1,
+            cursor: animating ? "default" : "pointer",
+          }}
+        >
+          {animating ? "Playing..." : "Animate"}
+        </button>
+      </div>
     </div>
   );
 }
 
-// Loading skeleton while client hydrates
 function SolDemoSkeleton() {
   return (
-    <div
-      className="relative overflow-hidden rounded-lg font-mono"
-      style={{ backgroundColor: "#0a0a1a" }}
-    >
-      <div className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap text-[#4a4a6a]">
-        {"█".repeat(120)}
-      </div>
-      <div className="flex">
-        <div className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col text-[#4a4a6a]">
-          {Array(20)
-            .fill("█")
-            .map((_, i) => (
-              <span key={i}>█</span>
-            ))}
-        </div>
+    <div className="relative overflow-hidden rounded-lg font-mono">
+      <div
+        className="relative"
+        style={{
+          height: 220,
+          background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
+        }}
+      >
         <div
-          className="flex-1 relative"
-          style={{
-            height: 240,
-            background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
-          }}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ color: "rgba(255, 255, 255, 0.3)" }}
         >
-          <div
-            className="absolute left-1/2 transform -translate-x-1/2 text-sm"
-            style={{
-              bottom: "25%",
-              color: "rgba(255, 255, 255, 0.3)",
-            }}
-          >
-            Loading...
-          </div>
-        </div>
-        <div className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col text-[#4a4a6a]">
-          {Array(20)
-            .fill("█")
-            .map((_, i) => (
-              <span key={i}>█</span>
-            ))}
+          Loading...
         </div>
       </div>
-      <div className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap text-[#4a4a6a]">
-        {"█".repeat(120)}
+      <div
+        className="px-4 py-3 flex items-center justify-center"
+        style={{ backgroundColor: "#4a4a6a" }}
+      >
+        <span className="text-sm" style={{ color: "#1a1a1a" }}>
+          ...
+        </span>
       </div>
     </div>
   );

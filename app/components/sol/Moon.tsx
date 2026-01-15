@@ -46,10 +46,10 @@ export function Moon({ position, phaseInfo, visible }: MoonProps) {
   }, [illumination]);
 
   // Don't render if not visible or below horizon
-  if (!visible || altitude <= -5) return null;
+  if (!visible || altitude <= -2) return null;
 
   // Fade out near horizon
-  const opacity = altitude < 0 ? Math.max(0, (altitude + 5) / 5) : 1;
+  const opacity = altitude < 0 ? Math.max(0, (altitude + 2) / 2) : 1;
 
   return (
     <div
@@ -59,7 +59,7 @@ export function Moon({ position, phaseInfo, visible }: MoonProps) {
         top: `${y}%`,
         transform: "translate(-50%, -50%)",
         opacity,
-        transition: "left 1s ease-out, top 1s ease-out, opacity 0.5s ease",
+        transition: "left 0.15s linear, top 0.15s linear, opacity 0.3s ease",
       }}
     >
       {/* Moon container */}

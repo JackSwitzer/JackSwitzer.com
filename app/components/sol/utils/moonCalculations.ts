@@ -385,29 +385,59 @@ export function getMoonAltAz(
 }
 
 // Get moon position with screen coordinates
+// Uses time-based X positioning (like sun) for visual consistency
 export function getMoonPosition(date: Date = new Date()): MoonPosition {
   const { altitude, azimuth } = getMoonAltAz(date);
 
-  // Convert altitude/azimuth to screen coordinates
-  // X: East (90°) = right, South (180°) = center, West (270°) = left
-  // Normalize azimuth to screen position (90° = 90%, 180° = 50%, 270° = 10%)
+  // Get moonrise/set times for today to calculate X position based on time
+  const moonTimes = getMoonRiseSet(date);
+
+  const currentMins = date.getHours() * 60 + date.getMinutes();
+
   let x: number;
-  if (azimuth >= 90 && azimuth <= 270) {
-    // Moon is in southern sky (visible arc)
-    x = 90 - ((azimuth - 90) / 180) * 80; // 90% -> 10%
-  } else if (azimuth < 90) {
-    // Moon is rising in east
-    x = 90 + ((90 - azimuth) / 90) * 5; // Beyond right edge
+  const horizonY = 80;
+  const peakY = 15;
+  const maxAltitude = 70;
+
+  if (moonTimes.rise && moonTimes.set && moonTimes.transit) {
+    const riseMins = moonTimes.rise.getHours() * 60 + moonTimes.rise.getMinutes();
+    const setMins = moonTimes.set.getHours() * 60 + moonTimes.set.getMinutes();
+    const transitMins = moonTimes.transit.getHours() * 60 + moonTimes.transit.getMinutes();
+
+    // Handle case where moonset is after midnight (next day)
+    const adjustedSetMins = setMins < riseMins ? setMins + 1440 : setMins;
+    const adjustedTransitMins = transitMins < riseMins ? transitMins + 1440 : transitMins;
+    const adjustedCurrentMins = currentMins < riseMins && moonTimes.set && setMins < riseMins
+      ? currentMins + 1440
+      : currentMins;
+
+    if (adjustedCurrentMins < riseMins) {
+      // Before moonrise
+      x = 95;
+    } else if (adjustedCurrentMins > adjustedSetMins) {
+      // After moonset
+      x = 5;
+    } else if (adjustedCurrentMins <= adjustedTransitMins) {
+      // Rising: moonrise (90%) -> transit (50%)
+      const progress = (adjustedCurrentMins - riseMins) / (adjustedTransitMins - riseMins);
+      x = 90 - progress * 40;
+    } else {
+      // Setting: transit (50%) -> moonset (10%)
+      const progress = (adjustedCurrentMins - adjustedTransitMins) / (adjustedSetMins - adjustedTransitMins);
+      x = 50 - progress * 40;
+    }
   } else {
-    // Moon is setting in west
-    x = 10 - ((azimuth - 270) / 90) * 5; // Beyond left edge
+    // Fallback to azimuth-based if no rise/set times (circumpolar cases)
+    if (azimuth >= 90 && azimuth <= 270) {
+      x = 90 - ((azimuth - 90) / 180) * 80;
+    } else if (azimuth < 90) {
+      x = 90 + ((90 - azimuth) / 90) * 5;
+    } else {
+      x = 10 - ((azimuth - 270) / 90) * 5;
+    }
   }
 
   // Y position based on altitude
-  const horizonY = 80;
-  const peakY = 15; // Moon can go higher than sun due to wider declination range
-  const maxAltitude = 70; // Max possible altitude for Toronto
-
   let y: number;
   if (altitude <= 0) {
     y = 100; // Below horizon
@@ -468,10 +498,10 @@ export function getMoonRiseSet(
   return { rise, set, transit };
 }
 
-// Determine if moon is above horizon
+// Determine if moon is above horizon (with buffer for horizon effects)
 export function isMoonVisible(date: Date = new Date()): boolean {
-  const position = getMoonPosition(date);
-  return position.altitude > 0;
+  const { altitude } = getMoonAltAz(date);
+  return altitude > -5; // Same buffer as sun for visual consistency
 }
 
 // Get next significant moon phase

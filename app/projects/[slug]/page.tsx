@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getProjectBySlug, getVisibleProjects } from "@/lib/data";
 import { getProjectContent, parseMarkdownToElements } from "@/lib/mdx";
 import { notFound } from "next/navigation";
@@ -143,7 +144,9 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
             <span className="tag">Terminal UI</span>
           </h2>
-          <SolDemo />
+          <Suspense fallback={<SolDemoFallback />}>
+            <SolDemo />
+          </Suspense>
         </div>
       )}
 
@@ -170,5 +173,55 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </Link>
       </div>
     </section>
+  );
+}
+
+// Loading fallback for SolDemo (matches skeleton in SolDemo.tsx)
+function SolDemoFallback() {
+  return (
+    <div
+      className="relative overflow-hidden rounded-lg font-mono"
+      style={{ backgroundColor: "#0a0a1a" }}
+    >
+      <div className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap text-[#4a4a6a]">
+        {"█".repeat(120)}
+      </div>
+      <div className="flex">
+        <div className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col text-[#4a4a6a]">
+          {Array(20)
+            .fill("█")
+            .map((_, i) => (
+              <span key={i}>█</span>
+            ))}
+        </div>
+        <div
+          className="flex-1 relative"
+          style={{
+            height: 240,
+            background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
+          }}
+        >
+          <div
+            className="absolute left-1/2 transform -translate-x-1/2 text-sm"
+            style={{
+              bottom: "25%",
+              color: "rgba(255, 255, 255, 0.3)",
+            }}
+          >
+            Loading...
+          </div>
+        </div>
+        <div className="text-[10px] leading-[1.2] select-none flex-shrink-0 flex flex-col text-[#4a4a6a]">
+          {Array(20)
+            .fill("█")
+            .map((_, i) => (
+              <span key={i}>█</span>
+            ))}
+        </div>
+      </div>
+      <div className="text-[10px] leading-none select-none overflow-hidden whitespace-nowrap text-[#4a4a6a]">
+        {"█".repeat(120)}
+      </div>
+    </div>
   );
 }

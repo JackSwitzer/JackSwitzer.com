@@ -46,9 +46,6 @@ export default function HomePage() {
           >
             LinkedIn
           </a>
-          <Link href="/resume" className="link-accent">
-            Resume
-          </Link>
         </div>
       </header>
 

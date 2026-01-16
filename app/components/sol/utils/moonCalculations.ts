@@ -406,7 +406,7 @@ export function getMoonPosition(date: Date = new Date()): MoonPosition {
 
   // Y position based on altitude - smooth arc that continues below horizon
   const horizonY = 80;
-  const peakY = 15;
+  const peakY = 22; // Moon arcs lower than sun
   const maxAltitude = 70;
   const minAltitude = -20; // Continue arc below horizon
 

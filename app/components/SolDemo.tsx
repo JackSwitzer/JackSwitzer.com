@@ -47,6 +47,16 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
 
   const solar = useSolarPosition(torontoTime.date);
 
+  // Determine if sunrise or sunset is next
+  const getNextSunEvent = () => {
+    const now = torontoTime.date;
+    const { sunrise, sunset } = solar.sunTimes;
+
+    if (now < sunrise) return "Sunrise";
+    if (now < sunset) return "Sunset";
+    return "Sunrise"; // After sunset, next is tomorrow's sunrise
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -113,7 +123,7 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
           {solar.isDaytime ? "☀" : "☽"} {torontoTime.formatted.full}
         </span>
 
-        {/* Animation button */}
+        {/* Sunrise/Sunset button */}
         <button
           onClick={startAnimation}
           disabled={animating}
@@ -125,7 +135,7 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
             cursor: animating ? "default" : "pointer",
           }}
         >
-          {animating ? "Playing..." : "Animate"}
+          {animating ? "Playing..." : getNextSunEvent()}
         </button>
       </div>
     </div>

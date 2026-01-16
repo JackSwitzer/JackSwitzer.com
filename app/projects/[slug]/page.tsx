@@ -138,12 +138,9 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       )}
 
-      {/* Sol Demo - animated sunrise terminal */}
+      {/* Sol Demo - animated sky */}
       {project.slug === "sol-sunrise-lamp" && (
         <div className="mb-8">
-          <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="tag">Terminal UI</span>
-          </h2>
           <Suspense fallback={<SolDemoFallback />}>
             <SolDemo />
           </Suspense>

@@ -295,7 +295,7 @@ export function solarToScreen(
 
   // Y position based on altitude - smooth arc that continues below horizon
   const horizonY = 80;
-  const peakY = 25;
+  const peakY = 12; // Sun arcs high in sky
   const maxAltitude = 70; // Max possible for Toronto
   const minAltitude = -20; // Continue arc below horizon
 

@@ -421,13 +421,13 @@ export const projects: Project[] = [
     featured: false,
     visible: true,
     status: "complete",
-    summary: "Terminal-based sunrise alarm that gradually brightens Kasa smart bulbs, integrated as an MCP server for AI assistant control.",
+    summary: "Sunrise alarm clock TUI to gently ease one into the world.",
     accomplishments: [
       "Built gradual sunrise simulation with configurable warmup duration",
       "Integrated with Kasa smart bulbs via python-kasa library",
       "Exposed as MCP server for Claude Desktop integration",
     ],
-    technologies: ["Python", "MCP", "asyncio"],
+    technologies: ["Python", "TUI", "MCP", "asyncio"],
     github: { repo: "sol", account: "JackSwitzer" },
   },
 ];

@@ -55,7 +55,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
             <span className="tag" style={{ background: "var(--warning)" }}>WIP</span>
           )}
           {project.status === "complete" && (
-            <span className="tag tag-muted">Complete</span>
+            <span className="tag" style={{ background: "var(--warning)" }}>Complete</span>
           )}
           {project.github && (
             <a
@@ -113,7 +113,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           <h2 className="mb-6 flex items-center gap-2">
             <span
               className={project.slug === "sol"
-                ? "px-3 py-1.5 text-lg font-semibold uppercase tracking-wide bg-[var(--success)] text-[var(--paper)]"
+                ? "px-3 py-1.5 text-base font-semibold uppercase tracking-wide bg-[var(--success)] text-[var(--paper)]"
                 : "tag tag-success"
               }
             >

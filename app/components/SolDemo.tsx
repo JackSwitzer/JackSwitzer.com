@@ -23,9 +23,8 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
   const date = testDate || searchParams.get("date");
   const scrub = scrubMode || searchParams.get("scrub") === "true";
 
-  // Animation: 20 seconds for full day = 1440 minutes / 20 seconds = 72 min per second
-  // At 50ms intervals: 72 / 20 = 3.6 minutes per tick
-  const ANIMATION_DURATION = 20000; // 20 seconds
+  // Animation: 15 seconds for full day (25% faster than 20s)
+  const ANIMATION_DURATION = 15000; // 15 seconds
   const TICK_INTERVAL = 50;
   const MINUTES_PER_TICK = 1440 / (ANIMATION_DURATION / TICK_INTERVAL);
 

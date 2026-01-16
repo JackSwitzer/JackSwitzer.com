@@ -187,7 +187,7 @@
     },
     {
       "id": "sol-smart-bulb",
-      "name": "Sol - Smart Bulb CLI",
+      "name": "Sol",
       "type": "personal",
       "period": "2025",
       "featured": false,

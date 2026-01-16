@@ -415,7 +415,7 @@ export const projects: Project[] = [
   },
   {
     slug: "sol-sunrise-lamp",
-    name: "Sol - Sunrise Alarm Clock",
+    name: "Sol",
     type: "personal",
     period: "Dec 2025",
     featured: false,
@@ -429,7 +429,6 @@ export const projects: Project[] = [
     ],
     technologies: ["Python", "MCP", "asyncio"],
     github: { repo: "sol", account: "JackSwitzer" },
-    link: "https://github.com/JackSwitzer/sol",
   },
 ];
 

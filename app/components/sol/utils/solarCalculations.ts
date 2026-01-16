@@ -293,17 +293,21 @@ export function solarToScreen(
     x = 10 - ((azimuth - 270) / 90) * 10; // 270° -> 10%, 360° -> 0%
   }
 
-  // Y position based on altitude
+  // Y position based on altitude - smooth arc that continues below horizon
   const horizonY = 80;
   const peakY = 25;
   const maxAltitude = 70; // Max possible for Toronto
+  const minAltitude = -20; // Continue arc below horizon
 
   let y: number;
-  if (altitude <= 0) {
-    y = 100; // Below horizon
-  } else {
+  if (altitude >= 0) {
+    // Above horizon: map altitude to y position
     const altitudeRatio = Math.min(altitude / maxAltitude, 1);
     y = horizonY - (horizonY - peakY) * altitudeRatio;
+  } else {
+    // Below horizon: continue the arc smoothly
+    const belowRatio = Math.min(Math.abs(altitude) / Math.abs(minAltitude), 1);
+    y = horizonY + (100 - horizonY) * belowRatio;
   }
 
   return {

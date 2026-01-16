@@ -46,11 +46,15 @@ export function Moon({ position, phaseInfo, visible, shadowAngle = 0 }: MoonProp
     return "circle(50% at 50% 50%)";
   }, [illumination]);
 
-  // Don't render if not visible or below horizon
-  if (!visible || altitude <= -2) return null;
+  // Don't render if far below horizon (but continue arc for smooth motion)
+  if (!visible || altitude <= -20) return null;
 
-  // Fade out near horizon
-  const opacity = altitude < 0 ? Math.max(0, (altitude + 2) / 2) : 1;
+  // Fade out gradually below horizon for smooth arc effect
+  let opacity = 1;
+  if (altitude < 0) {
+    // Fade from altitude 0 to -15 to match sun visibility threshold
+    opacity = Math.max(0, (altitude + 15) / 15);
+  }
 
   return (
     <div
@@ -60,7 +64,7 @@ export function Moon({ position, phaseInfo, visible, shadowAngle = 0 }: MoonProp
         top: `${y}%`,
         transform: "translate(-50%, -50%)",
         opacity,
-        transition: "left 0.15s linear, top 0.15s linear, opacity 0.3s ease",
+        transition: "left 0.12s ease-out, top 0.12s ease-out, opacity 0.24s ease",
       }}
     >
       {/* Moon container */}

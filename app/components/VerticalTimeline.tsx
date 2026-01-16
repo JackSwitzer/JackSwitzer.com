@@ -36,7 +36,7 @@ function getDisplayTitle(item: TimelineItem): string {
     "Chrono - Linguistic Pattern Forecasting": "Chrono",
     "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
     "QUANTT - Options Pricing Model": "QUANTT",
-    "Sol - Sunrise Alarm Clock": "Sol",
+    "Sol": "Sol",
     "NYT Games Solver": "NYT Games",
     // Leadership
     "Teaching Assistant: Linear Algebra I": "Lin Alg TA",

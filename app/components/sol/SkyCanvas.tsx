@@ -18,11 +18,10 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
   const skyGradient = getSkyGradientCSS(solar.colors);
   const groundColors = getGroundColors(solar.position.altitude);
 
-  // Show sun when above horizon (with some buffer for glow effect)
-  const showSun = solar.position.altitude > -5;
+  // Show sun when above horizon (with buffer for smooth arc effect)
+  const showSun = solar.position.altitude > -20;
 
-  // Show moon when it's above the horizon (based on accurate astronomical calculation)
-  // moon.isVisible already checks altitude > 0
+  // Show moon when it's above the horizon (with buffer for smooth arc)
   const showMoon = moon.isVisible;
 
   return (

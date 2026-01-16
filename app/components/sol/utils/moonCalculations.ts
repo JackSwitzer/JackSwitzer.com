@@ -404,17 +404,21 @@ export function getMoonPosition(date: Date = new Date()): MoonPosition {
     x = 10 - ((azimuth - 270) / 90) * 10;
   }
 
-  // Y position based on altitude
+  // Y position based on altitude - smooth arc that continues below horizon
   const horizonY = 80;
   const peakY = 15;
   const maxAltitude = 70;
+  const minAltitude = -20; // Continue arc below horizon
 
   let y: number;
-  if (altitude <= 0) {
-    y = 100; // Below horizon
-  } else {
+  if (altitude >= 0) {
+    // Above horizon: map altitude to y position
     const altitudeRatio = Math.min(altitude / maxAltitude, 1);
     y = horizonY - (horizonY - peakY) * altitudeRatio;
+  } else {
+    // Below horizon: continue the arc smoothly
+    const belowRatio = Math.min(Math.abs(altitude) / Math.abs(minAltitude), 1);
+    y = horizonY + (100 - horizonY) * belowRatio;
   }
 
   return {
@@ -472,7 +476,8 @@ export function getMoonRiseSet(
 // Determine if moon is above horizon (with buffer for horizon effects)
 export function isMoonVisible(date: Date = new Date()): boolean {
   const { altitude } = getMoonAltAz(date);
-  return altitude > -5; // Same buffer as sun for visual consistency
+  // Extended buffer for smooth arc transition
+  return altitude > -20;
 }
 
 // Calculate the rotation angle for moon shadow rendering

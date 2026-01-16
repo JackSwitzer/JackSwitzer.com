@@ -99,7 +99,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
       {/* Summary */}
       {project.summary && (
-        <p className={`text-lg text-[var(--muted)] leading-relaxed ${project.slug === "sol" ? "mb-4" : "mb-8"}`}>
+        <p className="text-lg text-[var(--muted)] mb-8 leading-relaxed">
           {project.summary}
         </p>
       )}
@@ -107,20 +107,22 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       {/* Sol Demo - featured section with sky animation */}
       {project.slug === "sol" && (
         <div className="mb-8">
-          <div className="flex items-center justify-center mb-3">
-            <span className="tag tag-success text-xs">How Sol Works</span>
-          </div>
           <Suspense fallback={<SolDemoFallback />}>
             <SolDemo />
           </Suspense>
-          <ul className="mt-5 space-y-2">
-            {project.accomplishments.map((acc: string, i: number) => (
-              <li key={i} className="text-[var(--muted)] flex items-start gap-2">
-                <span className="text-[var(--accent)] mt-0.5">→</span>
-                {acc}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-6">
+            <h2 className="text-base font-semibold mb-3">
+              <span className="tag tag-success">How Sol Works</span>
+            </h2>
+            <ul className="space-y-2">
+              {project.accomplishments.map((acc: string, i: number) => (
+                <li key={i} className="text-[var(--muted)] flex items-start gap-2">
+                  <span className="text-[var(--accent)] mt-0.5">→</span>
+                  {acc}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 

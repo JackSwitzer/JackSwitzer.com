@@ -122,7 +122,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       {!isResearchProject && !contentElements && (
         <div className="mb-8">
           <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="tag tag-success">{project.slug === "sol-sunrise-lamp" ? "How Sol Works" : "Key Accomplishments"}</span>
+            <span className="tag tag-success">{project.slug === "sol" ? "How Sol Works" : "Key Accomplishments"}</span>
           </h2>
           <ul className="bullet-arrow space-y-2">
             {project.accomplishments.map((acc: string, i: number) => (
@@ -146,7 +146,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       )}
 
       {/* Sol Demo - animated sky */}
-      {project.slug === "sol-sunrise-lamp" && (
+      {project.slug === "sol" && (
         <div className="mb-8">
           <Suspense fallback={<SolDemoFallback />}>
             <SolDemo />

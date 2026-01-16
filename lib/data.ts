@@ -414,7 +414,7 @@ export const projects: Project[] = [
     github: { repo: "qhacks24", account: "jackswitzer" },
   },
   {
-    slug: "sol-sunrise-lamp",
+    slug: "sol",
     name: "Sol",
     type: "personal",
     period: "Dec 2025",

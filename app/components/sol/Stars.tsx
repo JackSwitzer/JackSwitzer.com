@@ -8,23 +8,19 @@ interface StarsProps {
 
 // Bright star with 6-point twinkle - group 1, 2, or 3 for synced animation
 function BrightStar({ cx, cy, group = 1 }: { cx: number; cy: number; group?: 1 | 2 | 3 }) {
-  const r = 2.2; // ray length
-  const d = r * 0.7; // diagonal length
+  const r = 2.0; // ray length
   return (
     <g className={`twinkle-group-${group}`}>
       {/* Core */}
-      <circle cx={cx} cy={cy} r="0.4" fill="white" opacity="1" />
+      <circle cx={cx} cy={cy} r="0.35" fill="white" opacity="1" />
       {/* Horizontal rays */}
-      <line x1={cx - 0.45} y1={cy} x2={cx - r} y2={cy} stroke="white" strokeWidth="0.07" />
-      <line x1={cx + 0.45} y1={cy} x2={cx + r} y2={cy} stroke="white" strokeWidth="0.07" />
-      {/* Vertical rays */}
-      <line x1={cx} y1={cy - 0.45} x2={cx} y2={cy - r} stroke="white" strokeWidth="0.07" />
-      <line x1={cx} y1={cy + 0.45} x2={cx} y2={cy + r} stroke="white" strokeWidth="0.07" />
-      {/* Diagonal rays */}
-      <line x1={cx - 0.3} y1={cy - 0.3} x2={cx - d} y2={cy - d} stroke="white" strokeWidth="0.04" />
-      <line x1={cx + 0.3} y1={cy - 0.3} x2={cx + d} y2={cy - d} stroke="white" strokeWidth="0.04" />
-      <line x1={cx - 0.3} y1={cy + 0.3} x2={cx - d} y2={cy + d} stroke="white" strokeWidth="0.04" />
-      <line x1={cx + 0.3} y1={cy + 0.3} x2={cx + d} y2={cy + d} stroke="white" strokeWidth="0.04" />
+      <line x1={cx - 0.35} y1={cy} x2={cx - r} y2={cy} stroke="white" strokeWidth="0.06" />
+      <line x1={cx + 0.35} y1={cy} x2={cx + r} y2={cy} stroke="white" strokeWidth="0.06" />
+      {/* Diagonal rays - 60° angles for 6-point star */}
+      <line x1={cx - 0.18} y1={cy - 0.3} x2={cx - r * 0.5} y2={cy - r * 0.866} stroke="white" strokeWidth="0.06" />
+      <line x1={cx + 0.18} y1={cy - 0.3} x2={cx + r * 0.5} y2={cy - r * 0.866} stroke="white" strokeWidth="0.06" />
+      <line x1={cx - 0.18} y1={cy + 0.3} x2={cx - r * 0.5} y2={cy + r * 0.866} stroke="white" strokeWidth="0.06" />
+      <line x1={cx + 0.18} y1={cy + 0.3} x2={cx + r * 0.5} y2={cy + r * 0.866} stroke="white" strokeWidth="0.06" />
     </g>
   );
 }
@@ -53,12 +49,14 @@ export function Stars({ opacity }: StarsProps) {
         <defs>
           <style>{`
             @keyframes twinkle {
-              0%, 100% { opacity: 0.9; }
-              50% { opacity: 0.3; }
+              0%, 100% { opacity: 1; }
+              25% { opacity: 0.5; }
+              50% { opacity: 0.2; }
+              75% { opacity: 0.6; }
             }
-            .twinkle-group-1 line { animation: twinkle 2.5s ease-in-out infinite; }
-            .twinkle-group-2 line { animation: twinkle 2.5s ease-in-out infinite 0.8s; }
-            .twinkle-group-3 line { animation: twinkle 2.5s ease-in-out infinite 1.6s; }
+            .twinkle-group-1 line { animation: twinkle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+            .twinkle-group-2 line { animation: twinkle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite 0.6s; }
+            .twinkle-group-3 line { animation: twinkle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite 1.2s; }
           `}</style>
         </defs>
 

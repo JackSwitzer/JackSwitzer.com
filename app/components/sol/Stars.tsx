@@ -79,7 +79,7 @@ export function Stars({ opacity }: StarsProps) {
         </defs>
 
         {/* === LITTLE DIPPER === top-left, 20% bigger, more left */}
-        <g transform="translate(-40, -2) scale(1.52) rotate(-15, 15, 20)">
+        <g transform="translate(-60, 3) scale(1.82) rotate(-15, 15, 20)">
           <path
             d="M12 8 L16 12 L19 16 L23 21 L22 29 L31 31 L33 23 L23 21"
             stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"

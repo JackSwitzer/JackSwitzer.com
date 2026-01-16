@@ -76,49 +76,49 @@ export function Stars({ opacity, count = 40, seed = 42 }: StarsProps) {
         />
       ))}
 
-      {/* Constellations SVG - designed by Gemini 3.0 Pro */}
+      {/* Constellations SVG - designed by Gemini 3 Pro */}
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 100 75"
         preserveAspectRatio="none"
       >
-        {/* Constellation lines */}
-        <g stroke="white" strokeWidth="0.12" opacity="0.15" fill="none">
-          {/* Big Dipper */}
-          <path d="M 8 22 L 15 17 L 21 15 L 28 14 L 35 12 L 35 20 L 27 21 L 28 14" />
-          {/* Cassiopeia */}
-          <path d="M 70 20 L 76 12 L 83 16 L 88 10 L 94 15" />
-          {/* Orion */}
-          <path d="M 30 40 L 43 42 L 45 62 L 33 65 L 30 40 M 36 52 L 40 51" />
-        </g>
+        {/* Big Dipper - upper left */}
+        <path d="M8.5,14.5 L13.5,13.2 L17.5,12.5 L21.5,12.2 L29.2,10.5 L29.5,18.2 L21.8,18.5 L21.5,12.2" stroke="white" strokeWidth="0.1" opacity="0.12" fill="none"/>
+        <circle cx="8.5" cy="14.5" r="0.55" fill="white" opacity="0.7"/>
+        <circle cx="13.5" cy="13.2" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="17.5" cy="12.5" r="0.55" fill="white" opacity="0.7"/>
+        <circle cx="21.5" cy="12.2" r="0.4" fill="white" opacity="0.7"/>
+        <circle cx="21.8" cy="18.5" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="29.5" cy="18.2" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="29.2" cy="10.5" r="0.6" fill="white" opacity="0.7"/>
 
-        {/* Constellation stars */}
-        <g fill="white">
-          {/* Big Dipper Stars */}
-          <circle cx="8" cy="22" r="0.8" />
-          <circle cx="15" cy="17" r="0.75" />
-          <circle cx="21" cy="15" r="0.75" />
-          <circle cx="28" cy="14" r="0.5" />
-          <circle cx="35" cy="12" r="0.8" />
-          <circle cx="35" cy="20" r="0.7" />
-          <circle cx="27" cy="21" r="0.65" />
+        {/* Little Dipper - upper center */}
+        <path d="M68 7 L63 9 L58 11 L54 13 L54 18 L49 20 L47 15 L54 13" stroke="white" strokeWidth="0.1" opacity="0.12" fill="none"/>
+        <circle cx="68" cy="7" r="0.6" fill="white" opacity="0.9"/>
+        <circle cx="63" cy="9" r="0.4" fill="white" opacity="0.7"/>
+        <circle cx="58" cy="11" r="0.4" fill="white" opacity="0.7"/>
+        <circle cx="54" cy="13" r="0.45" fill="white" opacity="0.7"/>
+        <circle cx="54" cy="18" r="0.4" fill="white" opacity="0.7"/>
+        <circle cx="49" cy="20" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="47" cy="15" r="0.55" fill="white" opacity="0.8"/>
 
-          {/* Cassiopeia Stars */}
-          <circle cx="70" cy="20" r="0.5" />
-          <circle cx="76" cy="12" r="0.6" />
-          <circle cx="83" cy="16" r="0.8" />
-          <circle cx="88" cy="10" r="0.75" />
-          <circle cx="94" cy="15" r="0.65" />
+        {/* Cassiopeia - upper right */}
+        <path d="M76 11 L80.5 18.5 L86 13 L91.5 19.5 L94.5 9" stroke="white" strokeWidth="0.1" opacity="0.12" fill="none"/>
+        <circle cx="76" cy="11" r="0.4" fill="white" opacity="0.7"/>
+        <circle cx="80.5" cy="18.5" r="0.45" fill="white" opacity="0.7"/>
+        <circle cx="86" cy="13" r="0.55" fill="white" opacity="0.7"/>
+        <circle cx="91.5" cy="19.5" r="0.55" fill="white" opacity="0.7"/>
+        <circle cx="94.5" cy="9" r="0.5" fill="white" opacity="0.7"/>
 
-          {/* Orion Stars */}
-          <circle cx="30" cy="40" r="0.8" />
-          <circle cx="43" cy="42" r="0.7" />
-          <circle cx="36" cy="52" r="0.65" />
-          <circle cx="38" cy="51.5" r="0.65" />
-          <circle cx="40" cy="51" r="0.6" />
-          <circle cx="33" cy="65" r="0.65" />
-          <circle cx="45" cy="62" r="0.8" />
-        </g>
+        {/* Orion - lower right */}
+        <path d="M 58 35 L 65 47 L 67.5 47.5 L 70 48 L 74 33 M 65 47 L 63 63 M 70 48 L 77 59" stroke="white" strokeWidth="0.1" opacity="0.12" fill="none"/>
+        <circle cx="58" cy="35" r="0.6" fill="white" opacity="0.7"/>
+        <circle cx="74" cy="33" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="65" cy="47" r="0.45" fill="white" opacity="0.7"/>
+        <circle cx="67.5" cy="47.5" r="0.45" fill="white" opacity="0.7"/>
+        <circle cx="70" cy="48" r="0.45" fill="white" opacity="0.7"/>
+        <circle cx="63" cy="63" r="0.5" fill="white" opacity="0.7"/>
+        <circle cx="77" cy="59" r="0.6" fill="white" opacity="0.7"/>
       </svg>
 
       <style jsx>{`

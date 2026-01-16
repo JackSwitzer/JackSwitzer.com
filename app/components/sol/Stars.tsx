@@ -79,7 +79,7 @@ export function Stars({ opacity }: StarsProps) {
         </defs>
 
         {/* === LITTLE DIPPER === top-left, 20% bigger, more left */}
-        <g transform="translate(-40, -2) scale(1.32) rotate(-15, 15, 20)">
+        <g transform="translate(-40, -2) scale(1.52) rotate(-15, 15, 20)">
           <path
             d="M12 8 L16 12 L19 16 L23 21 L22 29 L31 31 L33 23 L23 21"
             stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"
@@ -107,7 +107,7 @@ export function Stars({ opacity }: StarsProps) {
         </g>
 
         {/* === ORION === shifted right, up, 20% bigger */}
-        <g transform="translate(7, -18) scale(1.2)">
+        <g transform="translate(2, -18) scale(1.32)">
           <path
             d="M38 34 L46 51 L40 68 M62 36 L54 49 L64 66 M46 51 L50 50 L54 49"
             stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"

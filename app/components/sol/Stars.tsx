@@ -78,53 +78,53 @@ export function Stars({ opacity }: StarsProps) {
           `}</style>
         </defs>
 
-        {/* === LITTLE DIPPER === extreme left edge */}
+        {/* === LITTLE DIPPER === top-left corner, rotated diagonal */}
         <path
-          d="M2 5 L4 14 L6 24 L8 35 L6 48 L16 54 L20 44 L8 35"
+          d="M3 3 L8 8 L14 12 L22 14 L28 22 L22 28 L16 24 L22 14"
           stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
         />
-        <BrightStar cx={2} cy={5} delay={0} />
-        <Star cx={4} cy={14} />
-        <Star cx={6} cy={24} />
-        <Star cx={8} cy={35} />
-        <Star cx={6} cy={48} />
-        <Star cx={16} cy={54} />
-        <Star cx={20} cy={44} />
+        <BrightStar cx={3} cy={3} delay={0} />
+        <Star cx={8} cy={8} />
+        <Star cx={14} cy={12} />
+        <Star cx={22} cy={14} />
+        <Star cx={28} cy={22} />
+        <Star cx={22} cy={28} />
+        <Star cx={16} cy={24} />
 
-        {/* === CASSIOPEIA === extreme top right corner */}
+        {/* === CASSIOPEIA === top right, bigger W */}
         <path
-          d="M78 4 L83 14 L89 5 L94 12 L99 2"
+          d="M68 5 L75 20 L84 6 L92 22 L99 4"
           stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
         />
-        <Star cx={78} cy={4} />
-        <Star cx={83} cy={14} />
-        <BrightStar cx={89} cy={5} delay={1.2} />
-        <Star cx={94} cy={12} />
-        <Star cx={99} cy={2} />
+        <Star cx={68} cy={5} />
+        <Star cx={75} cy={20} />
+        <BrightStar cx={84} cy={6} delay={1.2} />
+        <Star cx={92} cy={22} />
+        <Star cx={99} cy={4} />
 
-        {/* === ORION === right side, lower - hourglass */}
+        {/* === ORION === centered lower, between the two */}
         <path
-          d="M58 38 L66 52 L62 66 M78 40 L72 51 L80 64 M66 52 L69 51 L72 51"
+          d="M38 45 L46 58 L42 72 M56 47 L50 57 L58 70 M46 58 L48 57 L50 57"
           stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
         />
-        <BrightStar cx={58} cy={38} delay={0.6} />
-        <Star cx={78} cy={40} />
-        <Star cx={66} cy={52} />
-        <Star cx={69} cy={51} />
-        <Star cx={72} cy={51} />
-        <Star cx={62} cy={66} />
-        <BrightStar cx={80} cy={64} delay={1.8} />
+        <BrightStar cx={38} cy={45} delay={0.6} />
+        <Star cx={56} cy={47} />
+        <Star cx={46} cy={58} />
+        <Star cx={48} cy={57} />
+        <Star cx={50} cy={57} />
+        <Star cx={42} cy={72} />
+        <BrightStar cx={58} cy={70} delay={1.8} />
 
-        {/* Scattered ambient stars - fill the gaps */}
-        <circle cx="45" cy="12" r="0.2" fill="white" opacity="0.35" />
-        <circle cx="62" cy="22" r="0.18" fill="white" opacity="0.3" />
-        <circle cx="30" cy="18" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="70" cy="38" r="0.18" fill="white" opacity="0.3" />
-        <circle cx="55" cy="28" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="82" cy="45" r="0.15" fill="white" opacity="0.3" />
-        <circle cx="25" cy="58" r="0.18" fill="white" opacity="0.3" />
-        <circle cx="75" cy="58" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="15" cy="62" r="0.15" fill="white" opacity="0.3" />
+        {/* Scattered ambient stars */}
+        <circle cx="45" cy="18" r="0.18" fill="white" opacity="0.3" />
+        <circle cx="58" cy="28" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="35" cy="12" r="0.15" fill="white" opacity="0.3" />
+        <circle cx="72" cy="42" r="0.18" fill="white" opacity="0.3" />
+        <circle cx="25" cy="45" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="85" cy="50" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="12" cy="55" r="0.15" fill="white" opacity="0.3" />
+        <circle cx="78" cy="65" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="18" cy="68" r="0.15" fill="white" opacity="0.25" />
       </svg>
     </div>
   );

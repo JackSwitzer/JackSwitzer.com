@@ -200,15 +200,15 @@ export function getSkyGradientCSS(colors: SkyColors): string {
 }
 
 // Star opacity based on sun visibility
-// Stars fade as sun appears on screen (sun visible at altitude > -15)
+// Stars fade quickly as sun appears on screen
 export function getStarOpacity(altitude: number): number {
   // Full stars when sun not visible
   if (altitude <= -15) return 1;
-  // Fade out as sun rises (-15 to -5)
-  if (altitude <= -5) {
-    return (altitude + 5) / -10; // 1 at -15, 0 at -5
+  // Fade out quickly as sun rises (-15 to -10)
+  if (altitude <= -10) {
+    return (altitude + 10) / -5; // 1 at -15, 0 at -10
   }
-  // Gone before sun fully up
+  // Gone quickly after sun appears
   return 0;
 }
 

@@ -38,7 +38,7 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
       {/* Stars layer - fade as sun appears */}
       <Stars
         opacity={getStarOpacity(solar.position.altitude)}
-        count={60}
+        count={0}
         seed={42}
       />
 

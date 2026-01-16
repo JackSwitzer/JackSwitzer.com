@@ -78,11 +78,11 @@ export function Stars({ opacity }: StarsProps) {
           `}</style>
         </defs>
 
-        {/* === LITTLE DIPPER === top-left, scaled and translated */}
-        <g transform="translate(-2, -2) scale(1.1) rotate(-15, 15, 20)">
+        {/* === LITTLE DIPPER === top-left, 20% bigger, more left */}
+        <g transform="translate(-10, -2) scale(1.32) rotate(-15, 15, 20)">
           <path
             d="M12 8 L16 12 L19 16 L23 21 L22 29 L31 31 L33 23 L23 21"
-            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+            stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"
           />
           <BrightStar cx={12} cy={8} delay={0} />
           <Star cx={16} cy={12} />
@@ -93,11 +93,11 @@ export function Stars({ opacity }: StarsProps) {
           <Star cx={33} cy={23} />
         </g>
 
-        {/* === CASSIOPEIA === top right, scaled up */}
-        <g transform="translate(12, -2) scale(1.2)">
+        {/* === CASSIOPEIA === top right, 10% bigger, rotated down-right */}
+        <g transform="translate(10, 0) scale(1.32) rotate(8, 80, 15)">
           <path
             d="M66 12 L73 27 L80 15 L88 25 L94 7"
-            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+            stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"
           />
           <Star cx={66} cy={12} />
           <Star cx={73} cy={27} />
@@ -106,11 +106,11 @@ export function Stars({ opacity }: StarsProps) {
           <Star cx={94} cy={7} />
         </g>
 
-        {/* === ORION === center-lower, original shape translated */}
-        <g transform="translate(-5, 5) scale(1.0)">
+        {/* === ORION === shifted right, up, 20% bigger */}
+        <g transform="translate(12, -8) scale(1.2)">
           <path
             d="M38 34 L46 51 L40 68 M62 36 L54 49 L64 66 M46 51 L50 50 L54 49"
-            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+            stroke="white" strokeWidth="0.06" opacity="0.06" fill="none"
           />
           <BrightStar cx={38} cy={34} delay={0.6} />
           <Star cx={62} cy={36} />

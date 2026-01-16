@@ -42,7 +42,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
       </nav>
 
       {/* Header */}
-      <header className="border-b border-[var(--border)] pb-6 mb-8">
+      <header className="border-b border-[var(--border)] pb-6 mb-6">
         <div className="flex justify-between items-start gap-4">
           {/* Left: Title and metadata */}
           <div className="flex-1">
@@ -99,29 +99,29 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
       {/* Summary */}
       {project.summary && (
-        <p className="text-lg text-[var(--muted)] mb-8 leading-relaxed">
+        <p className="text-lg text-[var(--muted)] mb-6 leading-relaxed">
           {project.summary}
         </p>
       )}
 
       {/* SAE Research - special embedded content */}
       {isResearchProject && (
-        <div className="mb-8">
+        <div className="mb-6">
           <SAEResearch />
         </div>
       )}
 
       {/* MDX Content - if available */}
       {contentElements && contentElements.length > 0 && !isResearchProject && (
-        <div className="mb-8">
+        <div className="mb-6">
           <MarkdownContent elements={contentElements} />
         </div>
       )}
 
       {/* Accomplishments - only show if not research project and no MDX */}
       {!isResearchProject && !contentElements && (
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+        <div className="mb-6">
+          <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
             <span className="tag tag-success">{project.slug === "sol" ? "How Sol Works" : "Key Accomplishments"}</span>
           </h2>
           <ul className="bullet-arrow space-y-2">
@@ -147,7 +147,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
       {/* Sol Demo - animated sky */}
       {project.slug === "sol" && (
-        <div className="mb-8">
+        <div className="mb-6">
           <Suspense fallback={<SolDemoFallback />}>
             <SolDemo />
           </Suspense>

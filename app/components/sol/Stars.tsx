@@ -50,25 +50,25 @@ export function Stars({ opacity }: StarsProps) {
           `}</style>
         </defs>
 
-        {/* Little Dipper - upper left, more vertical spread */}
-        <path d="M42 9 L36 13 L29 18 L23 26 L26 33 L17 37 L13 29 L23 26" stroke="white" strokeWidth="0.08" opacity="0.08" fill="none"/>
-        <StarBurst cx={42} cy={9} size={1.8} />
-        <circle cx="36" cy="13" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="29" cy="18" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="23" cy="26" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="26" cy="33" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="17" cy="37" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="13" cy="29" r="0.5" fill="white" opacity="0.6"/>
+        {/* Little Dipper - smooth curve from Polaris to bowl */}
+        <path d="M44 10 L37 13 L31 18 L26 24 L17 27 L19 37 L28 34 L26 24" stroke="white" strokeWidth="0.08" opacity="0.05" fill="none"/>
+        <StarBurst cx={44} cy={10} size={1.8} />
+        <circle cx="37" cy="13" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="31" cy="18" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="26" cy="24" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="17" cy="27" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="19" cy="37" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="28" cy="34" r="0.5" fill="white" opacity="0.6"/>
 
-        {/* Orion - right side, hourglass shape */}
-        <path d="M60 16 L69 41 L63 64 M82 19 L77 39 L86 61 M69 41 L73 40 L77 39" stroke="white" strokeWidth="0.08" opacity="0.08" fill="none"/>
-        <StarBurst cx={60} cy={16} size={1.6} />
-        <circle cx="82" cy="19" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="69" cy="41" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="73" cy="40" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="77" cy="39" r="0.5" fill="white" opacity="0.6"/>
-        <circle cx="63" cy="64" r="0.5" fill="white" opacity="0.6"/>
-        <StarBurst cx={86} cy={61} size={1.6} />
+        {/* Orion - symmetric hourglass */}
+        <path d="M58 15 L69 40 L62 63 M87 18 L77 38 L88 60 M69 40 L73 39 L77 38" stroke="white" strokeWidth="0.08" opacity="0.05" fill="none"/>
+        <StarBurst cx={58} cy={15} size={1.6} />
+        <circle cx="87" cy="18" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="69" cy="40" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="73" cy="39" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="77" cy="38" r="0.5" fill="white" opacity="0.6"/>
+        <circle cx="62" cy="63" r="0.5" fill="white" opacity="0.6"/>
+        <StarBurst cx={88} cy={60} size={1.6} />
       </svg>
     </div>
   );

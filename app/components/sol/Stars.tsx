@@ -6,17 +6,25 @@ interface StarsProps {
   seed?: number;
 }
 
-// Bright star with 4-point twinkle - group 1, 2, or 3 for synced animation
+// Bright star with 6-point twinkle - group 1, 2, or 3 for synced animation
 function BrightStar({ cx, cy, group = 1 }: { cx: number; cy: number; group?: 1 | 2 | 3 }) {
+  const r = 2.2; // ray length
+  const d = r * 0.7; // diagonal length
   return (
     <g className={`twinkle-group-${group}`}>
       {/* Core */}
-      <circle cx={cx} cy={cy} r="0.35" fill="white" opacity="1" />
-      {/* 4-point twinkle rays */}
-      <line x1={cx - 0.4} y1={cy} x2={cx - 1.8} y2={cy} stroke="white" strokeWidth="0.05" />
-      <line x1={cx + 0.4} y1={cy} x2={cx + 1.8} y2={cy} stroke="white" strokeWidth="0.05" />
-      <line x1={cx} y1={cy - 0.4} x2={cx} y2={cy - 1.8} stroke="white" strokeWidth="0.05" />
-      <line x1={cx} y1={cy + 0.4} x2={cx} y2={cy + 1.8} stroke="white" strokeWidth="0.05" />
+      <circle cx={cx} cy={cy} r="0.4" fill="white" opacity="1" />
+      {/* Horizontal rays */}
+      <line x1={cx - 0.45} y1={cy} x2={cx - r} y2={cy} stroke="white" strokeWidth="0.07" />
+      <line x1={cx + 0.45} y1={cy} x2={cx + r} y2={cy} stroke="white" strokeWidth="0.07" />
+      {/* Vertical rays */}
+      <line x1={cx} y1={cy - 0.45} x2={cx} y2={cy - r} stroke="white" strokeWidth="0.07" />
+      <line x1={cx} y1={cy + 0.45} x2={cx} y2={cy + r} stroke="white" strokeWidth="0.07" />
+      {/* Diagonal rays */}
+      <line x1={cx - 0.3} y1={cy - 0.3} x2={cx - d} y2={cy - d} stroke="white" strokeWidth="0.04" />
+      <line x1={cx + 0.3} y1={cy - 0.3} x2={cx + d} y2={cy - d} stroke="white" strokeWidth="0.04" />
+      <line x1={cx - 0.3} y1={cy + 0.3} x2={cx - d} y2={cy + d} stroke="white" strokeWidth="0.04" />
+      <line x1={cx + 0.3} y1={cy + 0.3} x2={cx + d} y2={cy + d} stroke="white" strokeWidth="0.04" />
     </g>
   );
 }

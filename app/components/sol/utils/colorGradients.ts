@@ -40,7 +40,7 @@ const SKY_PRESETS: Record<TimeOfDay, SkyColors> = {
     border: "#5a4a6a",
     sun: "#ff6b35",
     showStars: true,
-    starOpacity: 0.5,
+    starOpacity: 0.3, // Stars fading
   },
   civil: {
     top: "#2a3a5a",
@@ -49,7 +49,7 @@ const SKY_PRESETS: Record<TimeOfDay, SkyColors> = {
     border: "#ff8c42",
     sun: "#ff8c42",
     showStars: false,
-    starOpacity: 0.2,
+    starOpacity: 0, // Stars gone by civil twilight (pre-dawn)
   },
   day: {
     top: "#4a90d9",

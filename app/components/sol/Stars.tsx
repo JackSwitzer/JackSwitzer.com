@@ -12,26 +12,13 @@ interface Star {
   twinkleDelay: number;
 }
 
-interface ConstellationStar {
-  x: number;
-  y: number;
-  size: number;
-  brightness: number;
-}
-
-interface Constellation {
-  name: string;
-  stars: ConstellationStar[];
-  lines: [number, number][]; // Pairs of star indices to connect
-}
-
 interface StarsProps {
-  opacity: number; // 0-1, controls overall star visibility
+  opacity: number;
   count?: number;
   seed?: number;
 }
 
-// Seeded random number generator for consistent star positions
+// Seeded random for consistent positions
 function seededRandom(seed: number): () => number {
   return () => {
     seed = (seed * 9301 + 49297) % 233280;
@@ -39,52 +26,7 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-// Recognizable constellations with approximate positions
-const CONSTELLATIONS: Constellation[] = [
-  {
-    // Orion - positioned left side
-    name: "Orion",
-    stars: [
-      { x: 12, y: 18, size: 2.5, brightness: 0.95 }, // Betelgeuse (shoulder)
-      { x: 18, y: 18, size: 2, brightness: 0.85 },   // Bellatrix (shoulder)
-      { x: 14, y: 28, size: 1.8, brightness: 0.8 },  // Belt star 1
-      { x: 15, y: 29, size: 1.8, brightness: 0.8 },  // Belt star 2
-      { x: 16, y: 30, size: 1.8, brightness: 0.8 },  // Belt star 3
-      { x: 12, y: 40, size: 2.2, brightness: 0.9 },  // Saiph (foot)
-      { x: 19, y: 40, size: 2.5, brightness: 0.95 }, // Rigel (foot)
-    ],
-    lines: [[0, 1], [0, 2], [1, 4], [2, 3], [3, 4], [2, 5], [4, 6]],
-  },
-  {
-    // Big Dipper - positioned upper right
-    name: "Big Dipper",
-    stars: [
-      { x: 70, y: 12, size: 2.2, brightness: 0.9 },  // Alkaid
-      { x: 74, y: 14, size: 2, brightness: 0.85 },   // Mizar
-      { x: 78, y: 13, size: 2, brightness: 0.85 },   // Alioth
-      { x: 82, y: 15, size: 2, brightness: 0.85 },   // Megrez
-      { x: 85, y: 18, size: 2.2, brightness: 0.9 },  // Phecda
-      { x: 82, y: 22, size: 2.2, brightness: 0.9 },  // Merak
-      { x: 86, y: 12, size: 2.3, brightness: 0.92 }, // Dubhe
-    ],
-    lines: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]],
-  },
-  {
-    // Cassiopeia - positioned upper center (W shape)
-    name: "Cassiopeia",
-    stars: [
-      { x: 42, y: 8, size: 2.2, brightness: 0.88 },
-      { x: 46, y: 14, size: 2, brightness: 0.85 },
-      { x: 50, y: 10, size: 2.3, brightness: 0.9 },
-      { x: 54, y: 15, size: 2, brightness: 0.85 },
-      { x: 58, y: 9, size: 2.2, brightness: 0.88 },
-    ],
-    lines: [[0, 1], [1, 2], [2, 3], [3, 4]],
-  },
-];
-
-export function Stars({ opacity, count = 50, seed = 42 }: StarsProps) {
-  // Generate random background stars
+export function Stars({ opacity, count = 40, seed = 42 }: StarsProps) {
   const stars = useMemo((): Star[] => {
     const random = seededRandom(seed);
     const result: Star[] = [];
@@ -93,10 +35,10 @@ export function Stars({ opacity, count = 50, seed = 42 }: StarsProps) {
       result.push({
         id: i,
         x: random() * 100,
-        y: random() * 75,
-        brightness: 0.2 + random() * 0.5, // Dimmer background stars
-        size: 1 + random() * 1.5,
-        twinkle: random() > 0.7,
+        y: random() * 70,
+        brightness: 0.3 + random() * 0.5,
+        size: 1 + random() * 1.2,
+        twinkle: random() > 0.75,
         twinkleDelay: random() * 3,
       });
     }
@@ -111,7 +53,7 @@ export function Stars({ opacity, count = 50, seed = 42 }: StarsProps) {
       className="absolute inset-0 pointer-events-none overflow-hidden"
       style={{
         opacity,
-        transition: "opacity 2s ease",
+        transition: "opacity 1.5s ease",
       }}
     >
       {/* Background stars */}
@@ -128,67 +70,92 @@ export function Stars({ opacity, count = 50, seed = 42 }: StarsProps) {
             backgroundColor: "white",
             borderRadius: "50%",
             opacity: star.brightness,
-            boxShadow: `0 0 ${star.size}px rgba(255, 255, 255, ${star.brightness * 0.3})`,
+            boxShadow: `0 0 ${star.size}px rgba(255, 255, 255, 0.4)`,
             animationDelay: star.twinkle ? `${star.twinkleDelay}s` : undefined,
           }}
         />
       ))}
 
-      {/* Constellations */}
-      {CONSTELLATIONS.map((constellation) => (
-        <div key={constellation.name}>
-          {/* Constellation lines */}
-          <svg
-            className="absolute inset-0 w-full h-full"
-            style={{ opacity: 0.3 }}
-          >
-            {constellation.lines.map(([from, to], i) => (
-              <line
-                key={i}
-                x1={`${constellation.stars[from].x}%`}
-                y1={`${constellation.stars[from].y}%`}
-                x2={`${constellation.stars[to].x}%`}
-                y2={`${constellation.stars[to].y}%`}
-                stroke="white"
-                strokeWidth="0.5"
-              />
-            ))}
-          </svg>
+      {/* Constellations SVG */}
+      <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 100 75"
+        preserveAspectRatio="none"
+      >
+        {/* Orion - left side */}
+        <g className="constellation-orion">
+          {/* Lines first (behind stars) */}
+          <path
+            d="M 8 15 L 14 15 M 8 15 L 10 25 M 14 15 L 12 25 M 10 25 L 11 27 L 12 25 M 10 25 L 7 38 M 12 25 L 15 38"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="0.3"
+            fill="none"
+          />
+          {/* Stars */}
+          <circle cx="8" cy="15" r="0.8" fill="white" opacity="0.9" /> {/* Betelgeuse */}
+          <circle cx="14" cy="15" r="0.6" fill="white" opacity="0.8" /> {/* Bellatrix */}
+          <circle cx="10" cy="25" r="0.5" fill="white" opacity="0.75" /> {/* Belt 1 */}
+          <circle cx="11" cy="27" r="0.5" fill="white" opacity="0.75" /> {/* Belt 2 */}
+          <circle cx="12" cy="25" r="0.5" fill="white" opacity="0.75" /> {/* Belt 3 */}
+          <circle cx="7" cy="38" r="0.6" fill="white" opacity="0.8" /> {/* Saiph */}
+          <circle cx="15" cy="38" r="0.8" fill="white" opacity="0.95" /> {/* Rigel */}
+        </g>
 
-          {/* Constellation stars */}
-          {constellation.stars.map((star, i) => (
-            <div
-              key={`${constellation.name}-${i}`}
-              style={{
-                position: "absolute",
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: star.size,
-                height: star.size,
-                backgroundColor: "white",
-                borderRadius: "50%",
-                opacity: star.brightness,
-                boxShadow: `0 0 ${star.size * 3}px rgba(255, 255, 255, ${star.brightness * 0.6})`,
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-          ))}
-        </div>
-      ))}
+        {/* Big Dipper - upper right */}
+        <g className="constellation-dipper">
+          <path
+            d="M 65 8 L 70 10 L 75 9 L 80 12 L 83 18 L 79 22 L 84 14 L 80 12"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="0.3"
+            fill="none"
+          />
+          <circle cx="65" cy="8" r="0.6" fill="white" opacity="0.85" /> {/* Alkaid */}
+          <circle cx="70" cy="10" r="0.55" fill="white" opacity="0.8" /> {/* Mizar */}
+          <circle cx="75" cy="9" r="0.55" fill="white" opacity="0.8" /> {/* Alioth */}
+          <circle cx="80" cy="12" r="0.5" fill="white" opacity="0.75" /> {/* Megrez */}
+          <circle cx="83" cy="18" r="0.6" fill="white" opacity="0.85" /> {/* Phecda */}
+          <circle cx="79" cy="22" r="0.6" fill="white" opacity="0.85" /> {/* Merak */}
+          <circle cx="84" cy="14" r="0.65" fill="white" opacity="0.9" /> {/* Dubhe */}
+        </g>
 
-      {/* CSS for twinkle animation */}
+        {/* Cassiopeia - upper center (W shape) */}
+        <g className="constellation-cassiopeia">
+          <path
+            d="M 38 6 L 43 12 L 48 7 L 53 13 L 58 5"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="0.3"
+            fill="none"
+          />
+          <circle cx="38" cy="6" r="0.6" fill="white" opacity="0.85" />
+          <circle cx="43" cy="12" r="0.55" fill="white" opacity="0.8" />
+          <circle cx="48" cy="7" r="0.65" fill="white" opacity="0.88" />
+          <circle cx="53" cy="13" r="0.55" fill="white" opacity="0.8" />
+          <circle cx="58" cy="5" r="0.6" fill="white" opacity="0.85" />
+        </g>
+
+        {/* Lyra (small) - right side */}
+        <g className="constellation-lyra">
+          <path
+            d="M 88 30 L 90 34 L 92 34 L 90 34 L 89 38 L 91 38"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="0.25"
+            fill="none"
+          />
+          <circle cx="88" cy="30" r="0.7" fill="white" opacity="0.95" /> {/* Vega */}
+          <circle cx="90" cy="34" r="0.4" fill="white" opacity="0.7" />
+          <circle cx="92" cy="34" r="0.4" fill="white" opacity="0.7" />
+          <circle cx="89" cy="38" r="0.35" fill="white" opacity="0.65" />
+          <circle cx="91" cy="38" r="0.35" fill="white" opacity="0.65" />
+        </g>
+      </svg>
+
       <style jsx>{`
         @keyframes twinkle {
-          0%,
-          100% {
-            opacity: var(--star-opacity, 0.7);
-          }
-          50% {
-            opacity: calc(var(--star-opacity, 0.7) * 0.3);
-          }
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 0.25; }
         }
         .animate-twinkle {
-          animation: twinkle 2s ease-in-out infinite;
+          animation: twinkle 2.5s ease-in-out infinite;
         }
       `}</style>
     </div>

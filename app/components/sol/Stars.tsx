@@ -78,53 +78,58 @@ export function Stars({ opacity }: StarsProps) {
           `}</style>
         </defs>
 
-        {/* === LITTLE DIPPER === top-left corner, rotated diagonal */}
-        <path
-          d="M3 3 L8 8 L14 12 L22 14 L28 22 L22 28 L16 24 L22 14"
-          stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
-        />
-        <BrightStar cx={3} cy={3} delay={0} />
-        <Star cx={8} cy={8} />
-        <Star cx={14} cy={12} />
-        <Star cx={22} cy={14} />
-        <Star cx={28} cy={22} />
-        <Star cx={22} cy={28} />
-        <Star cx={16} cy={24} />
+        {/* === LITTLE DIPPER === top-left, scaled and translated */}
+        <g transform="translate(-2, -2) scale(1.1) rotate(-15, 15, 20)">
+          <path
+            d="M12 8 L16 12 L19 16 L23 21 L22 29 L31 31 L33 23 L23 21"
+            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+          />
+          <BrightStar cx={12} cy={8} delay={0} />
+          <Star cx={16} cy={12} />
+          <Star cx={19} cy={16} />
+          <Star cx={23} cy={21} />
+          <Star cx={22} cy={29} />
+          <Star cx={31} cy={31} />
+          <Star cx={33} cy={23} />
+        </g>
 
-        {/* === CASSIOPEIA === top right, bigger W */}
-        <path
-          d="M68 5 L75 20 L84 6 L92 22 L99 4"
-          stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
-        />
-        <Star cx={68} cy={5} />
-        <Star cx={75} cy={20} />
-        <BrightStar cx={84} cy={6} delay={1.2} />
-        <Star cx={92} cy={22} />
-        <Star cx={99} cy={4} />
+        {/* === CASSIOPEIA === top right, scaled up */}
+        <g transform="translate(12, -2) scale(1.2)">
+          <path
+            d="M66 12 L73 27 L80 15 L88 25 L94 7"
+            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+          />
+          <Star cx={66} cy={12} />
+          <Star cx={73} cy={27} />
+          <BrightStar cx={80} cy={15} delay={1.2} />
+          <Star cx={88} cy={25} />
+          <Star cx={94} cy={7} />
+        </g>
 
-        {/* === ORION === centered lower, between the two */}
-        <path
-          d="M38 45 L46 58 L42 72 M56 47 L50 57 L58 70 M46 58 L48 57 L50 57"
-          stroke="white" strokeWidth="0.08" opacity="0.06" fill="none"
-        />
-        <BrightStar cx={38} cy={45} delay={0.6} />
-        <Star cx={56} cy={47} />
-        <Star cx={46} cy={58} />
-        <Star cx={48} cy={57} />
-        <Star cx={50} cy={57} />
-        <Star cx={42} cy={72} />
-        <BrightStar cx={58} cy={70} delay={1.8} />
+        {/* === ORION === center-lower, original shape translated */}
+        <g transform="translate(-5, 5) scale(1.0)">
+          <path
+            d="M38 34 L46 51 L40 68 M62 36 L54 49 L64 66 M46 51 L50 50 L54 49"
+            stroke="white" strokeWidth="0.07" opacity="0.06" fill="none"
+          />
+          <BrightStar cx={38} cy={34} delay={0.6} />
+          <Star cx={62} cy={36} />
+          <Star cx={46} cy={51} />
+          <Star cx={50} cy={50} />
+          <Star cx={54} cy={49} />
+          <Star cx={40} cy={68} />
+          <BrightStar cx={64} cy={66} delay={1.8} />
+        </g>
 
         {/* Scattered ambient stars */}
-        <circle cx="45" cy="18" r="0.18" fill="white" opacity="0.3" />
-        <circle cx="58" cy="28" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="35" cy="12" r="0.15" fill="white" opacity="0.3" />
-        <circle cx="72" cy="42" r="0.18" fill="white" opacity="0.3" />
-        <circle cx="25" cy="45" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="85" cy="50" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="12" cy="55" r="0.15" fill="white" opacity="0.3" />
-        <circle cx="78" cy="65" r="0.15" fill="white" opacity="0.25" />
-        <circle cx="18" cy="68" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="50" cy="15" r="0.18" fill="white" opacity="0.3" />
+        <circle cx="42" cy="22" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="58" cy="8" r="0.15" fill="white" opacity="0.3" />
+        <circle cx="75" cy="45" r="0.18" fill="white" opacity="0.25" />
+        <circle cx="20" cy="50" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="85" cy="55" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="10" cy="60" r="0.15" fill="white" opacity="0.25" />
+        <circle cx="70" cy="68" r="0.15" fill="white" opacity="0.2" />
       </svg>
     </div>
   );

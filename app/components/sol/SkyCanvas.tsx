@@ -5,7 +5,7 @@ import { Moon } from "./Moon";
 import { Stars } from "./Stars";
 import { useSolarPosition } from "./hooks/useSolarPosition";
 import { useMoonPhase } from "./hooks/useMoonPhase";
-import { getSkyGradientCSS, getGroundColors } from "./utils/colorGradients";
+import { getSkyGradientCSS, getGroundColors, getStarOpacity } from "./utils/colorGradients";
 
 interface SkyCanvasProps {
   date: Date;
@@ -35,9 +35,9 @@ export function SkyCanvas({ date }: SkyCanvasProps) {
         }}
       />
 
-      {/* Stars layer */}
+      {/* Stars layer - fade as sun appears */}
       <Stars
-        opacity={solar.colors.starOpacity}
+        opacity={getStarOpacity(solar.position.altitude)}
         count={60}
         seed={42}
       />

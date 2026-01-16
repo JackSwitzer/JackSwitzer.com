@@ -199,6 +199,19 @@ export function getSkyGradientCSS(colors: SkyColors): string {
   return `linear-gradient(to bottom, ${colors.top} 0%, ${colors.bottom} 100%)`;
 }
 
+// Star opacity based on sun visibility
+// Stars fade as sun appears on screen (sun visible at altitude > -15)
+export function getStarOpacity(altitude: number): number {
+  // Full stars when sun not visible
+  if (altitude <= -15) return 1;
+  // Fade out as sun rises (-15 to -5)
+  if (altitude <= -5) {
+    return (altitude + 5) / -10; // 1 at -15, 0 at -5
+  }
+  // Gone before sun fully up
+  return 0;
+}
+
 // Terminal-style ground colors based on time
 export function getGroundColors(altitude: number): {
   horizon: string;

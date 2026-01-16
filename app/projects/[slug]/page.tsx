@@ -99,9 +99,29 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
       {/* Summary */}
       {project.summary && (
-        <p className="text-lg text-[var(--muted)] mb-8 leading-relaxed">
+        <p className={`text-lg text-[var(--muted)] leading-relaxed ${project.slug === "sol" ? "mb-4" : "mb-8"}`}>
           {project.summary}
         </p>
+      )}
+
+      {/* Sol Demo - featured section with sky animation */}
+      {project.slug === "sol" && (
+        <div className="mb-8">
+          <div className="flex items-center justify-center mb-3">
+            <span className="tag tag-success text-xs">How Sol Works</span>
+          </div>
+          <Suspense fallback={<SolDemoFallback />}>
+            <SolDemo />
+          </Suspense>
+          <ul className="mt-5 space-y-2">
+            {project.accomplishments.map((acc: string, i: number) => (
+              <li key={i} className="text-[var(--muted)] flex items-start gap-2">
+                <span className="text-[var(--accent)] mt-0.5">→</span>
+                {acc}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* SAE Research - special embedded content */}
@@ -118,11 +138,11 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
         </div>
       )}
 
-      {/* Accomplishments - only show if not research project and no MDX */}
-      {!isResearchProject && !contentElements && (
+      {/* Accomplishments - only show if not research project and no MDX (except Sol) */}
+      {!isResearchProject && !contentElements && project.slug !== "sol" && (
         <div className="mb-8">
           <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <span className="tag tag-success">{project.slug === "sol" ? "How Sol Works" : "Key Accomplishments"}</span>
+            <span className="tag tag-success">Key Accomplishments</span>
           </h2>
           <ul className="bullet-arrow space-y-2">
             {project.accomplishments.map((acc: string, i: number) => (
@@ -142,15 +162,6 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           <p className="text-[var(--muted)] mt-6 text-sm italic text-center">
             A huge thank you to all of my amazing students for this wonderful card!
           </p>
-        </div>
-      )}
-
-      {/* Sol Demo - animated sky */}
-      {project.slug === "sol" && (
-        <div className="mb-8">
-          <Suspense fallback={<SolDemoFallback />}>
-            <SolDemo />
-          </Suspense>
         </div>
       )}
 
@@ -186,7 +197,7 @@ function SolDemoFallback() {
     <div
       className="relative overflow-hidden rounded-lg font-mono"
       style={{
-        height: 220,
+        height: 330,
         background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
       }}
     >

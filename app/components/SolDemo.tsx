@@ -93,7 +93,7 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-lg font-mono" style={{ height: 220 }}>
+    <div className="relative overflow-hidden rounded-lg font-mono" style={{ height: 330 }}>
       {/* Sky background */}
       <SkyCanvas date={torontoTime.date} />
 

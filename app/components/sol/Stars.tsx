@@ -6,35 +6,17 @@ interface StarsProps {
   seed?: number;
 }
 
-// Bright star with twinkling 4-point sparkle that extends and retreats
-function BrightStar({ cx, cy, delay = 0 }: { cx: number; cy: number; delay?: number }) {
+// Bright star with 4-point twinkle - group 1, 2, or 3 for synced animation
+function BrightStar({ cx, cy, group = 1 }: { cx: number; cy: number; group?: 1 | 2 | 3 }) {
   return (
-    <g>
-      {/* Soft glow */}
-      <circle cx={cx} cy={cy} r="1.2" fill="white" opacity="0.1" />
+    <g className={`twinkle-group-${group}`}>
       {/* Core */}
       <circle cx={cx} cy={cy} r="0.35" fill="white" opacity="1" />
-      {/* Sparkle rays that extend/retreat */}
-      <line
-        x1={cx - 0.4} y1={cy} x2={cx - 2} y2={cy}
-        stroke="white" strokeWidth="0.06" className="ray-extend"
-        style={{ animationDelay: `${delay}s` }}
-      />
-      <line
-        x1={cx + 0.4} y1={cy} x2={cx + 2} y2={cy}
-        stroke="white" strokeWidth="0.06" className="ray-extend"
-        style={{ animationDelay: `${delay}s` }}
-      />
-      <line
-        x1={cx} y1={cy - 0.4} x2={cx} y2={cy - 2}
-        stroke="white" strokeWidth="0.06" className="ray-extend"
-        style={{ animationDelay: `${delay + 0.15}s` }}
-      />
-      <line
-        x1={cx} y1={cy + 0.4} x2={cx} y2={cy + 2}
-        stroke="white" strokeWidth="0.06" className="ray-extend"
-        style={{ animationDelay: `${delay + 0.15}s` }}
-      />
+      {/* 4-point twinkle rays */}
+      <line x1={cx - 0.4} y1={cy} x2={cx - 1.8} y2={cy} stroke="white" strokeWidth="0.05" />
+      <line x1={cx + 0.4} y1={cy} x2={cx + 1.8} y2={cy} stroke="white" strokeWidth="0.05" />
+      <line x1={cx} y1={cy - 0.4} x2={cx} y2={cy - 1.8} stroke="white" strokeWidth="0.05" />
+      <line x1={cx} y1={cy + 0.4} x2={cx} y2={cy + 1.8} stroke="white" strokeWidth="0.05" />
     </g>
   );
 }
@@ -62,32 +44,23 @@ export function Stars({ opacity }: StarsProps) {
       >
         <defs>
           <style>{`
-            @keyframes ray-twinkle {
-              0%, 100% {
-                opacity: 0.8;
-                stroke-dashoffset: 0;
-              }
-              50% {
-                opacity: 0.2;
-                stroke-dashoffset: 1.5;
-              }
+            @keyframes twinkle {
+              0%, 100% { opacity: 0.9; }
+              50% { opacity: 0.3; }
             }
-            .ray-extend {
-              opacity: 0.7;
-              stroke-dasharray: 1.6;
-              animation: ray-twinkle 2s ease-in-out infinite;
-              transform-origin: center;
-            }
+            .twinkle-group-1 line { animation: twinkle 2.5s ease-in-out infinite; }
+            .twinkle-group-2 line { animation: twinkle 2.5s ease-in-out infinite 0.8s; }
+            .twinkle-group-3 line { animation: twinkle 2.5s ease-in-out infinite 1.6s; }
           `}</style>
         </defs>
 
-        {/* === LITTLE DIPPER === top-left, 20% bigger, more left */}
-        <g transform="translate(-60, -12) scale(1.82) rotate(-15, 15, 20)">
+        {/* === LITTLE DIPPER === top-left */}
+        <g transform="translate(-64, -9) scale(1.82) rotate(-15, 15, 20)">
           <path
             d="M12 8 L16 12 L19 16 L23 21 L22 29 L31 31 L33 23 L23 21"
             stroke="white" strokeWidth="0.12" opacity="0.08" fill="none"
           />
-          <BrightStar cx={12} cy={8} delay={0} />
+          <BrightStar cx={12} cy={8} group={1} />
           <Star cx={16} cy={12} />
           <Star cx={19} cy={16} />
           <Star cx={23} cy={21} />
@@ -96,32 +69,32 @@ export function Stars({ opacity }: StarsProps) {
           <Star cx={33} cy={23} />
         </g>
 
-        {/* === CASSIOPEIA === top right, 10% bigger, rotated down-right */}
-        <g transform="translate(15, -5) scale(1.32) rotate(8, 80, 15)">
+        {/* === CASSIOPEIA === top right */}
+        <g transform="translate(17, -5) scale(1.32) rotate(8, 80, 15)">
           <path
             d="M66 12 L73 27 L80 15 L88 25 L94 7"
             stroke="white" strokeWidth="0.12" opacity="0.08" fill="none"
           />
           <Star cx={66} cy={12} />
           <Star cx={73} cy={27} />
-          <BrightStar cx={80} cy={15} delay={1.2} />
+          <BrightStar cx={80} cy={15} group={2} />
           <Star cx={88} cy={25} />
           <Star cx={94} cy={7} />
         </g>
 
-        {/* === ORION === shifted right, up, 20% bigger */}
+        {/* === ORION === center, stars slightly bigger */}
         <g transform="translate(2, -18) scale(1.32)">
           <path
             d="M38 34 L46 51 L40 68 M62 36 L54 49 L64 66 M46 51 L50 50 L54 49"
             stroke="white" strokeWidth="0.12" opacity="0.08" fill="none"
           />
-          <BrightStar cx={38} cy={34} delay={0.6} />
-          <Star cx={62} cy={36} />
-          <Star cx={46} cy={51} />
-          <Star cx={50} cy={50} />
-          <Star cx={54} cy={49} />
-          <Star cx={40} cy={68} />
-          <BrightStar cx={64} cy={66} delay={1.8} />
+          <BrightStar cx={38} cy={34} group={3} />
+          <circle cx={62} cy={36} r="0.45" fill="white" opacity="0.8" />
+          <circle cx={46} cy={51} r="0.45" fill="white" opacity="0.8" />
+          <circle cx={50} cy={50} r="0.45" fill="white" opacity="0.8" />
+          <circle cx={54} cy={49} r="0.45" fill="white" opacity="0.8" />
+          <circle cx={40} cy={68} r="0.45" fill="white" opacity="0.8" />
+          <BrightStar cx={64} cy={66} group={1} />
         </g>
 
         {/* Scattered ambient stars */}

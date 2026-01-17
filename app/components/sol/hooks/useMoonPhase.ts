@@ -20,12 +20,13 @@ export interface MoonState {
 export function useMoonPhase(
   date: Date,
   sunAltitude: number = 0,
-  sunAzimuth: number = 180
+  sunAzimuth: number = 180,
+  sunTimes?: { sunrise: Date; dusk: Date }
 ): MoonState {
   return useMemo(() => {
     const phaseInfo = getMoonPhaseInfo(date);
     const position = getMoonPosition(date);
-    const isVisible = isMoonVisible(date);
+    const isVisible = isMoonVisible(date, sunTimes);
     const shadowAngle = getMoonShadowAngle(date, sunAltitude, sunAzimuth);
 
     return {
@@ -34,5 +35,5 @@ export function useMoonPhase(
       isVisible,
       shadowAngle,
     };
-  }, [date, sunAltitude, sunAzimuth]);
+  }, [date, sunAltitude, sunAzimuth, sunTimes]);
 }

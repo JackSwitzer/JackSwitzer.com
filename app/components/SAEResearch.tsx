@@ -96,12 +96,15 @@ export function SAEResearch() {
       {/* Finding 1 */}
       <Collapsible title="Degradation has structure" tag="Finding 1" tagType="finding" defaultOpen>
         <div className="space-y-4 mt-4">
-          <div className="flex gap-4 text-xs font-mono mb-4">
+          <div className="flex flex-wrap gap-3 md:gap-4 text-xs font-mono mb-4">
             <span className="flex items-center gap-1">
               <span className="w-3 h-3 bg-yellow-400 rounded-sm"></span> INT4
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 bg-amber-600 rounded-sm"></span> BF16 total
+              <span className="w-3 h-3 bg-orange-500 rounded-sm"></span> BF16
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-3 h-3 bg-red-500 rounded-sm"></span> Tie
             </span>
           </div>
 
@@ -109,17 +112,17 @@ export function SAEResearch() {
           <div className="space-y-2">
             <div className="text-sm font-semibold">Code (HumanEval)</div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">Qwen3</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "20%" }}>20%</div>
-                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "20%" }}>40%</div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">Qwen3</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "20%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>20%</div>
+                <div className="bg-orange-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "20%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>40%</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "18%" }}>18%</div>
-                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "17%" }}>35%</div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">StarCoder2</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "18%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>18%</div>
+                <div className="bg-orange-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "17%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>35%</div>
               </div>
             </div>
           </div>
@@ -128,34 +131,34 @@ export function SAEResearch() {
           <div className="space-y-2">
             <div className="text-sm font-semibold">Math (GSM8K)</div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">Qwen3</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "87%" }}>87%</div>
-                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "6%" }}></div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">Qwen3</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "87%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>87%</div>
+                <div className="bg-orange-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "6%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}></div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-yellow-400 h-full flex items-center justify-center text-xs font-mono" style={{ width: "71%" }}>71%</div>
-                <div className="bg-amber-600 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "7%" }}>78%</div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">StarCoder2</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-yellow-400 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "71%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>71%</div>
+                <div className="bg-orange-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "7%", textShadow: "-1px -1px 0 rgba(0,0,0,0.3), 1px -1px 0 rgba(0,0,0,0.3), -1px 1px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(0,0,0,0.3)" }}>78%</div>
               </div>
             </div>
           </div>
 
-          {/* Knowledge */}
+          {/* Knowledge - Tie (red) */}
           <div className="space-y-2">
             <div className="text-sm font-semibold">Knowledge (MMLU-CS)</div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">Qwen3</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-gradient-to-r from-amber-600 to-yellow-400 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "100%" }}>100%</div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">Qwen3</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-red-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "100%", textShadow: "-1px -1px 0 rgba(0,0,0,0.4), 1px -1px 0 rgba(0,0,0,0.4), -1px 1px 0 rgba(0,0,0,0.4), 1px 1px 0 rgba(0,0,0,0.4)" }}>100%</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[var(--muted)] w-20 text-right">StarCoder2</span>
-              <div className="flex-1 h-5 bg-[var(--border)] rounded overflow-hidden flex">
-                <div className="bg-gradient-to-r from-amber-600 to-yellow-400 h-full flex items-center justify-center text-xs font-mono text-white" style={{ width: "93%" }}>93%</div>
+              <span className="text-xs font-mono text-[var(--muted)] w-12 md:w-20 text-right shrink-0">StarCoder2</span>
+              <div className="flex-1 h-6 bg-[var(--border)] rounded overflow-hidden flex">
+                <div className="bg-red-500 h-full flex items-center justify-center text-[10px] md:text-xs font-mono font-bold text-white" style={{ width: "93%", textShadow: "-1px -1px 0 rgba(0,0,0,0.4), 1px -1px 0 rgba(0,0,0,0.4), -1px 1px 0 rgba(0,0,0,0.4), 1px 1px 0 rgba(0,0,0,0.4)" }}>93%</div>
               </div>
             </div>
           </div>
@@ -205,27 +208,28 @@ for num in `}<span className="text-red-500 bg-red-500/20 px-1">← truncated</sp
           <ul className="bullet-arrow space-y-2">
             <li className="py-1 border-b border-[var(--border)]">
               <span className="font-semibold">Sample correlation:</span>{" "}
-              <span className="stat-value">99%</span>{" "}
+              <span className="stat-value whitespace-nowrap">99%</span>{" "}
               <span className="text-[var(--muted)]">— Same inputs → same features fire</span>
             </li>
             <li className="py-1 border-b border-[var(--border)]">
               <span className="font-semibold">Top-10 agreement:</span>{" "}
-              <span className="stat-value">89%</span>{" "}
+              <span className="stat-value whitespace-nowrap">89%</span>{" "}
               <span className="text-[var(--muted)]">— 9/10 most active features match</span>
             </li>
             <li className="py-1 border-b border-[var(--border)]">
               <span className="font-semibold">Feature correlation:</span>{" "}
-              <span className="stat-value">95%</span>{" "}
+              <span className="stat-value whitespace-nowrap">95%</span>{" "}
               <span className="text-[var(--muted)]">— Each feature behaves consistently</span>
             </li>
             <li className="py-1">
               <span className="font-semibold">Sparsity agreement:</span>{" "}
-              <span className="stat-value">99%</span>{" "}
+              <span className="stat-value whitespace-nowrap">99%</span>{" "}
               <span className="text-[var(--muted)]">— Same features stay silent/active</span>
             </li>
           </ul>
 
-          <table className="data-table mt-4 w-full">
+          <div className="overflow-x-auto -mx-4 px-4">
+          <table className="data-table mt-4 w-full min-w-[300px]">
             <thead>
               <tr>
                 <th>Metric</th>
@@ -255,6 +259,7 @@ for num in `}<span className="text-red-500 bg-red-500/20 px-1">← truncated</sp
               </tr>
             </tbody>
           </table>
+          </div>
 
           <div className="insight-box mt-4">
             <strong>Implication:</strong> Train interpretability tools on expensive BF16, deploy monitoring on cheap INT4. Features mean the same thing across precisions.
@@ -265,11 +270,12 @@ for num in `}<span className="text-red-500 bg-red-500/20 px-1">← truncated</sp
       {/* Finding 3 */}
       <Collapsible title="Undercomplete SAEs transfer better" tag="Finding 3" tagType="finding">
         <div className="mt-4">
-          <p className="text-[var(--muted)] mb-4">
+          <p className="text-[var(--muted)] mb-4 text-sm md:text-base">
             Counter-intuitively, SAEs with <em>fewer</em> features (0.5× model dimension) transfer across precisions 2.3× better than larger SAEs (8×).
           </p>
 
-          <table className="data-table w-full">
+          <div className="overflow-x-auto -mx-4 px-4">
+          <table className="data-table w-full min-w-[320px]">
             <thead>
               <tr>
                 <th>SAE Size</th>
@@ -305,6 +311,7 @@ for num in `}<span className="text-red-500 bg-red-500/20 px-1">← truncated</sp
               </tr>
             </tbody>
           </table>
+          </div>
 
           <div className="insight-box mt-4">
             <strong>Intuition:</strong> With limited capacity, the SAE must learn only the most fundamental features — ones that exist regardless of precision. Larger SAEs have room to memorize precision-specific artifacts that don&apos;t transfer.

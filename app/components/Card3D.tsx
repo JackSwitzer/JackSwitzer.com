@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 // Message data extracted from the card
@@ -169,29 +169,52 @@ function BackContent() {
 export function Card3D({ className = '' }: { className?: string }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [showOriginal, setShowOriginal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const pageWidth = 280;
   const pageHeight = 380;
 
+  // Check if mobile (can't fit both inside pages side-by-side)
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 600);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Mobile: 4 pages (Cover, Inside Left, Inside Right, Back)
+  // Desktop: 3 pages (Cover, Inside Spread, Back)
+  const maxPage = isMobile ? 3 : 2;
+
   const goToPage = (page: number) => {
-    if (page < 0 || page > 2 || page === currentPage) return;
+    if (page < 0 || page > maxPage || page === currentPage) return;
     setCurrentPage(page);
   };
 
-  const nextPage = () => goToPage(Math.min(currentPage + 1, 2));
+  const nextPage = () => goToPage(Math.min(currentPage + 1, maxPage));
   const prevPageFn = () => goToPage(Math.max(currentPage - 1, 0));
 
-  const pageLabels = ['Closed', 'Inside', 'Back'];
+  const pageLabels = isMobile
+    ? ['Closed', 'Inside Left', 'Inside Right', 'Back']
+    : ['Closed', 'Inside', 'Back'];
 
   // Simple approach: just show the content for each state with a fade transition
   // No 3D flipping - just crossfade between states
+  // Mobile: 4 pages, Desktop: 3 pages with spread
+
+  // Determine which content to show based on page and mode
+  const showCover = currentPage === 0;
+  const showInsideSpread = !isMobile && currentPage === 1;
+  const showInsideLeft = isMobile && currentPage === 1;
+  const showInsideRight = isMobile && currentPage === 2;
+  const showBack = isMobile ? currentPage === 3 : currentPage === 2;
 
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       <div
         className="relative"
         style={{
-          width: currentPage === 1 ? pageWidth * 2 : pageWidth,
+          width: showInsideSpread ? pageWidth * 2 : pageWidth,
           height: pageHeight,
           maxWidth: '95vw',
           transition: 'width 500ms ease-in-out',
@@ -201,10 +224,10 @@ export function Card3D({ className = '' }: { className?: string }) {
         <div
           className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
           style={{
-            opacity: currentPage === 0 ? 1 : 0,
-            pointerEvents: currentPage === 0 ? 'auto' : 'none',
+            opacity: showCover ? 1 : 0,
+            pointerEvents: showCover ? 'auto' : 'none',
             transition: 'opacity 400ms ease-in-out',
-            zIndex: currentPage === 0 ? 10 : 1,
+            zIndex: showCover ? 10 : 1,
           }}
           onClick={nextPage}
         >
@@ -215,20 +238,52 @@ export function Card3D({ className = '' }: { className?: string }) {
           )}
         </div>
 
-        {/* State 1: Inside spread */}
-        <div
-          className="absolute inset-0 cursor-pointer"
-          style={{
-            opacity: currentPage === 1 ? 1 : 0,
-            pointerEvents: currentPage === 1 ? 'auto' : 'none',
-            transition: 'opacity 400ms ease-in-out',
-            zIndex: currentPage === 1 ? 10 : 1,
-          }}
-          onClick={nextPage}
-        >
+        {/* Desktop: Inside spread (both pages) */}
+        {!isMobile && (
           <div
-            className="absolute rounded-l-lg shadow-lg overflow-hidden"
-            style={{ width: pageWidth, height: pageHeight, left: 0 }}
+            className="absolute inset-0 cursor-pointer"
+            style={{
+              opacity: showInsideSpread ? 1 : 0,
+              pointerEvents: showInsideSpread ? 'auto' : 'none',
+              transition: 'opacity 400ms ease-in-out',
+              zIndex: showInsideSpread ? 10 : 1,
+            }}
+            onClick={nextPage}
+          >
+            <div
+              className="absolute rounded-l-lg shadow-lg overflow-hidden"
+              style={{ width: pageWidth, height: pageHeight, left: 0 }}
+            >
+              {showOriginal ? (
+                <Image src="/card-images/card_inside_left_processed.png" alt="Inside left" fill className="object-cover" />
+              ) : (
+                <InsideLeftContent />
+              )}
+            </div>
+            <div
+              className="absolute rounded-r-lg shadow-lg overflow-hidden"
+              style={{ width: pageWidth, height: pageHeight, right: 0 }}
+            >
+              {showOriginal ? (
+                <Image src="/card-images/card_inside_right_processed.png" alt="Inside right" fill className="object-cover" />
+              ) : (
+                <InsideRightContent />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile: Inside Left (separate page) */}
+        {isMobile && (
+          <div
+            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
+            style={{
+              opacity: showInsideLeft ? 1 : 0,
+              pointerEvents: showInsideLeft ? 'auto' : 'none',
+              transition: 'opacity 400ms ease-in-out',
+              zIndex: showInsideLeft ? 10 : 1,
+            }}
+            onClick={nextPage}
           >
             {showOriginal ? (
               <Image src="/card-images/card_inside_left_processed.png" alt="Inside left" fill className="object-cover" />
@@ -236,9 +291,19 @@ export function Card3D({ className = '' }: { className?: string }) {
               <InsideLeftContent />
             )}
           </div>
+        )}
+
+        {/* Mobile: Inside Right (separate page) */}
+        {isMobile && (
           <div
-            className="absolute rounded-r-lg shadow-lg overflow-hidden"
-            style={{ width: pageWidth, height: pageHeight, right: 0 }}
+            className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
+            style={{
+              opacity: showInsideRight ? 1 : 0,
+              pointerEvents: showInsideRight ? 'auto' : 'none',
+              transition: 'opacity 400ms ease-in-out',
+              zIndex: showInsideRight ? 10 : 1,
+            }}
+            onClick={nextPage}
           >
             {showOriginal ? (
               <Image src="/card-images/card_inside_right_processed.png" alt="Inside right" fill className="object-cover" />
@@ -246,16 +311,16 @@ export function Card3D({ className = '' }: { className?: string }) {
               <InsideRightContent />
             )}
           </div>
-        </div>
+        )}
 
-        {/* State 2: Back cover */}
+        {/* Back cover */}
         <div
           className="absolute inset-0 rounded-lg shadow-xl overflow-hidden cursor-pointer"
           style={{
-            opacity: currentPage === 2 ? 1 : 0,
-            pointerEvents: currentPage === 2 ? 'auto' : 'none',
+            opacity: showBack ? 1 : 0,
+            pointerEvents: showBack ? 'auto' : 'none',
             transition: 'opacity 400ms ease-in-out',
-            zIndex: currentPage === 2 ? 10 : 1,
+            zIndex: showBack ? 10 : 1,
           }}
           onClick={() => goToPage(0)}
         >
@@ -281,7 +346,7 @@ export function Card3D({ className = '' }: { className?: string }) {
         </button>
 
         <div className="flex gap-2">
-          {[0, 1, 2].map((page) => (
+          {Array.from({ length: maxPage + 1 }, (_, page) => (
             <button
               key={page}
               onClick={(e) => { e.stopPropagation(); goToPage(page); }}
@@ -309,8 +374,10 @@ export function Card3D({ className = '' }: { className?: string }) {
 
       <p className="text-xs text-neutral-500 dark:text-neutral-400">
         {currentPage === 0 && 'Front Cover — Click to open'}
-        {currentPage === 1 && 'Inside — Click to flip'}
-        {currentPage === 2 && 'Back Cover — Click to close'}
+        {!isMobile && currentPage === 1 && 'Inside — Click to flip'}
+        {isMobile && currentPage === 1 && 'Inside Left — Click to continue'}
+        {isMobile && currentPage === 2 && 'Inside Right — Click to flip'}
+        {(isMobile ? currentPage === 3 : currentPage === 2) && 'Back Cover — Click to close'}
       </p>
 
       <button

@@ -67,8 +67,8 @@ export function Moon({ position, phaseInfo, visible, shadowAngle = 0 }: MoonProp
         transition: "left 0.12s ease-out, top 0.12s ease-out, opacity 0.24s ease",
       }}
     >
-      {/* Moon container */}
-      <div className="relative" style={{ width: 40, height: 40 }}>
+      {/* Moon container - smaller on mobile */}
+      <div className="relative w-[28px] h-[28px] md:w-[40px] md:h-[40px]">
         {/* Dark side of moon (always visible as base) */}
         <div
           className="absolute inset-0 rounded-full"

@@ -30,7 +30,7 @@ export function Sun({ x, y, color, altitude }: SunProps) {
       }}
     >
       <pre
-        className="font-mono text-xs leading-none whitespace-pre"
+        className="font-mono text-[8px] md:text-xs leading-none whitespace-pre"
         style={{
           color,
           textShadow: `0 0 10px ${color}, 0 0 20px ${color}40`,

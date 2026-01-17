@@ -93,7 +93,7 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-lg font-mono" style={{ height: 220 }}>
+    <div className="relative overflow-hidden rounded-lg font-mono h-[160px] md:h-[220px]">
       {/* Sky background */}
       <SkyCanvas date={torontoTime.date} />
 
@@ -144,9 +144,8 @@ export function SolDemo({ testTime, testDate, scrubMode }: SolDemoProps) {
 function SolDemoSkeleton() {
   return (
     <div
-      className="relative overflow-hidden rounded-lg font-mono"
+      className="relative overflow-hidden rounded-lg font-mono h-[160px] md:h-[220px]"
       style={{
-        height: 220,
         background: "linear-gradient(to bottom, #1a1a3a 0%, #2a2a4a 100%)",
       }}
     >

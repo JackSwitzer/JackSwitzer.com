@@ -42,7 +42,7 @@ export function Stars({ opacity }: StarsProps) {
       }}
     >
       <svg
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full max-md:scale-[0.85] max-md:origin-top"
         viewBox="0 0 100 75"
         preserveAspectRatio="xMidYMid meet"
       >

@@ -473,11 +473,75 @@ export function getMoonRiseSet(
   return { rise, set, transit };
 }
 
-// Determine if moon is above horizon (with buffer for horizon effects)
-export function isMoonVisible(date: Date = new Date()): boolean {
+// Check if a date falls on an equinox (March 19-21 or September 21-23)
+export function isEquinox(date: Date): boolean {
+  const month = date.getMonth(); // 0-indexed
+  const day = date.getDate();
+
+  // Vernal equinox: around March 20 (month 2)
+  if (month === 2 && day >= 19 && day <= 21) return true;
+  // Autumnal equinox: around September 22 (month 8)
+  if (month === 8 && day >= 21 && day <= 23) return true;
+
+  return false;
+}
+
+// Get approximate equinox time for a given equinox date
+// Equinoxes occur at specific UTC times each year
+function getEquinoxTime(date: Date): Date {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  // Approximate equinox times (these vary by year, using rough estimates)
+  // Spring equinox ~10:00 UTC, Fall equinox ~14:00 UTC (varies by year)
+  const equinoxDate = new Date(date);
+  if (month === 2) {
+    // Vernal equinox - typically around 10:00-12:00 UTC
+    equinoxDate.setUTCHours(10, 0, 0, 0);
+  } else {
+    // Autumnal equinox - typically around 14:00-16:00 UTC
+    equinoxDate.setUTCHours(14, 0, 0, 0);
+  }
+
+  return equinoxDate;
+}
+
+// Determine if moon should be visible based on sun times
+// Moon hides 1 hour after sunrise and reappears at dusk
+// On equinoxes, moon becomes visible at the equinox time
+export function isMoonVisible(
+  date: Date = new Date(),
+  sunTimes?: { sunrise: Date; dusk: Date }
+): boolean {
   const { altitude } = getMoonAltAz(date);
-  // Extended buffer for smooth arc transition
-  return altitude > -20;
+
+  // Moon must be above horizon (with buffer for smooth arc)
+  if (altitude <= -20) return false;
+
+  // If no sun times provided, fall back to altitude-only check
+  if (!sunTimes) return true;
+
+  const { sunrise, dusk } = sunTimes;
+  const oneHourAfterSunrise = new Date(sunrise.getTime() + 60 * 60 * 1000);
+
+  // Check for equinox
+  if (isEquinox(date)) {
+    const equinoxTime = getEquinoxTime(date);
+    // On equinox, moon becomes visible at the equinox time (not dusk)
+    if (date >= equinoxTime) return true;
+    // Before equinox time, follow normal rules
+    if (date >= sunrise && date < oneHourAfterSunrise) return true;
+    if (date < sunrise) return true;
+    return false;
+  }
+
+  // Normal day: moon visible before sunrise, visible until 1h after sunrise,
+  // then hidden until dusk
+  if (date < sunrise) return true;
+  if (date < oneHourAfterSunrise) return true;
+  if (date >= dusk) return true;
+
+  return false;
 }
 
 // Calculate the rotation angle for moon shadow rendering

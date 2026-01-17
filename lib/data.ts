@@ -277,7 +277,6 @@ export const projects: Project[] = [
     summary: "Interactive website for teaching linear algebra fundamentals, built while TAing at Queen's University. Used as primary resource for 80+ students across 2 tutorial sections.",
     accomplishments: [
       "Built comprehensive learning platform with interactive visualizations for core linear algebra concepts",
-      "Used as primary resource for 80+ students across 2 tutorial sections",
     ],
     technologies: ["Next.js", "TypeScript", "MDX", "KaTeX"],
     github: { repo: "apsc174", account: "JackSwitzerSchool" },

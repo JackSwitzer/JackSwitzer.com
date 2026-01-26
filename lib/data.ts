@@ -167,6 +167,7 @@ export type Project = {
   slug: string;
   name: string;
   type: "work" | "personal" | "school" | "hackathon" | "consulting" | "quant" | "research";
+  organization?: string;
   period: string;
   featured: boolean;
   visible: boolean;
@@ -199,8 +200,9 @@ export const projects: Project[] = [
   },
   {
     slug: "ibm-ai-engineer",
-    name: "IBM AI Engineer - Mainframe Code Assistant",
+    name: "AI Engineer - Mainframe Code Assistant",
     type: "work",
+    organization: "IBM",
     period: "May 2025 - April 2026",
     featured: true,
     visible: true,
@@ -270,6 +272,7 @@ export const projects: Project[] = [
     slug: "linear-algebra-website",
     name: "Linear Algebra Learning Platform",
     type: "school",
+    organization: "Queen's",
     period: "Jan 2025 - Apr 2025",
     featured: true,
     visible: true,
@@ -286,6 +289,7 @@ export const projects: Project[] = [
     slug: "gulf-of-mexico-simulation",
     name: "Gulf of Mexico Trash Collection Simulation",
     type: "school",
+    organization: "Queen's",
     period: "Jan 2024 - Apr 2024",
     featured: false,
     visible: true,
@@ -366,8 +370,9 @@ export const projects: Project[] = [
   },
   {
     slug: "rbc-data-scientist",
-    name: "RBC Data Scientist",
+    name: "Data Scientist - Forecasting & Modelling",
     type: "work",
+    organization: "RBC",
     period: "May 2024 - Aug 2024",
     featured: true,
     visible: true,
@@ -382,8 +387,9 @@ export const projects: Project[] = [
   },
   {
     slug: "rbc-data-analyst",
-    name: "RBC Data Analyst",
+    name: "Data Analyst - Automation & Visualization",
     type: "work",
+    organization: "RBC",
     period: "May 2023 - Aug 2023",
     featured: false,
     visible: true,

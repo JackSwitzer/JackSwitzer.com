@@ -88,7 +88,7 @@ export default function HomePage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="tag tag-muted">{project.type}</span>
+                    <span className="tag tag-muted">{project.type}{project.organization && ` | ${project.organization}`}</span>
                     <span className="text-[var(--muted)]">{project.period}</span>
                   </div>
                 </div>

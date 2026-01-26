@@ -186,7 +186,7 @@ export const projects: Project[] = [
     period: "Jan 2026",
     featured: true,
     visible: true,
-    status: "active",
+    status: "complete",
     summary: "Research investigating how model quantization affects sparse autoencoders (SAEs). Found SAEs transfer across precisions (99% correlation), code generation degrades 50% at INT4 while knowledge retrieval survives, and undercomplete SAEs (fewer features than model dimension) transfer 2.3x better than overcomplete ones.",
     accomplishments: [
       "Discovered SAEs transfer across precisions with 99% sample correlation (BF16→INT4)",

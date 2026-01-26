@@ -24,7 +24,7 @@ const CALENDAR_YEARS = [2027, 2026, 2025, 2024, 2023, 2022];
 function getDisplayTitle(item: TimelineItem): string {
   const titles: Record<string, string> = {
     // Work
-    "IBM AI Engineer - WatsonX Code Assistant for Z": "IBM: AI Tooling",
+    "IBM AI Engineer - Mainframe Code Assistant": "IBM: AI Tooling",
     "RBC Data Scientist": "RBC: Data Science",
     "RBC Data Analyst": "RBC: Data Analyst",
     // Research/Projects

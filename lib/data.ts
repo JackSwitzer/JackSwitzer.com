@@ -33,12 +33,12 @@ export const education = {
 
 export const experience = [
   {
-    id: "ibm-software-developer",
+    id: "ibm-ai-engineer",
     role: "AI Engineer",
     company: "IBM",
     period: "May 2025 - April 2026",
     accomplishments: [
-      "Developing AI tooling for WatsonX Code Assistant for Z - mainframe code understanding and translation (COBOL, PL/1 to Java, Python)",
+      "Developing AI tooling for Mainframe Code Assistant - code understanding and translation (COBOL, PL/1 to Java, Python)",
       "Designed and implemented benchmark pipeline evaluating Claude, Llama, Mistral, and internal models - results directly influenced product model selection",
       "Shipped data dictionary feature to production: enriches LLM context with variable definitions, types, and usage patterns from legacy code for higher-quality code explanations",
       "Extended VSCode extension with A2A and MCP integrations, connecting IBM's existing profiling tools to AI workflows for richer code explanations",
@@ -198,16 +198,16 @@ export const projects: Project[] = [
     github: { repo: "QuantizationInterpretability", account: "JackSwitzer" },
   },
   {
-    slug: "ibm-software-developer",
-    name: "IBM AI Engineer - WatsonX Code Assistant for Z",
+    slug: "ibm-ai-engineer",
+    name: "IBM AI Engineer - Mainframe Code Assistant",
     type: "work",
     period: "May 2025 - April 2026",
     featured: true,
     visible: true,
     status: "active",
-    summary: "AI Engineer at IBM building AI tooling for WatsonX Code Assistant for Z - enabling mainframe code understanding and translation using LLMs.",
+    summary: "AI Engineer at IBM building AI tooling for Mainframe Code Assistant - enabling mainframe code understanding and translation using LLMs.",
     accomplishments: [
-      "Developing AI tooling for WatsonX Code Assistant for Z - mainframe code understanding and translation (COBOL, PL/1 to Java, Python)",
+      "Developing AI tooling for Mainframe Code Assistant - code understanding and translation (COBOL, PL/1 to Java, Python)",
       "Designed and implemented benchmark pipeline evaluating Claude, Llama, Mistral, and internal models - results directly influenced product model selection",
       "Shipped data dictionary feature to production: enriches LLM context with variable definitions, types, and usage patterns from legacy code",
       "Extended VSCode extension with A2A and MCP integrations, connecting IBM's existing profiling tools to AI workflows",

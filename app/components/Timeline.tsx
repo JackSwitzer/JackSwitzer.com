@@ -34,7 +34,7 @@ const timelineData: TimelineItem[] = [
   { startDate: parseDate("Sep 2022"), title: "Started University", subtitle: "Queen's - Math & Computer Engineering", type: "education" },
 
   // Work - ranges
-  { startDate: parseDate("May 2025"), endDate: parseDate("Apr 2026"), title: "AI Engineer", subtitle: "IBM - WatsonX Code Assistant for Z", type: "work" },
+  { startDate: parseDate("May 2025"), endDate: parseDate("Apr 2026"), title: "AI Engineer", subtitle: "Mainframe Code Assistant", organization: "IBM", type: "work" },
   { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "Teaching Assistant", subtitle: "Linear Algebra I", type: "work" },
   { startDate: parseDate("May 2024"), endDate: parseDate("Aug 2024"), title: "Data Scientist", subtitle: "Royal Bank of Canada", type: "work" },
   { startDate: parseDate("May 2023"), endDate: parseDate("Aug 2023"), title: "Data Analyst", subtitle: "Royal Bank of Canada", type: "work" },

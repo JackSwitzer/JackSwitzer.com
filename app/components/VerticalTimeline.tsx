@@ -20,43 +20,6 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 // Calendar years (Jan-Dec), most recent first
 const CALENDAR_YEARS = [2027, 2026, 2025, 2024, 2023, 2022];
 
-// Clean titles with context where needed
-function getDisplayTitle(item: TimelineItem): string {
-  const titles: Record<string, string> = {
-    // Work
-    "IBM AI Engineer - Mainframe Code Assistant": "IBM: AI Tooling",
-    "RBC Data Scientist": "RBC: Data Science",
-    "RBC Data Analyst": "RBC: Data Analyst",
-    // Research/Projects
-    "Quantization x Interpretability": "Quant x Interp",
-    "Slay the Spire Watcher Solver": "StS Solver",
-    "Linear Algebra Learning Platform": "Lin Alg Site",
-    "Black Box Deconstruction - Control Systems": "Black Box",
-    "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
-    "Chrono - Linguistic Pattern Forecasting": "Chrono",
-    "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
-    "QUANTT - Options Pricing Model": "QUANTT",
-    "Sol": "Sol",
-    "NYT Games Solver": "NYT Games",
-    // Leadership
-    "Teaching Assistant: Linear Algebra I": "Lin Alg TA",
-    "QSC Analyst → PM": "QSC",
-    "Campus Ambassador": "RBC Ambassador",
-    "QUANTT PM": "QUANTT PM",
-    "President - Future Blue": "Future Blue President",
-    "Future Blue Member": "Future Blue",
-    "Future Blue": "Future Blue",
-    // Education - show year context
-    "Queen's - 1st Year": "1st Year: Engineering",
-    "Queen's - 2nd Year": "2nd Year: Applied Math",
-    "Queen's - 3rd Year": "3rd Year: Applied Math",
-    "Queen's - 4th Year": "4th Year: Applied Math",
-    // Special
-    "Anthropic Fellow": "Anthropic Fellow 🤞",
-  };
-  return titles[item.title] || item.title;
-}
-
 function itemOverlapsYear(item: TimelineItem, yearStart: Date, yearEnd: Date): boolean {
   const itemEnd = item.endDate || new Date();
   return item.startDate < yearEnd && itemEnd > yearStart;
@@ -136,58 +99,12 @@ interface ProcessedItem extends TimelineItem {
 }
 
 export function VerticalTimeline({ items }: VerticalTimelineProps) {
-  // Process items to add special ones and split education
-  const processedItems: ProcessedItem[] = [];
-
-  for (const item of items) {
-    // Skip the full Queen's span and QUANTT analyst (was 2 years, should be shorter)
-    if (item.id === "edu-queens") continue;
-    // Skip items we'll handle specially
-    if (item.id === "project-quantt-analyst") continue;
-    processedItems.push(item);
-  }
-
-  // Add QUANTT with correct duration (just fall semester 2023)
-  processedItems.push({
-    id: "quantt-analyst",
-    title: "QUANTT - Options Pricing Model",
-    type: "project",
-    startDate: new Date(2023, 8, 1), // Sep 2023
-    endDate: new Date(2023, 11, 15), // Dec 2023
-    hasDetailPage: true,
-    slug: "quantt-analyst",
-  });
-
-  // Add Queen's education by academic year (only during school: Sep-Apr)
-  const queensYears = [
-    { id: "queens-1", title: "Queen's - 1st Year", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30) },
-    { id: "queens-2", title: "Queen's - 2nd Year", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30) },
-    { id: "queens-3", title: "Queen's - 3rd Year", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30) },
-    // Gap year 2025-26 for IBM
-    { id: "queens-4", title: "Queen's - 4th Year", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30) },
-  ];
-
-  for (const q of queensYears) {
-    processedItems.push({
-      id: q.id,
-      title: q.title,
-      type: "education",
-      startDate: q.start,
-      endDate: q.end,
-      hasDetailPage: false,
-    });
-  }
-
-  // Add Anthropic Fellow (hopeful) for Summer 2026
-  processedItems.push({
-    id: "anthropic-fellow",
-    title: "Anthropic Fellow",
-    type: "work",
-    startDate: new Date(2026, 4, 1), // May 2026
-    endDate: new Date(2026, 7, 31), // Aug 2026
-    hasDetailPage: false,
-    isHopeful: true,
-  } as ProcessedItem);
+  // Items now come fully processed from lib/data.ts getTimelineItems()
+  // No need for local transformations - data layer handles:
+  // - Education breakdown by academic year
+  // - QUANTT timing correction
+  // - Anthropic Fellow (hopeful)
+  const processedItems: ProcessedItem[] = items;
 
   return (
     <div className="space-y-0">
@@ -280,7 +197,7 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
                         }}
                       >
                         <span className="font-medium truncate">
-                          {getDisplayTitle(item)}
+                          {item.displayTitle}
                         </span>
                       </div>
                     );

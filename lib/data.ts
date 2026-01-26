@@ -34,7 +34,7 @@ export const education = {
 export const experience = [
   {
     id: "ibm-software-developer",
-    role: "Software Developer",
+    role: "AI Engineer",
     company: "IBM",
     period: "May 2025 - April 2026",
     accomplishments: [
@@ -199,13 +199,13 @@ export const projects: Project[] = [
   },
   {
     slug: "ibm-software-developer",
-    name: "IBM Software Developer - WatsonX Code Assistant for Z",
+    name: "IBM AI Engineer - WatsonX Code Assistant for Z",
     type: "work",
     period: "May 2025 - April 2026",
     featured: true,
     visible: true,
     status: "active",
-    summary: "Software Developer at IBM building AI tooling for WatsonX Code Assistant for Z - enabling mainframe code understanding and translation using LLMs.",
+    summary: "AI Engineer at IBM building AI tooling for WatsonX Code Assistant for Z - enabling mainframe code understanding and translation using LLMs.",
     accomplishments: [
       "Developing AI tooling for WatsonX Code Assistant for Z - mainframe code understanding and translation (COBOL, PL/1 to Java, Python)",
       "Designed and implemented benchmark pipeline evaluating Claude, Llama, Mistral, and internal models - results directly influenced product model selection",

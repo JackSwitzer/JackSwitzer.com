@@ -462,6 +462,7 @@ export type TimelineType = "work" | "education" | "leadership" | "project" | "ha
 export interface TimelineItem {
   id: string;
   title: string;
+  displayTitle: string;
   subtitle?: string;
   type: TimelineType;
   startDate: Date;
@@ -477,6 +478,8 @@ export interface TimelineItem {
   courses?: string[];
   degree?: string;
   externalLink?: string;
+  // Future/hopeful items
+  isHopeful?: boolean;
 }
 
 const monthMap: Record<string, number> = {
@@ -495,13 +498,6 @@ const monthMap: Record<string, number> = {
 };
 
 function parsePeriodString(period: string): { start: Date; end?: Date } {
-  // Handle formats:
-  // "May 2025 - April 2026" -> { start: Date(2025, 4), end: Date(2026, 3) }
-  // "Jan 2024" -> { start: Date(2024, 0), end: undefined }
-  // "2023-2024" -> { start: Date(2023, 0), end: Date(2024, 11) }
-  // "Dec 2024" -> { start: Date(2024, 11), end: undefined }
-  // "2026" -> { start: Date(2026, 0), end: undefined }
-
   const normalized = period.toLowerCase().trim();
 
   // Check for range with " - "
@@ -524,13 +520,11 @@ function parsePeriodString(period: string): { start: Date; end?: Date } {
 
   // Single date or year - for single month entries, set end to end of that month
   const start = parseDate(normalized);
-  // Check if it's a month+year format (e.g., "Oct 2024") - give it a 1-month duration
   const monthYearMatch = normalized.match(/^([a-z]+)\s+(\d{4})$/);
   if (monthYearMatch) {
     const month = monthMap[monthYearMatch[1]] ?? 0;
     const year = parseInt(monthYearMatch[2]);
-    // End at the last day of that month
-    const end = new Date(year, month + 1, 0); // day 0 of next month = last day of this month
+    const end = new Date(year, month + 1, 0);
     return { start, end };
   }
   return { start, end: undefined };
@@ -579,18 +573,57 @@ function mapProjectTypeToTimelineType(projectType: Project["type"]): TimelineTyp
   }
 }
 
+// Display title mappings for timeline items
+const displayTitleMap: Record<string, string> = {
+  // Work
+  "AI Engineer - Mainframe Code Assistant": "IBM: AI Tooling",
+  "Data Scientist - Forecasting & Modelling": "RBC: Data Science",
+  "Data Analyst - Automation & Visualization": "RBC: Data Analyst",
+  // Research/Projects
+  "Quantization x Interpretability": "Quant x Interp",
+  "Slay the Spire Watcher Solver": "StS Solver",
+  "Linear Algebra Learning Platform": "Lin Alg Site",
+  "Black Box Deconstruction - Control Systems": "Black Box",
+  "Gulf of Mexico Trash Collection Simulation": "Gulf Sim",
+  "Chrono - Linguistic Pattern Forecasting": "Chrono",
+  "McGill FAIM Hackathon - Portfolio Optimization": "FAIM",
+  "QUANTT - Options Pricing Model": "QUANTT",
+  "Sol": "Sol",
+  "NYT Games Solver": "NYT Games",
+  // Leadership
+  "Teaching Assistant: Linear Algebra I": "Lin Alg TA",
+  "QSC Analyst → PM": "QSC",
+  "Campus Ambassador": "RBC Ambassador",
+  "QUANTT PM": "QUANTT PM",
+  "President - Future Blue": "Future Blue President",
+  "Future Blue Member": "Future Blue",
+  "Future Blue": "Future Blue",
+  // Education - show year context
+  "Queen's - 1st Year": "1st Year: Engineering",
+  "Queen's - 2nd Year": "2nd Year: Applied Math",
+  "Queen's - 3rd Year": "3rd Year: Applied Math",
+  "Queen's - 4th Year": "4th Year: Applied Math",
+  // Special
+  "Anthropic Fellow": "Anthropic Fellow",
+};
+
+function getDisplayTitle(title: string): string {
+  return displayTitleMap[title] || title;
+}
+
 export function getTimelineItems(): TimelineItem[] {
   const items: TimelineItem[] = [];
   const processedIds = new Set<string>();
 
-  // 1. Add projects (visible only)
-  projects.filter(p => p.visible).forEach(project => {
+  // 1. Add projects (visible only), excluding QUANTT analyst (handled specially)
+  projects.filter(p => p.visible && p.slug !== "quantt-analyst").forEach(project => {
     const { start, end } = parsePeriodString(project.period);
     processedIds.add(project.slug);
 
     items.push({
       id: `project-${project.slug}`,
       title: project.name,
+      displayTitle: getDisplayTitle(project.name),
       subtitle: project.type === "work"
         ? experience.find(e => e.id === project.slug)?.company || project.type
         : project.type.charAt(0).toUpperCase() + project.type.slice(1),
@@ -605,13 +638,26 @@ export function getTimelineItems(): TimelineItem[] {
     });
   });
 
-  // 2. Add experiences NOT already in projects
+  // 2. Add QUANTT analyst with correct duration (just fall semester 2023)
+  items.push({
+    id: "quantt-analyst",
+    title: "QUANTT - Options Pricing Model",
+    displayTitle: "QUANTT",
+    type: "project",
+    startDate: new Date(2023, 8, 1), // Sep 2023
+    endDate: new Date(2023, 11, 15), // Dec 2023
+    hasDetailPage: true,
+    slug: "quantt-analyst",
+  });
+
+  // 3. Add experiences NOT already in projects
   experience.forEach(exp => {
     if (!processedIds.has(exp.id)) {
       const { start, end } = parsePeriodString(exp.period);
       items.push({
         id: `exp-${exp.id}`,
         title: exp.role,
+        displayTitle: getDisplayTitle(exp.role),
         subtitle: exp.company,
         type: "work",
         startDate: start,
@@ -624,12 +670,13 @@ export function getTimelineItems(): TimelineItem[] {
     }
   });
 
-  // 3. Add extracurriculars as leadership
+  // 4. Add extracurriculars as leadership
   extracurriculars.forEach(extra => {
     const { start, end } = parsePeriodString(extra.period);
     items.push({
       id: `extra-${extra.id}`,
       title: extra.role,
+      displayTitle: getDisplayTitle(extra.role),
       subtitle: extra.organization,
       type: "leadership",
       startDate: start,
@@ -640,19 +687,37 @@ export function getTimelineItems(): TimelineItem[] {
     });
   });
 
-  // 4. Add education as spanning item
+  // 5. Add Queen's education by academic year (only during school: Sep-Apr)
+  const queensYears = [
+    { id: "queens-1", title: "Queen's - 1st Year", start: new Date(2022, 8, 1), end: new Date(2023, 3, 30) },
+    { id: "queens-2", title: "Queen's - 2nd Year", start: new Date(2023, 8, 1), end: new Date(2024, 3, 30) },
+    { id: "queens-3", title: "Queen's - 3rd Year", start: new Date(2024, 8, 1), end: new Date(2025, 3, 30) },
+    // Gap year 2025-26 for IBM
+    { id: "queens-4", title: "Queen's - 4th Year", start: new Date(2026, 8, 1), end: new Date(2027, 3, 30) },
+  ];
+
+  for (const q of queensYears) {
+    items.push({
+      id: q.id,
+      title: q.title,
+      displayTitle: getDisplayTitle(q.title),
+      type: "education",
+      startDate: q.start,
+      endDate: q.end,
+      hasDetailPage: false,
+    });
+  }
+
+  // 6. Add Anthropic Fellow (hopeful) for Summer 2026
   items.push({
-    id: "edu-queens",
-    title: "Queen's University",
-    subtitle: "B.ASc. Math & Computer Engineering",
-    type: "education",
-    startDate: new Date(2022, 8, 1), // Sep 2022
-    endDate: new Date(2027, 4, 1), // May 2027
+    id: "anthropic-fellow",
+    title: "Anthropic Fellow",
+    displayTitle: "Anthropic Fellow",
+    type: "work",
+    startDate: new Date(2026, 4, 1), // May 2026
+    endDate: new Date(2026, 7, 31), // Aug 2026
     hasDetailPage: false,
-    institution: education.institution,
-    degree: education.degree,
-    gpa: education.gpa,
-    courses: education.relevantCourses,
+    isHopeful: true,
   });
 
   // Sort by startDate ascending (2022 -> 2027)

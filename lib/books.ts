@@ -4,6 +4,8 @@ export type Book = {
   title: string;
   author: string;
   rating: 4 | 5;
+  blurb?: string;
+  dateFinished?: string;
 };
 
 export type CurrentRead = {
@@ -21,10 +23,10 @@ export const currentlyReading: CurrentRead[] = [
     blurb: "\"The three greatest novels are Anna Karenina, Anna Karenina, and Anna Karenina.\" — Faulkner. Part of a recent interest in Tsarist Russia and the events leading to revolution and catastrophe.",
   },
   {
-    title: "Stalin: Paradoxes of Power",
+    title: "Stalin: Waiting for Hitler, 1929-1941",
     author: "Stephen Kotkin",
-    progress: "Page 2182 / 2721",
-    blurb: "Understanding how the Soviet state emerged from the chaos of revolution and civil war. The odd success of the 'Bolshevik' minority.",
+    progress: "Page 0 / 1154",
+    blurb: "Continuing the tale of how a uniquely capable dictator ruined millions of families' lives while gearing up to win a world war.",
   },
   {
     title: "Foundations of Optimization",
@@ -35,6 +37,13 @@ export const currentlyReading: CurrentRead[] = [
 ];
 
 export const favouriteBooks: Book[] = [
+  {
+    title: "Stalin: Paradoxes of Power",
+    author: "Stephen Kotkin",
+    rating: 5,
+    blurb: "A comprehensive history on how one man can change the world for better and for worse.",
+    dateFinished: "Jan 25, 2026",
+  },
   { title: "Flowers for Algernon", author: "Daniel Keyes", rating: 5 },
   { title: "Guns, Germs, and Steel", author: "Jared Diamond", rating: 5 },
   { title: "The Myth of Sisyphus", author: "Albert Camus", rating: 5 },

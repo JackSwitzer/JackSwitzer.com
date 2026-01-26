@@ -5,6 +5,7 @@ type TimelineItem = {
   endDate?: Date; // undefined = single point in time
   title: string;
   subtitle?: string;
+  organization?: string;
   type: "work" | "education" | "leadership" | "project" | "hackathon";
 };
 
@@ -30,33 +31,33 @@ function parseDate(str: string): Date {
 
 const timelineData: TimelineItem[] = [
   // Education
-  { startDate: parseDate("May 2027"), title: "B.ASc. Graduation", subtitle: "Queen's University", type: "education" },
-  { startDate: parseDate("Sep 2022"), title: "Started University", subtitle: "Queen's - Math & Computer Engineering", type: "education" },
+  { startDate: parseDate("May 2027"), title: "B.ASc. Graduation", subtitle: "Math & Computer Engineering", organization: "Queen's", type: "education" },
+  { startDate: parseDate("Sep 2022"), title: "Started University", subtitle: "Math & Computer Engineering", organization: "Queen's", type: "education" },
 
   // Work - ranges
-  { startDate: parseDate("May 2025"), endDate: parseDate("Apr 2026"), title: "Software Developer", subtitle: "IBM - WatsonX Code Assistant for Z", type: "work" },
-  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "Teaching Assistant", subtitle: "Linear Algebra I", type: "work" },
-  { startDate: parseDate("May 2024"), endDate: parseDate("Aug 2024"), title: "Data Scientist", subtitle: "Royal Bank of Canada", type: "work" },
-  { startDate: parseDate("May 2023"), endDate: parseDate("Aug 2023"), title: "Data Analyst", subtitle: "Royal Bank of Canada", type: "work" },
+  { startDate: parseDate("May 2025"), endDate: parseDate("Apr 2026"), title: "AI Engineer", subtitle: "Mainframe Code Assistant", organization: "IBM", type: "work" },
+  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "Teaching Assistant", subtitle: "Linear Algebra I", organization: "Queen's", type: "work" },
+  { startDate: parseDate("May 2024"), endDate: parseDate("Aug 2024"), title: "Data Scientist", subtitle: "Forecasting & Modelling", organization: "RBC", type: "work" },
+  { startDate: parseDate("May 2023"), endDate: parseDate("Aug 2023"), title: "Data Analyst", subtitle: "Automation & Visualization", organization: "RBC", type: "work" },
 
   // Leadership - ranges
-  { startDate: parseDate("Jul 2025"), endDate: parseDate("Jan 2026"), title: "Future Blue President", subtitle: "IBM Intern Council", type: "leadership" },
-  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "Project Manager", subtitle: "Queen's Startup Consulting", type: "leadership" },
-  { startDate: parseDate("Sep 2024"), endDate: parseDate("Apr 2025"), title: "Campus Ambassador", subtitle: "Royal Bank of Canada", type: "leadership" },
-  { startDate: parseDate("Sep 2024"), endDate: parseDate("Apr 2025"), title: "Project Manager", subtitle: "QUANTT (2 teams)", type: "leadership" },
-  { startDate: parseDate("Sep 2024"), endDate: parseDate("Dec 2024"), title: "Consultant", subtitle: "Queen's Startup Consulting", type: "leadership" },
-  { startDate: parseDate("Sep 2023"), endDate: parseDate("Apr 2024"), title: "Analyst", subtitle: "QUANTT", type: "leadership" },
+  { startDate: parseDate("Jul 2025"), endDate: parseDate("Jan 2026"), title: "Future Blue President", subtitle: "Intern Council", organization: "IBM", type: "leadership" },
+  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "Project Manager", organization: "QSC", type: "leadership" },
+  { startDate: parseDate("Sep 2024"), endDate: parseDate("Apr 2025"), title: "Campus Ambassador", organization: "RBC", type: "leadership" },
+  { startDate: parseDate("Sep 2024"), endDate: parseDate("Apr 2025"), title: "Project Manager", subtitle: "2 teams", organization: "QUANTT", type: "leadership" },
+  { startDate: parseDate("Sep 2024"), endDate: parseDate("Dec 2024"), title: "Consultant", organization: "QSC", type: "leadership" },
+  { startDate: parseDate("Sep 2023"), endDate: parseDate("Apr 2024"), title: "Analyst", organization: "QUANTT", type: "leadership" },
 
   // Projects - ranges
   { startDate: parseDate("Jan 2026"), title: "Interpretability Research", subtitle: "SAE + Quantization", type: "project" },
-  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "MTHE393 Control Systems", subtitle: "Black Box Identification", type: "project" },
-  { startDate: parseDate("Jan 2024"), endDate: parseDate("Apr 2024"), title: "APSC 200", subtitle: "Gulf of Mexico Simulation", type: "project" },
+  { startDate: parseDate("Jan 2025"), endDate: parseDate("Apr 2025"), title: "MTHE393 Control Systems", subtitle: "Black Box Identification", organization: "Queen's", type: "project" },
+  { startDate: parseDate("Jan 2024"), endDate: parseDate("Apr 2024"), title: "APSC 200", subtitle: "Gulf of Mexico Simulation", organization: "Queen's", type: "project" },
   { startDate: parseDate("Dec 2024"), title: "Advent of Code 2024", subtitle: "8 languages, 29 stars", type: "project" },
 
   // Hackathons - single points
-  { startDate: parseDate("Jan 2025"), title: "QHacks 2025", subtitle: "Chrono - Linguistic Forecasting", type: "hackathon" },
-  { startDate: parseDate("Nov 2024"), title: "McGill FAIM Hackathon", subtitle: "Portfolio Optimization", type: "hackathon" },
-  { startDate: parseDate("Jan 2024"), title: "QHacks 2024", subtitle: "AI Financial Advisor", type: "hackathon" },
+  { startDate: parseDate("Jan 2025"), title: "QHacks 2025", subtitle: "Chrono - Linguistic Forecasting", organization: "Queen's", type: "hackathon" },
+  { startDate: parseDate("Nov 2024"), title: "McGill FAIM Hackathon", subtitle: "Portfolio Optimization", organization: "McGill", type: "hackathon" },
+  { startDate: parseDate("Jan 2024"), title: "QHacks 2024", subtitle: "AI Financial Advisor", organization: "Queen's", type: "hackathon" },
 ];
 
 const typeColors = {
@@ -185,8 +186,10 @@ export function Timeline() {
                       {/* Tooltip */}
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-20">
                         <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black text-xs rounded px-2 py-1 whitespace-nowrap shadow-lg">
-                          <div className="font-medium">{item.title}</div>
-                          {item.subtitle && <div className="text-neutral-300 dark:text-neutral-600">{item.subtitle}</div>}
+                          <div className="text-neutral-400 dark:text-neutral-500 text-[10px] uppercase tracking-wide">
+                            {typeLabels[item.type]}{item.organization && ` | ${item.organization}`}
+                          </div>
+                          <div className="font-medium">{item.title}{item.subtitle && ` - ${item.subtitle}`}</div>
                           <div className="text-neutral-400 dark:text-neutral-500 mt-0.5">
                             {formatMonth(item.startDate)}{item.endDate ? ` - ${formatMonth(item.endDate)}` : ''}
                           </div>

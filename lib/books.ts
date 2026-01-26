@@ -23,6 +23,12 @@ export const currentlyReading: CurrentRead[] = [
     blurb: "\"The three greatest novels are Anna Karenina, Anna Karenina, and Anna Karenina.\" — Faulkner. Part of a recent interest in Tsarist Russia and the events leading to revolution and catastrophe.",
   },
   {
+    title: "Stalin: Waiting for Hitler, 1929-1941",
+    author: "Stephen Kotkin",
+    progress: "Page 0 / 1154",
+    blurb: "Continuing the tale of how a uniquely capable dictator ruined millions of families' lives while gearing up to win a world war.",
+  },
+  {
     title: "Foundations of Optimization",
     author: "Osman Guler",
     progress: "Chapter 2.1 / 14",

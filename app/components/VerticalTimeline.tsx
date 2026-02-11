@@ -94,17 +94,12 @@ function assignRows(
   return rows;
 }
 
-interface ProcessedItem extends TimelineItem {
-  isHopeful?: boolean;
-}
-
 export function VerticalTimeline({ items }: VerticalTimelineProps) {
   // Items now come fully processed from lib/data.ts getTimelineItems()
   // No need for local transformations - data layer handles:
   // - Education breakdown by academic year
   // - QUANTT timing correction
-  // - Anthropic Fellow (hopeful)
-  const processedItems: ProcessedItem[] = items;
+  const processedItems = items;
 
   return (
     <div className="space-y-0">
@@ -178,13 +173,11 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
                     const style = typeStyles[item.type];
                     const hasLink = item.hasDetailPage && item.slug;
                     const width = Math.max(endPct - startPct, 2);
-                    const isHopeful = (item as ProcessedItem).isHopeful;
-
                     const content = (
                       <div
                         className={`absolute flex items-center gap-1 px-1.5 text-[10px] border bg-[var(--paper)] overflow-hidden whitespace-nowrap ${
                           hasLink ? "hover:border-[var(--accent)] cursor-pointer" : ""
-                        } ${isHopeful ? "border-dashed opacity-70" : ""}`}
+                        }`}
                         style={{
                           left: `${startPct}%`,
                           width: `${width}%`,
@@ -192,7 +185,6 @@ export function VerticalTimeline({ items }: VerticalTimelineProps) {
                           height: rowHeight - 8,
                           borderLeftWidth: "3px",
                           borderLeftColor: style.color,
-                          borderLeftStyle: isHopeful ? "dashed" : "solid",
                           minWidth: "40px",
                         }}
                       >

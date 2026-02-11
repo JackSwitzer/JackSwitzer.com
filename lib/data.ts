@@ -478,8 +478,6 @@ export interface TimelineItem {
   courses?: string[];
   degree?: string;
   externalLink?: string;
-  // Future/hopeful items
-  isHopeful?: boolean;
 }
 
 const monthMap: Record<string, number> = {
@@ -603,8 +601,6 @@ const displayTitleMap: Record<string, string> = {
   "Queen's - 2nd Year": "2nd Year: Applied Math",
   "Queen's - 3rd Year": "3rd Year: Applied Math",
   "Queen's - 4th Year": "4th Year: Applied Math",
-  // Special
-  "Anthropic Fellow": "Anthropic Fellow",
 };
 
 function getDisplayTitle(title: string): string {
@@ -707,18 +703,6 @@ export function getTimelineItems(): TimelineItem[] {
       hasDetailPage: false,
     });
   }
-
-  // 6. Add Anthropic Fellow (hopeful) for Summer 2026
-  items.push({
-    id: "anthropic-fellow",
-    title: "Anthropic Fellow",
-    displayTitle: "Anthropic Fellow",
-    type: "work",
-    startDate: new Date(2026, 4, 1), // May 2026
-    endDate: new Date(2026, 7, 31), // Aug 2026
-    hasDetailPage: false,
-    isHopeful: true,
-  });
 
   // Sort by startDate ascending (2022 -> 2027)
   return items.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
